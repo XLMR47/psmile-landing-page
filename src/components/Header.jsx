@@ -29,13 +29,13 @@ export default function Header() {
                     <a href="#experto" className="text-xs font-bold text-[#F3F4F6] hover:text-[#0070F3] transition-colors uppercase tracking-widest">El Experto</a>
                     <a href="#testimonios" className="text-xs font-bold text-[#F3F4F6] hover:text-[#0070F3] transition-colors uppercase tracking-widest">Resultados</a>
                     <a href="#planes" className="text-xs font-bold text-[#F3F4F6] hover:text-[#0070F3] transition-colors uppercase tracking-widest">Planes</a>
-                    <a href="#recursos" className="text-xs font-black text-[#0C0C0C] bg-[#39FF14] hover:bg-[#32E612] px-4 py-1.5 rounded-full uppercase tracking-widest transition-all hover:scale-105 shadow-[0_0_12px_rgba(57,255,20,0.4)] animate-pulse">🎁 Recursos</a>
+                    <a href="#recursos" className="text-xs font-black text-[#0C0C0C] bg-[#FFFFFF] hover:bg-[#32E612] px-4 py-1.5 rounded-full uppercase tracking-widest transition-all hover:scale-105 shadow-[0_0_12px_rgba(57,255,20,0.4)] animate-pulse">🎁 Recursos</a>
                 </nav>
 
                 {/* Right Area: Status + CTA */}
                 <div className="flex items-center gap-6">
                     <div className="hidden lg:flex items-center gap-2">
-                        <span className="w-2 h-2 bg-[#39FF14] rounded-full animate-pulse"></span>
+                        <span className="w-2 h-2 bg-[#32E612] rounded-full animate-pulse shadow-[0_0_8px_rgba(50,230,18,0.5)]"></span>
                         <span className="text-[10px] font-bold text-white tracking-[0.2em] uppercase">Mental State: Active</span>
                     </div>
 

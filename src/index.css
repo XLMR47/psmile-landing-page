@@ -6,11 +6,13 @@
   --color-psmile-border: #2A2A2A;
   --color-psmile-blue: #0070F3;
   --color-psmile-blue-hover: #0056B3;
-  --color-psmile-green: #39FF14; /* Neon Green added */
+  --color-psmile-accent: #00D1FF;
+  /* Vibrant Cyan */
+  --color-psmile-silver: #FFFFFF;
   --color-psmile-yellow: #DFFF00;
   --color-psmile-text: #F3F4F6;
   --color-psmile-muted: #9CA3AF;
-  
+
   --font-sans: 'Space Grotesk', system-ui, sans-serif;
   --font-drama: 'DM Serif Display', serif;
   --font-mono: 'Space Mono', monospace;
@@ -29,29 +31,47 @@ html {
 
 /* Custom Utilities */
 .text-gradient-blue {
-  background: linear-gradient(135deg, #0070F3 0%, #39FF14 100%);
+  background: linear-gradient(135deg, #0070F3 0%, #00D1FF 100%);
   -webkit-background-clip: text;
+  background-clip: text;
   -webkit-text-fill-color: transparent;
 }
 
 .radar-glow {
-  filter: drop-shadow(0 0 10px rgba(57, 255, 20, 0.3));
+  filter: drop-shadow(0 0 10px rgba(0, 209, 255, 0.3));
 }
 
 .card-hover {
   transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
+
 .card-hover:hover {
   transform: translateY(-4px);
-  box-shadow: 0 10px 40px -10px rgba(0,0,0,0.5);
+  box-shadow: 0 10px 40px -10px rgba(0, 0, 0, 0.5);
 }
 
-@keyframes pulse-green {
-  0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(57, 255, 20, 0.7); }
-  70% { transform: scale(1); box-shadow: 0 0 0 10px rgba(57, 255, 20, 0); }
-  100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(57, 255, 20, 0); }
+@keyframes pulse-blue {
+  0% {
+    transform: scale(0.95);
+    box-shadow: 0 0 0 0 rgba(0, 112, 243, 0.7);
+  }
+
+  70% {
+    transform: scale(1);
+    box-shadow: 0 0 0 10px rgba(0, 112, 243, 0);
+  }
+
+  100% {
+    transform: scale(0.95);
+    box-shadow: 0 0 0 0 rgba(0, 112, 243, 0);
+  }
 }
 
-.animate-pulse-green {
-  animation: pulse-green 2s infinite;
+.animate-pulse-blue {
+  animation: pulse-blue 2s infinite;
+}
+
+.animate-marquee {
+  display: flex !important;
+  width: max-content;
 }

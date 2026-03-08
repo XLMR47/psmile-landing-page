@@ -23,8 +23,14 @@ export default function TacticalBreathing({ unlocked = false, onRequestUnlock })
                         setPhase('EXHALA');
                         return 4;
                     } else if (phase === 'EXHALA') {
+                        setCycleCount(c => {
+                            const newCount = c + 1;
+                            if (newCount >= 8) {
+                                setIsActive(false);
+                            }
+                            return newCount;
+                        });
                         setPhase('INHALA');
-                        setCycleCount(c => c + 1);
                         return 4;
                     }
                     return prev;
@@ -94,7 +100,7 @@ export default function TacticalBreathing({ unlocked = false, onRequestUnlock })
 
                         {/* Credenciales / Coherencia Visual */}
                         <div className="pt-2 flex items-center gap-3">
-                            <ShieldCheck size={18} className="text-[#39FF14]" />
+                            <ShieldCheck size={18} className="text-[#FFFFFF]" />
                             <div className="text-[10px] text-[#9CA3AF] uppercase tracking-wider font-bold">
                                 Respaldado por Ciencia Aplicada
                             </div>
@@ -183,7 +189,7 @@ export default function TacticalBreathing({ unlocked = false, onRequestUnlock })
                                 ))}
                             </div>
                             <p className="text-[10px] text-[#A1A1AA] font-bold">
-                                Súmate a los <span className="text-[#39FF14]">50 atletas</span> en formación que están liderando el futuro del fútbol en Chile.
+                                Súmate a los <span className="text-[#FFFFFF]">50 atletas</span> en formación que están liderando el futuro del fútbol en Chile.
                             </p>
                         </div>
                         */}
@@ -191,7 +197,7 @@ export default function TacticalBreathing({ unlocked = false, onRequestUnlock })
 
                     <a
                         href="#"
-                        className="group relative inline-flex items-center justify-center px-6 py-3.5 font-black text-xs uppercase tracking-widest text-[#141414] bg-[#39FF14] rounded-lg overflow-hidden transition-transform hover:scale-[1.02] shadow-[0_0_20px_rgba(57,255,20,0.15)] hover:shadow-[0_0_30px_rgba(57,255,20,0.3)] shrink-0 w-full md:w-auto"
+                        className="group relative inline-flex items-center justify-center px-6 py-3.5 font-black text-xs uppercase tracking-widest text-[#141414] bg-[#FFFFFF] rounded-lg overflow-hidden transition-transform hover:scale-[1.02] shadow-[0_0_20px_rgba(57,255,20,0.15)] hover:shadow-[0_0_30px_rgba(57,255,20,0.3)] shrink-0 w-full md:w-auto"
                     >
                         <span className="absolute inset-0 w-full h-full -mt-1 rounded-lg opacity-30 bg-gradient-to-b from-transparent via-transparent to-black"></span>
                         <span className="relative flex items-center gap-2">

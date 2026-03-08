@@ -10,7 +10,7 @@ export default function Comparison() {
         {
             topic: "La Herramienta",
             traditional: 'Basado en la experiencia del "coach", opiniones y consejos genéricos sin respaldo empírico.',
-            psmile: 'Basado en psicometría estructurada (ePsD Lite) y datos concretos del jugador (Terapia Breve Centrada en Soluciones).',
+            psmile: 'Basado en psicometría estructurada (ePsD Lite) y datos concretos del jugador (Entrenamiento mental para el maximo rendimiento).',
         },
         {
             topic: "La Instrucción",
@@ -28,13 +28,13 @@ export default function Comparison() {
         <section className="py-24 bg-[#080808] relative border-t border-white/5 overflow-hidden">
             {/* Background Glows */}
             <div className="absolute top-1/2 left-0 -translate-y-1/2 w-64 h-64 bg-[#E10600]/10 rounded-full blur-[100px] pointer-events-none"></div>
-            <div className="absolute top-1/2 right-0 -translate-y-1/2 w-64 h-64 bg-[#39FF14]/10 rounded-full blur-[100px] pointer-events-none"></div>
+            <div className="absolute top-1/2 right-0 -translate-y-1/2 w-64 h-64 bg-[#FFFFFF]/10 rounded-full blur-[100px] pointer-events-none"></div>
 
             <div className="container mx-auto px-6 lg:px-12 max-w-7xl relative z-10">
                 <div className="text-center mb-16">
                     <span className="text-[10px] font-bold text-[#0070F3] tracking-[0.3em] uppercase block mb-4">El valor de lo científico</span>
                     <h2 className="text-3xl md:text-5xl font-black text-white mb-6">
-                        La diferencia entre <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#E10600] to-orange-500">motivar</span> y <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#39FF14] to-[#0070F3]">entrenar tu mente</span>
+                        La diferencia entre <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#E10600] to-orange-500">motivar</span> y <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#FFFFFF] to-[#0070F3]">entrenar tu mente</span>
                     </h2>
                     <p className="text-[#9CA3AF] text-lg max-w-2xl mx-auto">
                         Muchos te dicen "échale ganas". Nosotros medimos, estructuramos y blindamos la psicología del jugador con métodos clínicos aplicados al deporte.
@@ -53,13 +53,13 @@ export default function Comparison() {
                             </h3>
                             <p className="text-[10px] text-[#A1A1AA] mt-2 uppercase tracking-wider">Simples opiniones y motivación</p>
                         </div>
-                        <div className="col-span-5 bg-[#1A1A1A] border border-[#39FF14]/30 rounded-t-2xl p-6 text-center shadow-2xl relative overflow-hidden">
-                            <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-[#39FF14] to-[#0070F3]"></div>
+                        <div className="col-span-5 bg-[#1A1A1A] border border-[#FFFFFF]/30 rounded-t-2xl p-6 text-center shadow-2xl relative overflow-hidden">
+                            <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-[#FFFFFF] to-[#0070F3]"></div>
                             <h3 className="text-xl font-black text-white flex items-center justify-center gap-2">
-                                <TrendingUp className="text-[#39FF14]" size={20} />
+                                <TrendingUp className="text-[#FFFFFF]" size={20} />
                                 Sistema PSMILE
                             </h3>
-                            <p className="text-[10px] text-[#39FF14] mt-2 uppercase tracking-wider">Psicología Clínica y Deportiva Estructurada</p>
+                            <p className="text-[10px] text-[#FFFFFF] mt-2 uppercase tracking-wider">Psicología Clínica y Deportiva Estructurada</p>
                         </div>
                     </div>
 
@@ -73,8 +73,8 @@ export default function Comparison() {
                                     <XCircle className="text-[#E10600] shrink-0 mt-0.5" size={20} />
                                     <p className="text-[#9CA3AF] text-sm leading-relaxed">{point.traditional}</p>
                                 </div>
-                                <div className="col-span-5 bg-[#1A1A1A] border border-[#39FF14]/20 rounded-xl p-6 flex items-start gap-4 hover:border-[#39FF14]/50 transition-colors shadow-lg">
-                                    <CheckCircle2 className="text-[#39FF14] shrink-0 mt-0.5" size={20} />
+                                <div className="col-span-5 bg-[#1A1A1A] border border-[#FFFFFF]/20 rounded-xl p-6 flex items-start gap-4 hover:border-[#FFFFFF]/50 transition-colors shadow-lg">
+                                    <CheckCircle2 className="text-[#FFFFFF] shrink-0 mt-0.5" size={20} />
                                     <p className="text-white text-sm font-medium leading-relaxed">{point.psmile}</p>
                                 </div>
                             </div>
@@ -100,12 +100,12 @@ export default function Comparison() {
                                 </div>
                             </div>
 
-                            <div className="bg-[#1A1A1A] border border-[#39FF14]/30 rounded-xl p-5 relative shadow-lg">
-                                <span className="absolute -top-3 right-4 bg-[#080808] text-[10px] font-black text-[#39FF14] px-2 py-1 uppercase tracking-wider border border-[#39FF14]/30 rounded-md">
+                            <div className="bg-[#1A1A1A] border border-[#FFFFFF]/30 rounded-xl p-5 relative shadow-lg">
+                                <span className="absolute -top-3 right-4 bg-[#080808] text-[10px] font-black text-[#FFFFFF] px-2 py-1 uppercase tracking-wider border border-[#FFFFFF]/30 rounded-md">
                                     Método PSMILE
                                 </span>
                                 <div className="flex gap-3 mt-2">
-                                    <CheckCircle2 className="text-[#39FF14] shrink-0" size={18} />
+                                    <CheckCircle2 className="text-[#FFFFFF] shrink-0" size={18} />
                                     <p className="text-white font-medium text-sm leading-relaxed">{point.psmile}</p>
                                 </div>
                             </div>

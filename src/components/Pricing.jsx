@@ -1,20 +1,41 @@
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { CheckCircle2, Star, ChevronDown, ChevronUp, ShieldCheck, Microscope, Users, Zap, Eye, Trophy, Target } from "lucide-react";
+import gsap from 'gsap';
+import { ScrollTrigger } from 'gsap/ScrollTrigger';
+
+gsap.registerPlugin(ScrollTrigger);
 
 export default function Pricing() {
+    const sectionRef = useRef(null);
     const [expandedPlan, setExpandedPlan] = useState(null);
 
     const togglePlan = (planId) => {
         setExpandedPlan(expandedPlan === planId ? null : planId);
     };
 
+    useEffect(() => {
+        let ctx = gsap.context(() => {
+            gsap.from('.price-header', {
+                scrollTrigger: {
+                    trigger: sectionRef.current,
+                    start: 'top 80%',
+                },
+                y: 20,
+                opacity: 0,
+                duration: 0.8,
+                ease: 'power2.out'
+            });
+        }, sectionRef);
+        return () => ctx.revert();
+    }, []);
+
     return (
-        <section id="planes" className="py-24 bg-[#0C0C0C]">
+        <section ref={sectionRef} id="planes" className="py-24 bg-[#0C0C0C]">
             <div className="container mx-auto px-6 lg:px-12 max-w-7xl">
 
-                <div className="text-center mb-16">
+                <div className="price-header text-center mb-16">
                     <h2 className="text-4xl md:text-5xl font-black text-white mb-4">
-                        Planes de <span className="italic text-[#39FF14]">Entrenamiento Mental</span>
+                        Planes de <span className="italic text-[#00D1FF]">Entrenamiento Mental</span>
                     </h2>
                     <p className="text-[#9CA3AF] text-base font-medium max-w-2xl mx-auto">
                         Elige la mejor opción en Chile para deportistas en formación y familias que buscan resultados reales.
@@ -24,7 +45,7 @@ export default function Pricing() {
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-8 items-start">
 
                     {/* Plan 1: Diagnóstico de Élite */}
-                    <div className="bg-[#141414] border border-white/5 rounded-2xl p-8 hover:border-white/10 transition-all duration-300 shadow-xl overflow-hidden self-start">
+                    <div className="price-card backdrop-blur-md bg-[#141414]/90 border border-white/5 rounded-2xl p-8 hover:border-[#00D1FF]/40 transition-all duration-300 shadow-xl overflow-hidden self-start">
                         <h3 className="text-xl font-bold text-white mb-2">Diagnóstico de Élite</h3>
                         <div className="flex items-baseline gap-1 mb-2">
                             <span className="text-4xl font-black text-white">$12.990</span>
@@ -33,20 +54,20 @@ export default function Pricing() {
 
                         <ul className="space-y-4 mb-8">
                             <li className="flex items-start gap-3">
-                                <CheckCircle2 size={18} className="text-[#39FF14] shrink-0 mt-0.5" />
+                                <CheckCircle2 size={18} className="text-[#FFFFFF] shrink-0 mt-0.5" />
                                 <span className="text-sm text-[#F3F4F6]">Sesión Motivo de Consulta</span>
                             </li>
                             <li className="flex items-start gap-3">
-                                <CheckCircle2 size={18} className="text-[#39FF14] shrink-0 mt-0.5" />
-                                <span className="text-sm text-[#F3F4F6]">Sesión TBCS "Futuro Deseado"</span>
+                                <CheckCircle2 size={18} className="text-[#FFFFFF] shrink-0 mt-0.5" />
+                                <span className="text-sm text-[#F3F4F6]">Entrevista de Futuro Deseado y Metas</span>
                             </li>
                             <li className="flex items-start gap-3">
-                                <CheckCircle2 size={18} className="text-[#39FF14] shrink-0 mt-0.5" />
+                                <CheckCircle2 size={18} className="text-[#FFFFFF] shrink-0 mt-0.5" />
                                 <span className="text-sm text-[#F3F4F6]">Evaluación PSMILE (EPI, Motivación, GRID)</span>
                             </li>
                             <li className="flex items-start gap-3">
-                                <Star size={18} className="text-[#39FF14] shrink-0 mt-0.5" />
-                                <span className="text-sm text-[#F3F4F6] font-bold text-[#39FF14]">1 Sesión Personalizada de Regalo</span>
+                                <Star size={18} fill="currentColor" className="text-[#0070F3] shrink-0 mt-0.5" />
+                                <span className="text-sm text-[#F3F4F6] font-bold text-[#00D1FF]">1 Sesión Personalizada de Regalo</span>
                             </li>
                         </ul>
 
@@ -55,9 +76,9 @@ export default function Pricing() {
                                 href={`https://wa.me/56951435062?text=${encodeURIComponent("Hola Luis! 👋 Me interesa el [Diagnóstico de Élite] para mi hijo. ¿Cómo podemos agendar la primera sesión?")}`}
                                 target="_blank"
                                 rel="noopener noreferrer"
-                                className="w-full inline-flex items-center justify-center py-3 rounded-lg border border-[#39FF14]/30 text-[#39FF14] font-bold text-sm hover:bg-[#39FF14]/10 transition-colors uppercase tracking-wider text-center"
+                                className="w-full inline-flex items-center justify-center py-3 rounded-lg border border-[#00D1FF]/30 text-[#00D1FF] font-bold text-sm hover:bg-[#00D1FF]/10 transition-colors uppercase tracking-wider text-center"
                             >
-                                Iniciar Diagnóstico
+                                AGENDAR MI DIAGNÓSTICO
                             </a>
 
                             <button
@@ -89,8 +110,8 @@ export default function Pricing() {
                                 <div className="flex gap-4">
                                     <Target size={20} className="text-[#0070F3] shrink-0" />
                                     <div>
-                                        <h4 className="text-sm font-bold text-white mb-1">Enfoque TBCS</h4>
-                                        <p className="text-xs text-[#9CA3AF] leading-relaxed">Entrevista centrada en soluciones para definir el "futuro deseado" del jugador.</p>
+                                        <h4 className="text-sm font-bold text-white mb-1">Entrenamiento mental para el maximo rendimiento</h4>
+                                        <p className="text-xs text-[#9CA3AF] leading-relaxed">Entrevista centrada en soluciones para definir el "futuro deseado" y las metas del jugador.</p>
                                     </div>
                                 </div>
                             </div>
@@ -98,12 +119,12 @@ export default function Pricing() {
 
                         <div className="mt-8 pt-6 border-t border-white/5 flex items-center justify-center gap-2">
                             <div className="w-2 h-2 bg-[#E10600] rounded-full animate-pulse"></div>
-                            <span className="text-[10px] font-black text-white/40 tracking-[0.2em] uppercase">Solo quedan 8 cupos</span>
+                            <span className="text-[10px] font-black text-white/40 tracking-[0.2em] uppercase">Solo quedan 5 vacantes</span>
                         </div>
                     </div>
 
                     {/* Plan 2: Performance & Mental Skills (POPULAR) */}
-                    <div className="bg-[#1C1C1E] border border-[#0070F3] rounded-2xl p-8 relative transform md:-translate-y-4 shadow-2xl shadow-[#0070F3]/20 self-start">
+                    <div className="price-card backdrop-blur-md bg-[#1C1C1E]/95 border border-[#0070F3] rounded-2xl p-8 relative transform md:-translate-y-4 shadow-2xl shadow-[#0070F3]/20 self-start">
                         <div className="absolute -top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-[#0070F3] text-white text-[11px] font-black tracking-widest uppercase px-5 py-1.5 rounded-full whitespace-nowrap shadow-lg shadow-[#0070F3]/40">
                             🔥 POPULAR
                         </div>
@@ -132,8 +153,8 @@ export default function Pricing() {
                                 <span className="text-sm text-[#F3F4F6]">Control de Pulsaciones y Resiliencia Inmediata</span>
                             </li>
                             <li className="flex items-start gap-3">
-                                <Star size={18} className="text-[#0070F3] shrink-0 mt-0.5" />
-                                <span className="text-sm font-bold text-[#F3F4F6]">2 Sesiones de Intervención Personalizada / mes</span>
+                                <Star size={18} fill="currentColor" className="text-[#0070F3] shrink-0 mt-0.5" />
+                                <span className="text-sm font-bold text-[#F3F4F6]">2 Sesiones de Entrenamiento Mental Psicodeportológico / mes</span>
                             </li>
                         </ul>
 
@@ -142,9 +163,13 @@ export default function Pricing() {
                                 href={`https://wa.me/56951435062?text=${encodeURIComponent("Hola Luis! 👋 Quiero asegurar un cupo en el programa [Performance & Mental Skills] para mi hijo. Vengo de la web oficial.")}`}
                                 target="_blank"
                                 rel="noopener noreferrer"
-                                className="w-full inline-flex items-center justify-center py-3 rounded-lg bg-[#0070F3] hover:bg-[#0056B3] text-white font-black text-sm transition-all transform hover:scale-[1.02] shadow-lg shadow-[#0070F3]/30 uppercase tracking-wider text-center"
+                                className="relative w-full inline-flex items-center justify-center py-3 rounded-lg bg-[#0070F3] hover:bg-[#0056B3] text-white font-black text-sm transition-all transform hover:scale-[1.02] shadow-lg shadow-[#0070F3]/30 uppercase tracking-wider text-center overflow-visible"
                             >
-                                Asegurar cupo para mi hijo
+                                RESERVAR MI CUPO (QUEDAN 5)
+                                <span className="absolute -top-2 -right-2 flex h-4 w-4">
+                                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#00D1FF] opacity-75"></span>
+                                    <span className="relative inline-flex rounded-full h-4 w-4 bg-[#00D1FF]"></span>
+                                </span>
                             </a>
 
                             <button
@@ -160,31 +185,31 @@ export default function Pricing() {
                         <div className={`transition-all duration-500 ease-in-out ${expandedPlan === 2 ? 'max-h-[500px] opacity-100 mt-8' : 'max-h-0 opacity-0 pointer-events-none'}`}>
                             <div className="space-y-6 pt-6 border-t border-white/5">
                                 <div className="flex gap-4">
-                                    <Eye size={20} className="text-[#39FF14] shrink-0" />
+                                    <Eye size={20} className="text-[#FFFFFF] shrink-0" />
                                     <div>
                                         <h4 className="text-sm font-bold text-white mb-1">Análisis en Acción (ePsD Lite)</h4>
                                         <p className="text-xs text-[#9CA3AF] leading-relaxed">Observación profesional en un partido real para detectar visión de juego, liderazgo y resiliencia inmediata en vivo.</p>
                                     </div>
                                 </div>
                                 <div className="flex gap-4">
-                                    <Zap size={20} className="text-[#39FF14] shrink-0" />
+                                    <Zap size={20} className="text-[#FFFFFF] shrink-0" />
                                     <div>
                                         <h4 className="text-sm font-bold text-white mb-1">Entrenamiento de Campo (Scanning)</h4>
                                         <p className="text-xs text-[#9CA3AF] leading-relaxed">Técnicas de élite para mejorar la visión periférica y la toma de decisiones bajo presión extrema.</p>
                                     </div>
                                 </div>
                                 <div className="flex gap-4">
-                                    <ShieldCheck size={20} className="text-[#39FF14] shrink-0" />
+                                    <ShieldCheck size={20} className="text-[#FFFFFF] shrink-0" />
                                     <div>
                                         <h4 className="text-sm font-bold text-white mb-1">Foco Blindado</h4>
                                         <p className="text-xs text-[#9CA3AF] leading-relaxed">Protocolos de respiración y recuperación tras el error para mantener el rendimiento al 100% los 90 minutos.</p>
                                     </div>
                                 </div>
                                 <div className="flex gap-4">
-                                    <Target size={20} className="text-[#39FF14] shrink-0" />
+                                    <Target size={20} className="text-[#FFFFFF] shrink-0" />
                                     <div>
-                                        <h4 className="text-sm font-bold text-white mb-1">Intervención Personalizada (2 sesiones / mes)</h4>
-                                        <p className="text-xs text-[#9CA3AF] leading-relaxed">Basándonos en lo detectado en el Diagnóstico y la observación en cancha, diseñamos un plan de intervención a medida. Cada mes realizamos 2 sesiones individuales donde trabajamos directamente las áreas que más impactan el rendimiento del jugador: confianza, control de ansiedad, foco o toma de decisiones bajo presión.</p>
+                                        <h4 className="text-sm font-bold text-white mb-1">Entrenamiento Mental Psicodeportológico (2 sesiones / mes)</h4>
+                                        <p className="text-xs text-[#9CA3AF] leading-relaxed">Basándonos en lo detectado en el Diagnóstico y la observación en cancha, diseñamos un plan de optimización a medida. Cada mes realizamos 2 sesiones individuales donde trabajamos directamente las áreas que más impactan el rendimiento del jugador: confianza, control de ansiedad, foco o toma de decisiones bajo presión.</p>
                                     </div>
                                 </div>
                             </div>
@@ -192,12 +217,12 @@ export default function Pricing() {
 
                         <div className="mt-8 pt-6 border-t border-white/5 flex items-center justify-center gap-2">
                             <div className="w-2 h-2 bg-[#E10600] rounded-full animate-pulse"></div>
-                            <span className="text-[10px] font-black text-white/60 tracking-[0.2em] uppercase">Solo quedan 8 cupos</span>
+                            <span className="text-[10px] font-black text-white/60 tracking-[0.2em] uppercase">Solo quedan 5 vacantes</span>
                         </div>
                     </div>
 
                     {/* Plan 3: Élite 360 */}
-                    <div className="bg-[#141414] border border-white/5 rounded-2xl p-8 hover:border-white/10 transition-all duration-300 shadow-xl overflow-hidden self-start">
+                    <div className="price-card backdrop-blur-md bg-[#141414]/90 border border-white/5 rounded-2xl p-8 hover:border-[#00D1FF]/40 transition-all duration-300 shadow-xl overflow-hidden self-start">
                         <h3 className="text-xl font-bold text-white mb-2">Élite 360</h3>
                         <div className="flex items-baseline gap-1 mb-2">
                             <span className="text-4xl font-black text-white">$99.990</span>
@@ -206,20 +231,20 @@ export default function Pricing() {
 
                         <ul className="space-y-4 mb-8">
                             <li className="flex items-start gap-3">
-                                <CheckCircle2 size={18} className="text-[#39FF14] shrink-0 mt-0.5" />
+                                <CheckCircle2 size={18} className="text-[#FFFFFF] shrink-0 mt-0.5" />
                                 <span className="text-sm text-[#F3F4F6]">Todo lo de Performance</span>
                             </li>
                             <li className="flex items-start gap-3">
-                                <CheckCircle2 size={18} className="text-[#39FF14] shrink-0 mt-0.5" />
+                                <CheckCircle2 size={18} className="text-[#FFFFFF] shrink-0 mt-0.5" />
                                 <span className="text-sm text-[#F3F4F6]">Psicoeducación para Padres (crianza deportiva)</span>
                             </li>
                             <li className="flex items-start gap-3">
-                                <CheckCircle2 size={18} className="text-[#39FF14] shrink-0 mt-0.5" />
+                                <CheckCircle2 size={18} className="text-[#FFFFFF] shrink-0 mt-0.5" />
                                 <span className="text-sm text-[#F3F4F6]">4 sesiones intensivas mensuales</span>
                             </li>
                             <li className="flex items-start gap-3">
-                                <Star size={18} className="text-[#39FF14] shrink-0 mt-0.5" />
-                                <span className="text-sm text-[#F3F4F6] font-bold text-[#39FF14]">20% OFF en renovaciones</span>
+                                <Star size={18} fill="currentColor" className="text-[#0070F3] shrink-0 mt-0.5" />
+                                <span className="text-sm text-[#F3F4F6] font-bold text-[#00D1FF]">20% OFF en renovaciones</span>
                             </li>
                         </ul>
 
@@ -228,9 +253,9 @@ export default function Pricing() {
                                 href={`https://wa.me/56951435062?text=${encodeURIComponent("Hola Luis! 👋 Me interesa el programa [Élite 360] y me gustaría postular para trabajar contigo. ¿Qué pasos siguen?")}`}
                                 target="_blank"
                                 rel="noopener noreferrer"
-                                className="w-full inline-flex items-center justify-center py-3 rounded-lg border border-white/20 text-white font-bold text-sm hover:bg-white/5 transition-colors uppercase tracking-wider text-center"
+                                className="w-full inline-flex items-center justify-center py-3 rounded-lg border border-[#00D1FF]/30 text-[#00D1FF] font-bold text-sm hover:bg-[#00D1FF]/10 transition-colors uppercase tracking-wider text-center"
                             >
-                                Postular al Programa
+                                POSTULAR A ÉLITE 360
                             </a>
 
                             <button
@@ -271,7 +296,7 @@ export default function Pricing() {
 
                         <div className="mt-8 pt-6 border-t border-white/5 flex items-center justify-center gap-2">
                             <div className="w-2 h-2 bg-[#E10600] rounded-full animate-pulse"></div>
-                            <span className="text-[10px] font-black text-white/40 tracking-[0.2em] uppercase">Solo quedan 8 cupos</span>
+                            <span className="text-[10px] font-black text-white/40 tracking-[0.2em] uppercase">Solo quedan 5 vacantes</span>
                         </div>
                     </div>
 

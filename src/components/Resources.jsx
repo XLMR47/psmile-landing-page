@@ -75,25 +75,25 @@ export default function Resources() {
         <div
             onClick={allUnlocked ? undefined : handleOpenUnlockModal}
             className={`flex items-center justify-between p-5 bg-[#141414] rounded-xl border transition-all group relative overflow-hidden shadow-[0_0_15px_rgba(37,99,235,0.05)] ${allUnlocked
-                ? 'border-[#39FF14]/30 hover:border-[#39FF14]/60'
+                ? 'border-[#FFFFFF]/30 hover:border-[#FFFFFF]/60'
                 : 'border-[#2563EB]/20 hover:border-[#2563EB]/80 cursor-pointer hover:shadow-[0_0_20px_rgba(37,99,235,0.15)]'
                 }`}
         >
-            <div className="absolute top-0 right-0 bg-[#39FF14] text-black text-[9px] font-black tracking-widest uppercase px-3 py-1 rounded-bl-xl z-20 shadow-md animate-pulse">
+            <div className="absolute top-0 right-0 bg-[#FFFFFF] text-black text-[9px] font-black tracking-widest uppercase px-3 py-1 rounded-bl-xl z-20 shadow-md animate-pulse">
                 NUEVO
             </div>
-            <div className={`absolute inset-0 bg-gradient-to-r opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none ${allUnlocked ? 'from-[#39FF14]/0 to-[#39FF14]/5' : 'from-[#2563EB]/0 to-[#2563EB]/10'
+            <div className={`absolute inset-0 bg-gradient-to-r opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none ${allUnlocked ? 'from-[#FFFFFF]/0 to-[#FFFFFF]/5' : 'from-[#2563EB]/0 to-[#2563EB]/10'
                 }`}></div>
             <div className="flex items-center gap-4 relative z-10 w-full sm:w-auto">
-                <div className={`w-12 h-16 sm:w-14 sm:h-20 shrink-0 rounded-md overflow-hidden flex items-center justify-center group-hover:scale-105 transition-transform shadow-lg border ${allUnlocked ? 'bg-[#39FF14]/5 border-[#39FF14]/30' : 'bg-[#2563EB]/10 border-[#2563EB]/30'
+                <div className={`w-12 h-16 sm:w-14 sm:h-20 shrink-0 rounded-md overflow-hidden flex items-center justify-center group-hover:scale-105 transition-transform shadow-lg border ${allUnlocked ? 'bg-[#FFFFFF]/5 border-[#FFFFFF]/30' : 'bg-[#2563EB]/10 border-[#2563EB]/30'
                     }`}>
                     <img src={image} alt={title} className="w-full h-full object-cover" />
                 </div>
                 <div className="pr-4 sm:pr-0">
-                    <h4 className={`text-white font-bold text-sm sm:text-base transition-colors leading-tight mb-1 ${allUnlocked ? 'group-hover:text-[#39FF14]' : 'group-hover:text-[#2563EB]'
+                    <h4 className={`text-white font-bold text-sm sm:text-base transition-colors leading-tight mb-1 ${allUnlocked ? 'group-hover:text-[#FFFFFF]' : 'group-hover:text-[#2563EB]'
                         }`}>
                         {title}<br className="hidden sm:block" />
-                        <span className={`text-xs sm:text-sm text-gray-300 transition-colors font-medium ${allUnlocked ? 'group-hover:text-[#39FF14]/80' : 'group-hover:text-[#2563EB]/80'
+                        <span className={`text-xs sm:text-sm text-gray-300 transition-colors font-medium ${allUnlocked ? 'group-hover:text-[#FFFFFF]/80' : 'group-hover:text-[#2563EB]/80'
                             }`}>{subtitle}</span>
                     </h4>
                     <p className="text-[#9CA3AF] text-xs sm:text-sm mt-1 max-w-[250px] sm:max-w-none">{description}</p>
@@ -106,7 +106,7 @@ export default function Resources() {
                         target="_blank"
                         rel="noopener noreferrer"
                         onClick={(e) => e.stopPropagation()}
-                        className="flex items-center gap-2 px-4 py-2 bg-[#39FF14] text-black font-black text-[10px] uppercase tracking-widest rounded-lg hover:bg-[#32E612] transition-all hover:scale-105 shadow-lg shadow-[#39FF14]/10"
+                        className="flex items-center gap-2 px-4 py-2 bg-[#FFFFFF] text-black font-black text-[10px] uppercase tracking-widest rounded-lg hover:bg-[#32E612] transition-all hover:scale-105 shadow-lg shadow-[#FFFFFF]/10"
                     >
                         <Download size={14} /> Descargar
                     </a>
@@ -143,9 +143,9 @@ export default function Resources() {
                                 </button>
                             )}
                             {allUnlocked && (
-                                <div className="flex items-center gap-2 px-3 py-1.5 bg-[#39FF14]/10 border border-[#39FF14]/30 rounded-lg">
-                                    <CheckCircle2 size={14} className="text-[#39FF14]" />
-                                    <span className="text-[10px] font-black uppercase tracking-widest text-[#39FF14]">Todo Desbloqueado</span>
+                                <div className="flex items-center gap-2 px-3 py-1.5 bg-[#FFFFFF]/10 border border-[#FFFFFF]/30 rounded-lg">
+                                    <CheckCircle2 size={14} className="text-[#FFFFFF]" />
+                                    <span className="text-[10px] font-black uppercase tracking-widest text-[#FFFFFF]">Todo Desbloqueado</span>
                                 </div>
                             )}
                         </div>
@@ -176,8 +176,8 @@ export default function Resources() {
                             />
 
                             {/* Video: Consciencia Plena */}
-                            <div className="bg-[#141414] rounded-xl border border-[#39FF14]/20 hover:border-[#39FF14]/60 transition-all overflow-hidden group relative shadow-[0_0_15px_rgba(57,255,20,0.05)] hover:shadow-[0_0_20px_rgba(57,255,20,0.15)]">
-                                <div className="absolute top-0 right-0 bg-[#39FF14] text-black text-[9px] font-black tracking-widest uppercase px-3 py-1 rounded-bl-xl z-20 shadow-md">
+                            <div className="bg-[#141414] rounded-xl border border-[#FFFFFF]/20 hover:border-[#FFFFFF]/60 transition-all overflow-hidden group relative shadow-[0_0_15px_rgba(57,255,20,0.05)] hover:shadow-[0_0_20px_rgba(57,255,20,0.15)]">
+                                <div className="absolute top-0 right-0 bg-[#FFFFFF] text-black text-[9px] font-black tracking-widest uppercase px-3 py-1 rounded-bl-xl z-20 shadow-md">
                                     {allUnlocked ? 'DESBLOQUEADO' : 'GRATIS'}
                                 </div>
                                 <div className="aspect-video w-full relative">
@@ -204,11 +204,11 @@ export default function Resources() {
                                 </div>
                                 <div className="p-4 flex items-center justify-between">
                                     <div className="flex items-center gap-3">
-                                        <div className="w-9 h-9 bg-[#39FF14]/10 rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform">
-                                            <MonitorPlay className="text-[#39FF14]" size={18} />
+                                        <div className="w-9 h-9 bg-[#FFFFFF]/10 rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform">
+                                            <MonitorPlay className="text-[#FFFFFF]" size={18} />
                                         </div>
                                         <div>
-                                            <h4 className="text-white font-bold text-sm group-hover:text-[#39FF14] transition-colors">Consciencia Plena</h4>
+                                            <h4 className="text-white font-bold text-sm group-hover:text-[#FFFFFF] transition-colors">Consciencia Plena</h4>
                                             <p className="text-[#9CA3AF] text-xs">Video guiado de mindfulness deportivo</p>
                                         </div>
                                     </div>
@@ -217,7 +217,7 @@ export default function Resources() {
                                             href="https://youtu.be/a8Epq4ryL4s"
                                             target="_blank"
                                             rel="noopener noreferrer"
-                                            className="text-[10px] uppercase tracking-widest font-bold text-[#39FF14] hover:text-white transition-colors"
+                                            className="text-[10px] uppercase tracking-widest font-bold text-[#FFFFFF] hover:text-white transition-colors"
                                         >
                                             Ver en YouTube →
                                         </a>
@@ -268,7 +268,7 @@ export default function Resources() {
 
                         <div className="mb-6">
                             <div className="w-12 h-12 bg-[#0070F3]/10 rounded-xl flex items-center justify-center mb-4 border border-[#0070F3]/20">
-                                {justUnlocked ? <CheckCircle2 className="text-[#39FF14]" size={24} /> : <LockKeyhole className="text-[#0070F3]" size={24} />}
+                                {justUnlocked ? <CheckCircle2 className="text-[#FFFFFF]" size={24} /> : <LockKeyhole className="text-[#0070F3]" size={24} />}
                             </div>
                             <h3 className="text-2xl font-black text-white mb-2">
                                 {justUnlocked ? "¡Todo Desbloqueado! 🎉" : "Desbloquea Todos los Recursos"}
@@ -347,15 +347,15 @@ export default function Resources() {
                             </>
                         ) : (
                             <div className="space-y-4">
-                                <div className="bg-[#1A1A1A] border border-[#39FF14]/30 rounded-xl p-4 text-center">
-                                    <CheckCircle2 className="text-[#39FF14] mx-auto mb-2" size={32} />
+                                <div className="bg-[#1A1A1A] border border-[#FFFFFF]/30 rounded-xl p-4 text-center">
+                                    <CheckCircle2 className="text-[#FFFFFF] mx-auto mb-2" size={32} />
                                     <p className="text-white font-bold text-sm mb-1">Acceso completo activado</p>
                                     <p className="text-[10px] text-[#9CA3AF]">Cierra esta ventana y explora los recursos sin límites.</p>
                                 </div>
 
                                 <button
                                     onClick={() => setModalOpen(false)}
-                                    className="w-full bg-[#39FF14] hover:bg-[#32E612] text-black font-black uppercase tracking-widest text-xs py-4 rounded-lg transition-transform hover:scale-[1.02] shadow-lg shadow-[#39FF14]/20 flex items-center justify-center gap-2"
+                                    className="w-full bg-[#FFFFFF] hover:bg-[#32E612] text-black font-black uppercase tracking-widest text-xs py-4 rounded-lg transition-transform hover:scale-[1.02] shadow-lg shadow-[#FFFFFF]/20 flex items-center justify-center gap-2"
                                 >
                                     Explorar Recursos <CheckCircle2 size={16} />
                                 </button>

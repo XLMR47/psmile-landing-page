@@ -1,11 +1,54 @@
 import { Award, BookOpen, Brain, ShieldCheck, X } from "lucide-react";
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
+import gsap from 'gsap';
+import { ScrollTrigger } from 'gsap/ScrollTrigger';
+
+gsap.registerPlugin(ScrollTrigger);
 
 export default function Expert() {
+    const sectionRef = useRef(null);
     const [selectedImage, setSelectedImage] = useState(null);
 
+    useEffect(() => {
+        let ctx = gsap.context(() => {
+            gsap.from('.expert-img-block', {
+                scrollTrigger: {
+                    trigger: sectionRef.current,
+                    start: 'top 70%',
+                },
+                x: -50,
+                opacity: 0,
+                duration: 1,
+                ease: 'power3.out'
+            });
+
+            gsap.from('.expert-text-block', {
+                scrollTrigger: {
+                    trigger: sectionRef.current,
+                    start: 'top 70%',
+                },
+                x: 50,
+                opacity: 0,
+                duration: 1,
+                ease: 'power3.out'
+            });
+
+            gsap.from('.expert-cert', {
+                scrollTrigger: {
+                    trigger: sectionRef.current,
+                    start: 'top 50%',
+                },
+                y: 10,
+                duration: 0.5,
+                stagger: 0.1,
+                ease: 'power2.out'
+            });
+        }, sectionRef);
+        return () => ctx.revert();
+    }, []);
+
     return (
-        <section id="experto" className="py-24 bg-[#0C0C0C] border-t border-white/5 relative overflow-hidden">
+        <section ref={sectionRef} id="experto" className="py-24 bg-[#0C0C0C] border-t border-white/5 relative overflow-hidden">
             {/* Elementos de fondo */}
             <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-[#0070F3]/10 rounded-full blur-[120px] pointer-events-none"></div>
 
@@ -14,7 +57,7 @@ export default function Expert() {
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
 
                     {/* Bloque Visual (Izquierda) */}
-                    <div className="relative">
+                    <div className="expert-img-block relative">
                         <div className="relative rounded-2xl overflow-hidden border border-white/10 aspect-[4/5] bg-[#1A1A1A] group">
                             {/* 
                               NOTA PARA EL USUARIO: 
@@ -38,34 +81,34 @@ export default function Expert() {
                                 </div>
                                 <div>
                                     <p className="text-white font-bold text-sm">Lic. Luis Enrique Morales</p>
-                                    <p className="text-[#39FF14] text-[10px] font-black uppercase tracking-widest">Psicólogo Deportivo</p>
+                                    <p className="text-[#00D1FF] text-[10px] font-black uppercase tracking-widest">Psicólogo Deportivo</p>
                                 </div>
                             </div>
                         </div>
                     </div>
 
                     {/* Bloque de Texto y Credenciales (Derecha) */}
-                    <div>
+                    <div className="expert-text-block">
                         <span className="text-[10px] font-bold text-[#0070F3] tracking-[0.3em] uppercase block mb-4">Tu Mentor en el Camino al Éxito</span>
                         <h2 className="text-3xl md:text-5xl font-black text-white mb-6 leading-tight">
-                            Ciencia y Pasión al servicio de tu <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#0070F3] to-[#39FF14]">rendimiento</span>.
+                            Ciencia y Pasión al servicio de tu <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#0070F3] to-[#00D1FF]">rendimiento</span>.
                         </h2>
 
                         <p className="text-[#9CA3AF] text-lg leading-relaxed mb-10">
-                            "Soy <span className="text-white font-bold">Luis Enrique Morales</span>, psicólogo deportivo enfocado en descodificar el éxito mental en el fútbol. Mi sistema integra las neurociencias aplicadas y el entrenamiento de élite para que cada joven talento domine la presión, forje una mentalidad inquebrantable y encuentre su mejor versión competitiva."
+                            "Soy <span className="text-white font-bold">Luis Enrique Morales</span>, Licenciado en Psicología especializado en el ámbito deportivo a través de Neurociencias y Psicología del Fútbol. Mi sistema integra las neurociencias aplicadas y el entrenamiento de élite para que cada joven talento domine la presión, optimice su rendimiento y encuentre su mejor versión competitiva."
                         </p>
 
                         {/* Galería de Credenciales */}
                         <div className="space-y-4 mb-10">
                             <h3 className="text-sm font-bold text-white uppercase tracking-wider mb-4 flex items-center gap-2">
-                                <ShieldCheck size={16} className="text-[#39FF14]" />
+                                <ShieldCheck size={16} className="text-[#00D1FF]" />
                                 Acreditaciones Oficiales
                             </h3>
 
                             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                 <button
                                     onClick={() => setSelectedImage('/images/Titulo%20profesional.jpeg')}
-                                    className="text-left bg-[#141414] border border-white/5 p-4 rounded-xl flex items-start gap-4 hover:border-[#0070F3]/50 transition-all cursor-pointer group"
+                                    className="sm:col-span-2 text-left bg-[#141414] border border-white/5 p-4 rounded-xl flex items-start gap-4 hover:border-[#0070F3]/50 transition-all cursor-pointer group"
                                 >
                                     <BookOpen size={24} className="text-[#0070F3] shrink-0 group-hover:scale-110 transition-transform" />
                                     <div>
@@ -76,7 +119,7 @@ export default function Expert() {
 
                                 <button
                                     onClick={() => setSelectedImage('/images/Neurociencias.jpeg')}
-                                    className="text-left bg-[#141414] border border-white/5 p-4 rounded-xl flex items-start gap-4 hover:border-[#0070F3]/50 transition-all cursor-pointer group"
+                                    className="expert-cert text-left bg-[#141414] border border-white/5 p-4 rounded-xl flex items-start gap-4 hover:border-[#0070F3]/50 transition-all cursor-pointer group"
                                 >
                                     <Brain size={24} className="text-[#0070F3] shrink-0 group-hover:scale-110 transition-transform" />
                                     <div>
@@ -87,9 +130,9 @@ export default function Expert() {
 
                                 <button
                                     onClick={() => setSelectedImage('/images/Psicologia%20deportiva.jpeg')}
-                                    className="text-left bg-[#141414] border border-white/5 p-4 rounded-xl flex items-start gap-4 hover:border-[#39FF14]/50 transition-all cursor-pointer group"
+                                    className="expert-cert text-left bg-[#141414] border border-white/5 p-4 rounded-xl flex items-start gap-4 hover:border-[#00D1FF]/50 transition-all cursor-pointer group"
                                 >
-                                    <Award size={24} className="text-[#39FF14] shrink-0 group-hover:scale-110 transition-transform" />
+                                    <Award size={24} className="text-[#00D1FF] shrink-0 group-hover:scale-110 transition-transform" />
                                     <div>
                                         <p className="text-white text-sm font-bold mb-1">Psicología Deportiva</p>
                                         <p className="text-[#9CA3AF] text-xs">Certificación en Alto Rendimiento</p>
@@ -98,12 +141,23 @@ export default function Expert() {
 
                                 <button
                                     onClick={() => setSelectedImage('/images/Mentalidad%20ganadora.jpeg')}
-                                    className="text-left bg-[#141414] border border-white/5 p-4 rounded-xl flex items-start gap-4 hover:border-[#39FF14]/50 transition-all cursor-pointer group"
+                                    className="expert-cert text-left bg-[#141414] border border-white/5 p-4 rounded-xl flex items-start gap-4 hover:border-[#00D1FF]/50 transition-all cursor-pointer group"
                                 >
-                                    <ShieldCheck size={24} className="text-[#39FF14] shrink-0 group-hover:scale-110 transition-transform" />
+                                    <ShieldCheck size={24} className="text-[#00D1FF] shrink-0 group-hover:scale-110 transition-transform" />
                                     <div>
                                         <p className="text-white text-sm font-bold mb-1">Mentalidad Ganadora</p>
                                         <p className="text-[#9CA3AF] text-xs">Certificación en Alto Rendimiento</p>
+                                    </div>
+                                </button>
+
+                                <button
+                                    onClick={() => setSelectedImage('/images/Tede.jpg')}
+                                    className="expert-cert text-left bg-[#141414] border border-white/5 p-4 rounded-xl flex items-start gap-4 hover:border-[#0070F3]/50 transition-all cursor-pointer group"
+                                >
+                                    <Award size={24} className="text-[#0070F3] shrink-0 group-hover:scale-110 transition-transform" />
+                                    <div>
+                                        <p className="text-white text-sm font-bold mb-1">Psicología del Deporte</p>
+                                        <p className="text-[#9CA3AF] text-xs">Curso de Especialización</p>
                                     </div>
                                 </button>
                             </div>

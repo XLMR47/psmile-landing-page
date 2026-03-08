@@ -63,7 +63,10 @@ export default function LeadForm() {
             </div>
 
             <div className="container relative mx-auto px-6 lg:px-12 max-w-4xl z-10 w-full">
-                <div className="bg-[#141414]/90 backdrop-blur-xl border border-white/5 rounded-2xl p-8 md:p-12 shadow-2xl relative overflow-hidden">
+                <div className="bg-[#141414]/95 backdrop-blur-2xl border border-white/10 rounded-3xl p-8 md:p-16 shadow-2xl relative overflow-hidden group">
+                    {/* Decorative Color Accents */}
+                    <div className="absolute top-0 right-0 w-64 h-64 bg-[#0070F3]/10 rounded-full blur-[100px] pointer-events-none group-hover:bg-[#00D1FF]/20 transition-all duration-700"></div>
+                    <div className="absolute bottom-0 left-0 w-64 h-64 bg-[#00D1FF]/5 rounded-full blur-[100px] pointer-events-none group-hover:bg-[#0070F3]/15 transition-all duration-700"></div>
 
                     <div className="text-center mb-10">
                         <h2 className="text-3xl md:text-4xl font-black text-white mb-2">
@@ -74,24 +77,24 @@ export default function LeadForm() {
                         </p>
                     </div>
 
-                    {/* Progress Indicator (Goal Gradient Effect) */}
+                    {/* Progress Indicator (Cyan Gradient Effect) */}
                     {step < 4 && (
-                        <div className="flex gap-2 mb-10">
+                        <div className="flex gap-4 mb-16 max-w-md mx-auto relative z-10">
                             {[1, 2, 3].map((s) => (
-                                <div key={s} className="h-1 flex-1 rounded-full bg-white/5 overflow-hidden">
-                                    <div className="h-full bg-[#39FF14] transition-all duration-500 ease-out" style={{ width: s <= step ? '100%' : '0%' }}></div>
+                                <div key={s} className="h-1.5 flex-1 rounded-full bg-white/5 overflow-hidden">
+                                    <div className={`h-full bg-gradient-to-r from-[#0070F3] to-[#00D1FF] transition-all duration-700 ease-out shadow-[0_0_10px_rgba(0,209,255,0.4)] ${s <= step ? 'w-full' : 'w-0'}`}></div>
                                 </div>
                             ))}
                         </div>
                     )}
 
                     {step === 4 ? (
-                        <div className="text-center py-10 animation-fade-in">
-                            <div className="inline-flex justify-center items-center w-20 h-20 bg-[#39FF14]/10 rounded-full mb-6 border border-[#39FF14]/30">
-                                <CheckCircle2 size={40} className="text-[#39FF14]" />
+                        <div className="text-center py-12 animate-fade-in relative z-10">
+                            <div className="inline-flex justify-center items-center w-24 h-24 bg-gradient-to-br from-[#0070F3] to-[#00D1FF] rounded-full mb-8 shadow-xl shadow-[#0070F3]/20">
+                                <CheckCircle2 size={48} className="text-white" />
                             </div>
-                            <h3 className="text-2xl font-bold text-white mb-2">Solicitud de Cupo Recibida</h3>
-                            <p className="text-[#9CA3AF] text-sm">Analizaremos el caso de tu hijo. Te contactaremos en menos de 12 horas para coordinar el diagnóstico.</p>
+                            <h3 className="text-3xl font-black text-white mb-4 uppercase tracking-tight">Solicitud de Cupo Recibida</h3>
+                            <p className="text-[#9CA3AF] text-lg max-w-md mx-auto leading-relaxed">Analizaremos el caso de tu hijo. Te contactaremos en menos de 12 horas para coordinar el diagnóstico inicial.</p>
                         </div>
                     ) : (
                         <form onSubmit={step === 3 ? handleSubmit : handleNext} className="max-w-xl mx-auto space-y-6">
@@ -99,15 +102,15 @@ export default function LeadForm() {
                             {/* Step 1 */}
                             <div className={`transition-all duration-500 ${step === 1 ? 'block opacity-100 transform translate-x-0' : 'hidden opacity-0 transform -translate-x-8'}`}>
                                 <div className="space-y-6">
-                                    <div>
-                                        <label className="block text-[10px] font-bold text-[#A1A1AA] tracking-widest uppercase mb-2">Nombre del Jugador / Padre / Madre</label>
-                                        <input type="text" required={step === 1} value={formData.nombre} onChange={e => setFormData({ ...formData, nombre: e.target.value })} className="w-full bg-[#1A1A1A] border border-white/10 rounded-lg px-4 py-3 text-white placeholder-white/30 outline-none focus:border-[#0070F3] transition-colors text-sm" placeholder="Ej. Juan Pérez" />
+                                    <div className="group/input">
+                                        <label className="block text-[11px] font-black text-[#9CA3AF] tracking-[0.2em] uppercase mb-3 px-1 group-focus-within/input:text-[#00D1FF] transition-colors">Nombre del Jugador / Padre / Madre</label>
+                                        <input type="text" required={step === 1} value={formData.nombre} onChange={e => setFormData({ ...formData, nombre: e.target.value })} className="w-full bg-[#0F0F0F]/80 border border-white/5 rounded-xl px-5 py-4 text-white placeholder-white/20 outline-none focus:border-[#00D1FF]/50 focus:ring-1 focus:ring-[#00D1FF]/20 transition-all text-sm lg:text-base" placeholder="Ej. Juan Pérez" />
                                     </div>
-                                    <div>
-                                        <label className="block text-[10px] font-bold text-[#A1A1AA] tracking-widest uppercase mb-2">Categoría (Edad)</label>
-                                        <div className="grid grid-cols-2 gap-3">
+                                    <div className="group/input">
+                                        <label className="block text-[11px] font-black text-[#9CA3AF] tracking-[0.2em] uppercase mb-3 px-1 group-focus-within/input:text-[#00D1FF] transition-colors">Categoría (Edad)</label>
+                                        <div className="grid grid-cols-2 gap-4">
                                             {['Sub-13 / Sub-15', 'Sub-16 / Sub-18', 'Sub-20 / Pro', 'Cadete Formación'].map(lvl => (
-                                                <button type="button" key={lvl} onClick={() => setFormData({ ...formData, nivel: lvl })} className={`px-4 py-3 rounded-lg border text-sm font-bold transition-all duration-300 ${formData.nivel === lvl ? 'bg-[#39FF14]/10 text-white border-[#39FF14] scale-[1.02]' : 'bg-[#1A1A1A] border-white/10 text-[#9CA3AF] hover:bg-white/5 hover:border-white/20'}`}>{lvl}</button>
+                                                <button type="button" key={lvl} onClick={() => setFormData({ ...formData, nivel: lvl })} className={`px-5 py-4 rounded-xl border text-sm font-black transition-all duration-300 tracking-wide uppercase ${formData.nivel === lvl ? 'bg-gradient-to-r from-[#0070F3] to-[#00D1FF] text-white border-transparent scale-[1.03] shadow-lg shadow-[#0070F3]/20' : 'bg-[#0F0F0F]/80 border-white/5 text-[#9CA3AF] hover:bg-white/5 hover:border-white/10'}`}>{lvl}</button>
                                             ))}
                                         </div>
                                     </div>
@@ -116,12 +119,17 @@ export default function LeadForm() {
 
                             {/* Step 2 */}
                             <div className={`transition-all duration-500 ${step === 2 ? 'block opacity-100 transform translate-x-0' : 'hidden opacity-0 transform translate-x-8'}`}>
-                                <div className="space-y-3">
-                                    <label className="block text-[10px] font-bold text-[#A1A1AA] tracking-widest uppercase mb-2">¿Cuál es el mayor obstáculo hoy?</label>
+                                <div className="space-y-4">
+                                    <label className="block text-[11px] font-black text-[#9CA3AF] tracking-[0.2em] uppercase mb-4 px-1">¿Cuál es el mayor obstáculo hoy?</label>
                                     {['Nervios y ansiedad antes de los partidos', 'Falta de confianza tras cometer un error', 'Dificultad para mantener el foco 90 min', 'Presión de las pruebas o seleccionadores', 'Gestión emocional y frustración'].map(obj => (
-                                        <label key={obj} className={`block relative p-4 rounded-xl border cursor-pointer transition-all duration-300 ${formData.objetivo === obj ? 'bg-[#39FF14]/10 border-[#39FF14] text-white scale-[1.02]' : 'border-white/10 bg-[#1A1A1A] text-[#9CA3AF] hover:bg-white/5 hover:border-white/20'}`}>
+                                        <label key={obj} className={`block relative p-5 rounded-2xl border cursor-pointer transition-all duration-300 group/label ${formData.objetivo === obj ? 'bg-gradient-to-r from-[#0070F3]/20 to-[#00D1FF]/10 border-[#00D1FF] text-white scale-[1.02] shadow-lg shadow-[#0070F3]/10' : 'border-white/5 bg-[#0F0F0F]/80 text-[#9CA3AF] hover:bg-white/5 hover:border-white/10'}`}>
                                             <input type="radio" required={step === 2} name="objetivo" value={obj} checked={formData.objetivo === obj} onChange={(e) => setFormData({ ...formData, objetivo: e.target.value })} className="absolute opacity-0" />
-                                            <span className="font-bold text-sm tracking-wide">{obj}</span>
+                                            <div className="flex items-center gap-4">
+                                                <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center transition-all ${formData.objetivo === obj ? 'border-[#00D1FF] bg-[#00D1FF]' : 'border-white/20 group-hover/label:border-white/40'}`}>
+                                                    {formData.objetivo === obj && <div className="w-2 h-2 bg-white rounded-full"></div>}
+                                                </div>
+                                                <span className="font-bold text-sm lg:text-base tracking-wide">{obj}</span>
+                                            </div>
                                         </label>
                                     ))}
                                 </div>
@@ -129,15 +137,15 @@ export default function LeadForm() {
 
                             {/* Step 3 */}
                             <div className={`transition-all duration-500 ${step === 3 ? 'block opacity-100 transform translate-x-0' : 'hidden opacity-0 transform translate-x-8'}`}>
-                                <div>
-                                    <label className="block text-[10px] font-bold text-[#A1A1AA] tracking-widest uppercase mb-2">WhatsApp / Email de contacto</label>
-                                    <input type="text" required={step === 3} value={formData.contacto} onChange={e => setFormData({ ...formData, contacto: e.target.value })} className="w-full bg-[#1A1A1A] border border-white/10 rounded-lg px-4 py-3 text-white placeholder-white/30 outline-none focus:border-[#39FF14] transition-colors text-sm" placeholder="+56 9 1234 5678 o email@ejemplo.com" />
+                                <div className="group/input">
+                                    <label className="block text-[11px] font-black text-[#9CA3AF] tracking-[0.2em] uppercase mb-3 px-1 group-focus-within/input:text-[#00D1FF] transition-colors">WhatsApp / Email de contacto</label>
+                                    <input type="text" required={step === 3} value={formData.contacto} onChange={e => setFormData({ ...formData, contacto: e.target.value })} className="w-full bg-[#0F0F0F]/80 border border-white/5 rounded-xl px-5 py-4 text-white placeholder-white/20 outline-none focus:border-[#00D1FF]/50 focus:ring-1 focus:ring-[#00D1FF]/20 transition-all text-sm lg:text-base" placeholder="+56 9 1234 5678 o email@ejemplo.com" />
                                 </div>
                             </div>
 
                             {/* Bottom Actions */}
-                            <div className="mt-8 flex items-center justify-between pt-6 border-t border-white/5 relative z-20">
-                                {step > 1 && step < 4 ? <button type="button" onClick={() => setStep(step - 1)} className="text-sm font-bold text-[#9CA3AF] hover:text-white transition-colors">Volver</button> : <div></div>}
+                            <div className="mt-12 flex items-center justify-between pt-8 border-t border-white/5 relative z-20">
+                                {step > 1 && step < 4 ? <button type="button" onClick={() => setStep(step - 1)} className="text-[11px] font-black text-[#6B7280] hover:text-white transition-colors uppercase tracking-[0.2em]">Volver</button> : <div></div>}
 
                                 <button
                                     type="submit"
@@ -147,13 +155,14 @@ export default function LeadForm() {
                                         (step === 3 && !formData.contacto) ||
                                         isSubmitting
                                     }
-                                    className="bg-[#39FF14] hover:bg-[#32e012] text-black font-black px-8 py-3 rounded-lg font-bold text-sm flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed transition-all uppercase tracking-wider group"
+                                    className="bg-gradient-to-r from-[#0070F3] to-[#00D1FF] hover:from-[#0056B3] hover:to-[#00A3FF] text-white font-black px-10 py-4 rounded-xl text-sm lg:text-base flex items-center gap-3 disabled:opacity-30 disabled:grayscale disabled:cursor-not-allowed transition-all transform hover:scale-[1.02] active:scale-[0.98] shadow-xl shadow-[#0070F3]/20 uppercase tracking-widest group/btn"
                                 >
                                     {step === 3
                                         ? (isSubmitting ? 'Enviando Solicitud...' : 'Asegurar cupo para mi hijo')
                                         : 'Siguiente Paso'
                                     }
-                                    {step < 3 && <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform" />}
+                                    {step < 3 && <ArrowRight size={18} className="group-hover/btn:translate-x-1 transition-transform" />}
+                                    {step === 3 && !isSubmitting && <CheckCircle2 size={18} />}
                                 </button>
                             </div>
 

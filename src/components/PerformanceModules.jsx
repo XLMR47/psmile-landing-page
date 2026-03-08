@@ -14,8 +14,8 @@ const modules = [
     },
     {
         id: '02',
-        title: 'Intervención TBCS',
-        description: 'Terapia Breve Centrada en Soluciones. Diseño de planes mentales individualizados según demanda del jugador o club.',
+        title: 'Entrenamiento mental para el maximo rendimiento',
+        description: 'Entrenamiento mental de alto nivel. Diseño de planes mentales individualizados según demanda del jugador o club.',
         icon: <ClipboardList className="text-rojo-intensidad" size={32} />
     },
     {

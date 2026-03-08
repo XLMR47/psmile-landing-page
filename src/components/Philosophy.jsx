@@ -39,7 +39,7 @@ export default function Philosophy() {
                 </h2>
 
                 <p className="philo-text text-xl md:text-2xl text-gris-cemento/80 max-w-3xl mx-auto leading-relaxed font-light">
-                    A través de la Terapia Breve Centrada en Soluciones (TBCS), enfocamos el talento en sus fortalezas comprobables, trabajando exclusivamente en el presente para pavimentar y accionar el futuro deseado en la cancha.
+                    A través del Entrenamiento mental para el maximo rendimiento, enfocamos el talento en sus fortalezas comprobables, trabajando exclusivamente la optimización de sus capacidades para pavimentar y accionar el futuro deseado en la cancha.
                 </p>
             </div>
         </section>

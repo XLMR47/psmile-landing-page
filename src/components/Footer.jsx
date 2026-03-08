@@ -22,7 +22,7 @@ export default function Footer() {
 
                     {/* Status Indicator */}
                     <div className="flex items-center gap-2 px-4 py-2 bg-[#1A1A1A] rounded-full border border-white/5">
-                        <span className="w-2 h-2 bg-[#39FF14] rounded-full animate-pulse shadow-[0_0_8px_#39FF14]"></span>
+                        <span className="w-2 h-2 bg-[#32E612] rounded-full animate-pulse shadow-[0_0_8px_#32E612]"></span>
                         <span className="text-[10px] font-bold text-white tracking-widest uppercase">High Performance System Online</span>
                     </div>
 

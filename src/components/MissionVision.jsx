@@ -5,15 +5,15 @@ export default function MissionVision() {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
 
                     {/* Misión Card */}
-                    <div className="bg-gradient-to-b from-[#1C1C1E] to-[#121212] rounded-2xl p-10 border border-white/5 relative overflow-hidden group hover:border-[#39FF14]/20 transition-all duration-500">
+                    <div className="bg-gradient-to-b from-[#1C1C1E] to-[#121212] rounded-2xl p-10 border border-white/5 relative overflow-hidden group hover:border-[#FFFFFF]/20 transition-all duration-500">
                         <div className="mb-6">
-                            <span className="text-[10px] font-bold text-[#39FF14] tracking-[0.3em] uppercase block mb-4">Nuestra Meta 2026</span>
+                            <span className="text-[10px] font-bold text-[#FFFFFF] tracking-[0.3em] uppercase block mb-4">Nuestra Meta 2026</span>
                             <h3 className="text-3xl font-black text-white mb-4">Misión</h3>
                             <p className="text-[#9CA3AF] text-base leading-relaxed">
-                                Transformar la carrera de <span className="text-white font-bold">50 jóvenes futbolistas en Chile</span> en 24 meses, dominando su ansiedad pre-competitiva y fortaleciendo su confianza con ciencia aplicada.
+                                Transformar la carrera de <span className="text-white font-bold">15 jóvenes futbolistas en Chile</span> en 24 meses, logrando la optimización del rendimiento y el manejo de la ansiedad pre-competitiva con ciencia aplicada.
                             </p>
                         </div>
-                        <div className="absolute -bottom-6 -right-6 text-9xl font-black text-[#39FF14]/5 italic">50</div>
+                        <div className="absolute -bottom-6 -right-6 text-9xl font-black text-[#FFFFFF]/5 italic">15</div>
                     </div>
 
                     {/* Visión Card */}

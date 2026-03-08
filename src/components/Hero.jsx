@@ -1,15 +1,64 @@
-import React from 'react';
+import React, { useEffect, useRef } from 'react';
 import { Zap, AlertCircle } from 'lucide-react';
+import gsap from 'gsap';
 
 export default function Hero() {
+    const heroRef = useRef(null);
+
+    useEffect(() => {
+        let ctx = gsap.context(() => {
+            // Intro animations
+            gsap.from('.hero-elem', {
+                y: 30,
+                opacity: 0,
+                duration: 1,
+                stagger: 0.15,
+                ease: 'power3.out',
+                delay: 0.1
+            });
+            gsap.from('.hero-bg', {
+                scale: 1.05,
+                opacity: 0,
+                duration: 2,
+                ease: 'power2.out'
+            });
+
+            // GSAP Marquee
+            gsap.to('.animate-marquee', {
+                xPercent: -50,
+                repeat: -1,
+                duration: 25,
+                ease: "none"
+            });
+        }, heroRef);
+        return () => ctx.revert();
+    }, []);
+
     return (
-        <div className="flex flex-col">
+        <div ref={heroRef} className="flex flex-col">
             {/* Urgency Banner */}
-            <div className="bg-[#E10600] text-white py-2 px-4 text-center z-[60] relative mt-20 md:mt-0">
-                <p className="text-xs md:text-sm font-black tracking-wider uppercase flex items-center justify-center gap-2">
-                    <AlertCircle size={16} className="animate-pulse" />
-                    🚨 SOLO QUEDAN 8 DE LOS 50 CUPOS DISPONIBLES para el Programa Piloto 2026
-                </p>
+            {/* Rolling Urgency & Info Banner */}
+            <div className="hero-elem bg-[#E10600] text-white py-2.5 overflow-hidden z-[60] relative mt-20 md:mt-0 border-b border-black/10">
+                <div className="flex whitespace-nowrap animate-marquee">
+                    {[...Array(4)].map((_, i) => (
+                        <div key={i} className="flex items-center gap-12 px-6 shrink-0">
+                            <p className="text-[10px] md:text-xs font-black tracking-[0.2em] uppercase flex items-center gap-2">
+                                <AlertCircle size={14} className="text-white animate-pulse" />
+                                🚨 SOLO QUEDAN 5 DE LOS 15 CUPOS DISPONIBLES PARA EL PROGRAMA 2026
+                            </p>
+                            <span className="w-1.5 h-1.5 bg-white/40 rounded-full shrink-0"></span>
+                            <p className="text-[10px] md:text-xs font-black tracking-[0.2em] uppercase flex items-center gap-2">
+                                <Zap size={14} className="text-[#FFFF00]" />
+                                VISITA NUESTRA SECCIÓN DE RECURSOS GRATUITOS
+                            </p>
+                            <span className="w-1.5 h-1.5 bg-white/40 rounded-full shrink-0"></span>
+                            <p className="text-[10px] md:text-xs font-black tracking-[0.2em] uppercase flex items-center gap-2 text-white">
+                                🤝 ALIANZA ESTRATÉGICA CON <span className="text-[#FFFFFF] underline decoration-white/30 underline-offset-4">BEWEFUTBOL</span>
+                            </p>
+                            <span className="w-1.5 h-1.5 bg-white/40 rounded-full shrink-0"></span>
+                        </div>
+                    ))}
+                </div>
             </div>
 
             <section className="relative min-h-[90vh] flex items-center pt-12 pb-20 overflow-hidden bg-[#0C0C0C]">
@@ -22,7 +71,7 @@ export default function Hero() {
                         <img
                             src="/images/hero_tunnel.png"
                             alt="Futbolista joven concentrado"
-                            className="w-full h-full object-cover object-[center_top] opacity-40 mix-blend-luminosity grayscale contrast-125"
+                            className="hero-bg w-full h-full object-cover object-[center_top] opacity-40 mix-blend-luminosity grayscale contrast-125"
                         />
                     </div>
                 </div>
@@ -30,23 +79,23 @@ export default function Hero() {
                 <div className="container mx-auto px-6 lg:px-12 relative z-20">
                     <div className="max-w-3xl">
 
-                        <div className="inline-flex items-center rounded-full border border-[#39FF14]/30 bg-[#39FF14]/10 px-3 py-1 mb-6">
-                            <span className="text-[10px] font-bold text-[#39FF14] tracking-[0.2em] uppercase">
+                        <div className="hero-elem inline-flex items-center rounded-full border border-[#FFFFFF]/30 bg-[#FFFFFF]/10 px-3 py-1 mb-6">
+                            <span className="text-[10px] font-bold text-[#FFFFFF] tracking-[0.2em] uppercase">
                                 ALTO RENDIMIENTO CHILE
                             </span>
                         </div>
 
-                        <h1 className="text-5xl md:text-7xl lg:text-[80px] font-black text-white leading-[1.05] tracking-tighter mb-6">
+                        <h1 className="hero-elem text-5xl md:text-7xl lg:text-[80px] font-black text-white leading-[1.05] tracking-tighter mb-6">
                             Entrena tu mente <br />
                             como un <br />
                             <span className="text-[#0070F3] italic font-serif tracking-normal pr-4">profesional</span>
                         </h1>
 
-                        <p className="text-[#F3F4F6] text-lg md:text-xl max-w-xl font-medium leading-relaxed mb-10">
+                        <p className="hero-elem text-[#F3F4F6] text-lg md:text-xl max-w-xl font-medium leading-relaxed mb-10">
                             Psicología deportiva aplicada para que tu hijo recupere la confianza, domine sus nervios y destaque en la cancha.
                         </p>
 
-                        <div className="flex flex-col sm:flex-row gap-4">
+                        <div className="hero-elem flex flex-col sm:flex-row gap-4">
                             <a href="#diagnostico" className="bg-[#0070F3] hover:bg-[#0056B3] text-white px-8 py-4 rounded-md font-bold text-sm sm:text-base flex items-center justify-center gap-2 transition-all transform hover:scale-[1.02] shadow-lg shadow-[#0070F3]/30">
                                 Asegurar cupo para mi hijo
                                 <Zap size={18} className="fill-current" />

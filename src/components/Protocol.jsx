@@ -12,7 +12,7 @@ const phases = [
     },
     {
         id: '02',
-        title: 'Estrategia TBCS',
+        title: 'Entrenamiento mental para el maximo rendimiento',
         desc: 'Diseño del plan mental. Identificación de excepciones y recursos existentes para cocrear soluciones rápidas y sostenibles.'
     },
     {

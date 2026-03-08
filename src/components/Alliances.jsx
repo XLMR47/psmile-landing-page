@@ -94,9 +94,9 @@ export default function Alliances() {
                             )}
                             <p className="text-[#9CA3AF] text-sm leading-relaxed">{partner.description}</p>
 
-                            <div className="mt-5 flex items-center gap-2 px-3 py-1.5 bg-[#39FF14]/5 border border-[#39FF14]/20 rounded-full">
-                                <ShieldCheck size={12} className="text-[#39FF14]" />
-                                <span className="text-[9px] uppercase tracking-widest font-bold text-[#39FF14]">Aliado Verificado</span>
+                            <div className="mt-5 flex items-center gap-2 px-3 py-1.5 bg-[#FFFFFF]/5 border border-[#FFFFFF]/20 rounded-full">
+                                <ShieldCheck size={12} className="text-[#FFFFFF]" />
+                                <span className="text-[9px] uppercase tracking-widest font-bold text-[#FFFFFF]">Aliado Verificado</span>
                             </div>
 
                             {partner.instagram && (
@@ -156,7 +156,7 @@ export default function Alliances() {
 
                         <div className="mb-6">
                             <div className="w-12 h-12 bg-[#0070F3]/10 rounded-xl flex items-center justify-center mb-4 border border-[#0070F3]/20">
-                                {submitted ? <CheckCircle2 className="text-[#39FF14]" size={24} /> : <Handshake className="text-[#0070F3]" size={24} />}
+                                {submitted ? <CheckCircle2 className="text-[#FFFFFF]" size={24} /> : <Handshake className="text-[#0070F3]" size={24} />}
                             </div>
                             <h3 className="text-2xl font-black text-white mb-2">
                                 {submitted ? "¡Solicitud Enviada! 🤝" : "Solicitar Alianza"}
@@ -229,7 +229,7 @@ export default function Alliances() {
                         ) : (
                             <button
                                 onClick={() => setModalOpen(false)}
-                                className="w-full bg-[#39FF14] hover:bg-[#32E612] text-black font-black uppercase tracking-widest text-xs py-4 rounded-lg transition-transform hover:scale-[1.02] shadow-lg shadow-[#39FF14]/20 flex items-center justify-center gap-2"
+                                className="w-full bg-[#FFFFFF] hover:bg-[#32E612] text-black font-black uppercase tracking-widest text-xs py-4 rounded-lg transition-transform hover:scale-[1.02] shadow-lg shadow-[#FFFFFF]/20 flex items-center justify-center gap-2"
                             >
                                 Cerrar <CheckCircle2 size={16} />
                             </button>
