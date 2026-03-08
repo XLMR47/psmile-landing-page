@@ -13,7 +13,7 @@ export default function Footer() {
                             <div className="rounded-sm overflow-hidden w-7 h-7 flex items-center justify-center">
                                 <img src="/images/Logo.png" alt="PSMILE Logo" className="w-full h-full object-contain" />
                             </div>
-                            <span className="font-black tracking-tighter text-lg text-white">PSMILE PERFORMANCE</span>
+                            <span className="font-black tracking-tighter text-lg text-white">PSMILE CHILE</span>
                         </div>
                         <p className="text-[#9CA3AF] text-xs max-w-xs">
                             Desarrollando la mente de los futbolistas que transformarán Chile.
@@ -49,7 +49,7 @@ export default function Footer() {
 
                 <div className="text-center border-t border-white/5 pt-8">
                     <p className="text-[#9CA3AF] text-[10px] tracking-widest uppercase">
-                        © {new Date().getFullYear()} PSMILE PERFORMANCE. TODOS LOS DERECHOS RESERVADOS. PRODUCIDO PARA EL ALTO RENDIMIENTO EN CHILE.
+                        © {new Date().getFullYear()} PSMILE CHILE. TODOS LOS DERECHOS RESERVADOS. PRODUCIDO PARA EL ALTO RENDIMIENTO EN CHILE.
                     </p>
                 </div>
 

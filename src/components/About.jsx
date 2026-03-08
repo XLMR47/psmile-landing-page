@@ -23,7 +23,7 @@ export default function About() {
                         </h2>
 
                         <p className="text-[#9CA3AF] text-lg leading-relaxed mb-12 max-w-xl">
-                            El talento técnico sin control emocional se queda en la banca. En **PSMILE PERFORMANCE** transformamos la ansiedad y el miedo a fallar en una ventaja competitiva diferencial. Preparamos a la nueva generación de futbolistas chilenos para tolerar la presión, multiplicar su confianza y acelerar su llegada al élite.
+                            El talento técnico sin control emocional se queda en la banca. En <span className="text-white font-black italic tracking-tight">PSMILE CHILE</span> transformamos la ansiedad y el miedo a fallar en una ventaja competitiva diferencial. Preparamos a la nueva generación de futbolistas chilenos para tolerar la presión, multiplicar su confianza y acelerar su llegada al élite.
                         </p>
 
                         <div className="grid grid-cols-2 gap-8">
