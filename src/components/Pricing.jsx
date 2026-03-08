@@ -51,9 +51,14 @@ export default function Pricing() {
                         </ul>
 
                         <div className="space-y-4">
-                            <button className="w-full py-3 rounded-lg border border-[#39FF14]/30 text-[#39FF14] font-bold text-sm hover:bg-[#39FF14]/10 transition-colors uppercase tracking-wider">
+                            <a
+                                href={`https://wa.me/56951435062?text=${encodeURIComponent("Hola Luis! 👋 Me interesa el [Diagnóstico de Élite] para mi hijo. ¿Cómo podemos agendar la primera sesión?")}`}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="w-full inline-flex items-center justify-center py-3 rounded-lg border border-[#39FF14]/30 text-[#39FF14] font-bold text-sm hover:bg-[#39FF14]/10 transition-colors uppercase tracking-wider text-center"
+                            >
                                 Iniciar Diagnóstico
-                            </button>
+                            </a>
 
                             <button
                                 onClick={() => togglePlan(1)}
@@ -133,9 +138,14 @@ export default function Pricing() {
                         </ul>
 
                         <div className="space-y-4">
-                            <button className="w-full py-3 rounded-lg bg-[#0070F3] hover:bg-[#0056B3] text-white font-black text-sm transition-all transform hover:scale-[1.02] shadow-lg shadow-[#0070F3]/30 uppercase tracking-wider">
+                            <a
+                                href={`https://wa.me/56951435062?text=${encodeURIComponent("Hola Luis! 👋 Quiero asegurar un cupo en el programa [Performance & Mental Skills] para mi hijo. Vengo de la web oficial.")}`}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="w-full inline-flex items-center justify-center py-3 rounded-lg bg-[#0070F3] hover:bg-[#0056B3] text-white font-black text-sm transition-all transform hover:scale-[1.02] shadow-lg shadow-[#0070F3]/30 uppercase tracking-wider text-center"
+                            >
                                 Asegurar cupo para mi hijo
-                            </button>
+                            </a>
 
                             <button
                                 onClick={() => togglePlan(2)}
@@ -214,9 +224,14 @@ export default function Pricing() {
                         </ul>
 
                         <div className="space-y-4">
-                            <button className="w-full py-3 rounded-lg border border-white/20 text-white font-bold text-sm hover:bg-white/5 transition-colors uppercase tracking-wider">
+                            <a
+                                href={`https://wa.me/56951435062?text=${encodeURIComponent("Hola Luis! 👋 Me interesa el programa [Élite 360] y me gustaría postular para trabajar contigo. ¿Qué pasos siguen?")}`}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="w-full inline-flex items-center justify-center py-3 rounded-lg border border-white/20 text-white font-bold text-sm hover:bg-white/5 transition-colors uppercase tracking-wider text-center"
+                            >
                                 Postular al Programa
-                            </button>
+                            </a>
 
                             <button
                                 onClick={() => togglePlan(3)}
