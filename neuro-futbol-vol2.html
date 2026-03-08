@@ -1,0 +1,449 @@
+<!DOCTYPE html>
+<html lang="es" class="scroll-smooth">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Neuro-Fútbol Vol. 2 | El Anclaje de Confianza</title>
+    <meta name="description"
+        content="Usa la ciencia de la TBCS para recuperar la seguridad y el enfoque en 3 segundos tras un error.">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800&family=Fira+Code:wght@400;500;700&display=swap"
+        rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        dark: '#0A0F1E',
+                        electric: '#00E5FF',
+                        neon: '#39FF14',
+                        card: '#131C31',
+                        border: '#1E2D4A'
+                    },
+                    fontFamily: {
+                        sora: ['Sora', 'sans-serif'],
+                        mono: ['Fira Code', 'monospace'],
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            background-color: #0A0F1E;
+            color: #FFFFFF;
+            font-family: 'Sora', sans-serif;
+        }
+
+        .glass-panel {
+            background: rgba(19, 28, 49, 0.6);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(30, 45, 74, 0.8);
+        }
+
+        .neon-text-blue {
+            text-shadow: 0 0 10px rgba(0, 229, 255, 0.5);
+        }
+
+        .neon-text-green {
+            text-shadow: 0 0 10px rgba(57, 255, 20, 0.5);
+        }
+
+        .gradient-text {
+            background: linear-gradient(90deg, #00E5FF, #39FF14);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .btn-glow {
+            box-shadow: 0 0 15px rgba(0, 229, 255, 0.3);
+            transition: all 0.3s ease;
+        }
+
+        .btn-glow:hover {
+            box-shadow: 0 0 25px rgba(0, 229, 255, 0.6);
+            transform: translateY(-2px);
+        }
+
+        /* Custom progress bar */
+        .progress-bar-container {
+            width: 100%;
+            height: 4px;
+            background: #1E2D4A;
+            border-radius: 2px;
+            overflow: hidden;
+        }
+
+        .progress-bar {
+            height: 100%;
+            background: linear-gradient(90deg, #00E5FF, #39FF14);
+            width: 100%;
+            transform-origin: left;
+            animation: loadProgress 2s ease-out forwards;
+        }
+
+        @keyframes loadProgress {
+            0% {
+                transform: scaleX(0);
+            }
+
+            100% {
+                transform: scaleX(1);
+            }
+        }
+    </style>
+</head>
+
+<body class="antialiased min-h-screen relative overflow-x-hidden selection:bg-electric selection:text-dark">
+
+    <!-- Background Accents -->
+    <div class="fixed top-0 left-0 w-full h-full overflow-hidden -z-10 pointer-events-none">
+        <div
+            class="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-electric rounded-full mix-blend-screen filter blur-[150px] opacity-10">
+        </div>
+        <div
+            class="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-neon rounded-full mix-blend-screen filter blur-[150px] opacity-5">
+        </div>
+    </div>
+
+    <!-- Header / Hero -->
+    <header class="pt-8 pb-16 px-6 max-w-4xl mx-auto relative z-10">
+        <div class="flex items-center justify-between mb-12">
+            <div class="font-sora font-bold text-xl tracking-wider text-white">PSMILE<span
+                    class="text-electric">.</span></div>
+            <div
+                class="font-mono text-xs text-electric/70 border border-electric/30 rounded-full px-3 py-1 bg-electric/5">
+                CONFIDENTIAL // VOL. 2</div>
+        </div>
+
+        <div class="space-y-6">
+            <div
+                class="inline-block px-3 py-1 rounded-sm bg-electric/10 border border-electric/30 text-electric font-mono text-xs font-medium uppercase tracking-widest mb-2">
+                Documento Técnico de Rendimiento
+            </div>
+            <h1 class="text-4xl md:text-6xl font-extrabold leading-tight">
+                NEURO-FÚTBOL VOL. 2: <br>
+                <span class="gradient-text">EL ANCLAJE DE CONFIANZA</span>
+            </h1>
+            <p class="text-lg md:text-xl text-gray-300 max-w-2xl leading-relaxed">
+                Usa la ciencia de la <span class="text-white font-semibold">Terapia Breve Centrada en Soluciones
+                    (TBCS)</span> para recuperar la seguridad y el enfoque en 3 segundos tras un error.
+            </p>
+        </div>
+
+        <!-- Master Image -->
+        <div class="mt-8 relative rounded-2xl overflow-hidden border border-border shadow-2xl group">
+            <div
+                class="absolute inset-0 bg-gradient-to-t from-dark via-dark/20 to-transparent z-10 pointer-events-none">
+            </div>
+            <!-- IMAGE_PLACEHOLDER: Will be replaced by actual generated image -->
+            <img id="cover-image" src="/images/portada_vol2.png" alt="Jugador usando anclaje"
+                class="w-full h-[400px] md:h-[500px] object-cover transition-transform duration-700 group-hover:scale-105">
+
+            <!-- Technical Overlay -->
+            <div class="absolute bottom-6 left-6 z-20 font-mono text-xs">
+                <div class="flex items-center gap-2 mb-2">
+                    <div class="w-2 h-2 rounded-full bg-neon animate-pulse"></div>
+                    <span class="text-neon">SISTEMA NERVIOSO ESTABILIZADO</span>
+                </div>
+                <div class="text-gray-400">T/RECUPERACIÓN: <span class="text-white">2.4s</span></div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="max-w-4xl mx-auto px-6 pb-24 space-y-16">
+
+        <!-- Context & Science (Por qué) -->
+        <section class="glass-panel p-8 md:p-10 rounded-2xl relative overflow-hidden">
+            <!-- Decorative line -->
+            <div class="absolute left-0 top-0 bottom-0 w-1 bg-gradient-to-b from-electric to-transparent"></div>
+
+            <h2 class="text-2xl md:text-3xl font-bold mb-6 flex items-center gap-3">
+                <span class="text-electric">01.</span> La Ciencia del 'Reset'
+            </h2>
+            <div class="space-y-4 text-gray-300 text-lg leading-relaxed">
+                <p>
+                    <strong class="text-white font-semibold">El 'Por Qué': La Neuro-asociación.</strong> Un anclaje en
+                    el fútbol funciona como un "botón mental". Cuando un jugador se encuentra en su momento de máximo
+                    rendimiento (estado de "flow") y realiza un gesto físico, el cerebro crea un vínculo neurobiológico
+                    entre ese estímulo y la sensación de éxito.
+                </p>
+                <p>
+                    El cerebro asocia un estímulo físico (ancla) con un estado emocional de pico (confianza/calma)
+                    cultivado en sesión. <span class="bg-electric/20 text-electric px-1 rounded">No es magia; es
+                        condicionamiento operante.</span>
+                </p>
+                <p>
+                    El uso de anclajes permite a los atletas eludir el análisis consciente y disparar una respuesta
+                    fisiológica y emocional inmediata, algo crucial en un deporte donde las decisiones se toman en
+                    milisegundos.
+                </p>
+            </div>
+        </section>
+
+        <!-- Protocolo 4 Pasos (Cómo) -->
+        <section>
+            <h2 class="text-2xl md:text-3xl font-bold mb-8 flex items-center gap-3">
+                <span class="text-neon">02.</span> Protocolo de 4 Pasos
+            </h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <!-- Step 1 -->
+                <div
+                    class="glass-panel p-6 rounded-xl border-l-2 border-l-border hover:border-l-electric transition-colors">
+                    <div class="font-mono text-electric mb-2 text-sm">FASE 01</div>
+                    <h3 class="text-xl font-bold mb-3">Recuperación del Estado de Éxito</h3>
+                    <p class="text-gray-400 text-sm">Identificar el "estado recurso". El futbolista debe determinar qué
+                        emoción necesita acceder (ej. calma absoluta para un penalti) y visualizar una experiencia
+                        pasada de éxito total viviéndolo en primera persona.</p>
+                </div>
+                <!-- Step 2 -->
+                <div
+                    class="glass-panel p-6 rounded-xl border-l-2 border-l-border hover:border-l-electric transition-colors">
+                    <div class="font-mono text-electric mb-2 text-sm">FASE 02</div>
+                    <h3 class="text-xl font-bold mb-3">Definición del Ancla</h3>
+                    <p class="text-gray-400 text-sm">Elegir un estímulo físico, visual o auditivo específico. Debe ser
+                        un gesto único (ej. tocar el escudo, ajustar la venda, palabra clave "RESET") que no forme parte
+                        de movimientos cotidianos.</p>
+                </div>
+                <!-- Step 3 -->
+                <div
+                    class="glass-panel p-6 rounded-xl border-l-2 border-l-border hover:border-l-neon transition-colors">
+                    <div class="font-mono text-neon mb-2 text-sm">FASE 03</div>
+                    <h3 class="text-xl font-bold mb-3">Condicionamiento (Sincronización)</h3>
+                    <p class="text-gray-400 text-sm">Ejecutar el ancla en la fase de ascenso de la emoción, justo antes
+                        del punto máximo. Mantener durante unos segundos para "sellar" la neuro-asociación. (Repetir X5
+                        mínimos en entrenamiento).</p>
+                </div>
+                <!-- Step 4 -->
+                <div
+                    class="glass-panel p-6 rounded-xl border-l-2 border-l-border hover:border-l-neon transition-colors">
+                    <div class="font-mono text-neon mb-2 text-sm">FASE 04</div>
+                    <h3 class="text-xl font-bold mb-3">Prueba y Uso en Campo</h3>
+                    <p class="text-gray-400 text-sm">Activación tras el error para resetear el sistema nervioso en el
+                        campo. Se recomienda usar el protocolo: Exhalación profunda + Palabra de Corte + Microacción
+                        Física (Ancla).</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Calculadora de Enfoque (Interactive Script) -->
+        <section id="calculadora" class="bg-card/50 border border-electric/20 rounded-2xl p-8 relative">
+            <div
+                class="absolute -top-3 left-8 px-4 py-1 bg-dark font-mono text-xs text-electric border border-electric/30 rounded-full">
+                SISTEMA INTERACTIVO
+            </div>
+
+            <h2 class="text-2xl font-bold mb-2">Calculadora de Enfoque</h2>
+            <p class="text-gray-400 text-sm mb-8">Diseña tu rutina de anclaje personalizada respondiendo a 2 variables
+                simples.</p>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
+                <!-- Inputs -->
+                <div class="space-y-6">
+                    <div>
+                        <label class="block font-mono text-xs text-gray-400 mb-2">01. PUNTO DE ACTIVACIÓN
+                            (CUÁNDO)</label>
+                        <select id="trigger-point"
+                            class="w-full bg-dark border border-border rounded-lg px-4 py-3 text-white focus:outline-none focus:border-electric transition-colors appearance-none">
+                            <option value="">Selecciona el momento de crisis...</option>
+                            <option value="fallo-pase">Tras fallar un pase clave</option>
+                            <option value="antes-penal">Antes de cobrar un penal</option>
+                            <option value="tarjeta">Tras recibir una tarjeta inmerecida</option>
+                            <option value="gol-contra">Tras recibir un gol en contra</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block font-mono text-xs text-gray-400 mb-2">02. ESTÍMULO FÍSICO (CÓMO)</label>
+                        <select id="physical-anchor"
+                            class="w-full bg-dark border border-border rounded-lg px-4 py-3 text-white focus:outline-none focus:border-electric transition-colors appearance-none">
+                            <option value="">Selecciona tu anclaje...</option>
+                            <option value="tocar-pulsera">Tocar fuertemente una pulsera o vendaje</option>
+                            <option value="palabra-reset">Gritar '¡RESET!' internamente + apretar puño</option>
+                            <option value="tocar-cesped">Agacharse, tocar el césped y frotar los dedos</option>
+                            <option value="ajustar-espinillera">Ajustar bruscamente la espinillera derecha</option>
+                        </select>
+                    </div>
+                    <button id="generate-routine-btn"
+                        class="w-full py-4 rounded-xl bg-white/5 border border-white/10 hover:bg-electric/10 hover:border-electric/50 text-white font-bold transition-all disabled:opacity-50 disabled:cursor-not-allowed">
+                        GENERAR RUTINA NEUROLÓGICA
+                    </button>
+                </div>
+
+                <!-- Output Area -->
+                <div
+                    class="bg-dark/80 rounded-xl border border-border p-6 font-mono relative flex flex-col h-full min-h-[250px]">
+
+                    <div id="routine-empty"
+                        class="absolute inset-0 flex items-center justify-center text-gray-600 text-center p-6 text-sm">
+                        Esperando datos del jugador...<br>Selecciona las variables para calcular.
+                    </div>
+
+                    <div id="routine-result" class="hidden flex-col h-full">
+                        <div class="text-xs text-electric mb-4 flex items-center justify-between">
+                            <span>// PROTOCOLO GENERADO</span>
+                            <span class="text-neon animate-pulse">■</span>
+                        </div>
+
+                        <div class="space-y-4 flex-grow text-sm">
+                            <div>
+                                <span class="text-gray-500">ACCIONADOR:</span><br>
+                                <span id="res-trigger" class="text-white"></span>
+                            </div>
+                            <div class="pl-4 border-l border-electric/30">
+                                <span class="text-gray-500">1. CORTE FISIOLÓGICO:</span><br>
+                                <span class="text-gray-300">Exhalación sonora profunda por la boca (1.5s).</span>
+                            </div>
+                            <div class="pl-4 border-l border-electric/30">
+                                <span class="text-gray-500">2. ACTIVACIÓN ANCLA (ESTÍMULO):</span><br>
+                                <span id="res-anchor" class="text-electric font-bold"></span>
+                            </div>
+                            <div class="pl-4 border-l border-neon/30">
+                                <span class="text-gray-500">3. REDIRECCIÓN DE FOCO:</span><br>
+                                <span class="text-neon">Visión periférica al balón o marca inmediata.</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Authority & Social Proof -->
+        <section class="py-10 border-t border-b border-border my-16">
+            <div class="flex flex-col md:flex-row items-center gap-8">
+                <div class="w-full md:w-1/3 relative shrink-0">
+                    <img src="./public/images/luis-oficina.jpg" alt="Luis Enrique Morales Ramirez"
+                        class="rounded-xl w-full object-cover aspect-square border-2 border-border shadow-[0_0_30px_rgba(0,0,0,0.5)]">
+                    <div
+                        class="absolute -bottom-4 -right-4 bg-electric text-dark font-bold px-3 py-1 rounded shadow-lg text-sm font-mono rotate-[-5deg]">
+                        AUTOR VOL. 2
+                    </div>
+                </div>
+                <div class="w-full md:w-2/3">
+                    <h3 class="text-2xl font-bold mb-2">Luis Enrique Morales Ramirez</h3>
+                    <p class="text-electric font-mono text-xs mb-4">LICENCIADO EN PSICOLOGÍA // ESPECIALISTA EN
+                        RENDIMIENTO DEPORTIVO</p>
+                    <p class="text-gray-400 mb-6 leading-relaxed text-sm">
+                        Diseñador del programa PSMILE PERFORMANCE. He implementado protocolos de intervención y "Reseteo
+                        Mental" en jugadores de élite basándome en los pilares de las Neurociencias y la Psicología
+                        Deportiva para optimizar tiempos de reacción emocionales.
+                    </p>
+                    <div class="flex flex-wrap gap-4">
+                        <img src="./public/images/Psicologia deportiva.jpeg" alt="Psicologia Deportiva"
+                            class="h-10 rounded shadow-md border border-white/10 opacity-80 hover:opacity-100 transition-opacity">
+                        <img src="./public/images/Neurociencias.jpeg" alt="Neurociencias"
+                            class="h-10 rounded shadow-md border border-white/10 opacity-80 hover:opacity-100 transition-opacity">
+                        <img src="./public/images/Mentalidad ganadora.jpeg" alt="Mentalidad Ganadora"
+                            class="h-10 rounded shadow-md border border-white/10 opacity-80 hover:opacity-100 transition-opacity">
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- CTA & Urgency -->
+        <section class="glass-panel p-8 md:p-12 rounded-3xl text-center relative overflow-hidden group">
+            <div
+                class="absolute inset-0 bg-gradient-to-t from-electric/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none">
+            </div>
+
+            <div class="font-mono text-neon text-sm mb-4 tracking-widest uppercase">Oferta Piloto Exclusiva</div>
+            <h2 class="text-3xl md:text-5xl font-bold mb-6">El Diagnóstico de Élite</h2>
+            <p class="text-xl text-gray-300 mb-8 max-w-xl mx-auto">
+                Implementa estos protocolos con acompañamiento profesional 1:1. Diseñando tu ancla perfecta según tu
+                perfil cognitivo-emocional.
+            </p>
+
+            <div class="flex flex-col items-center justify-center gap-6">
+                <!-- Button -->
+                <a href="#"
+                    class="inline-block w-full md:w-auto bg-electric text-dark font-bold text-lg px-8 py-5 rounded-xl btn-glow transition-all active:scale-95 text-center">
+                    QUIERO MI RUTINA DE ANCLAJE <br class="md:hidden">PERSONALIZADA CON LUIS
+                </a>
+
+                <!-- Price tag -->
+                <div class="text-2xl font-bold font-mono">
+                    <span class="text-electric">$12.990 CLP</span>
+                </div>
+
+                <!-- Urgency Counter -->
+                <div
+                    class="inline-flex items-center gap-3 bg-dark/80 rounded-full px-5 py-2 border border-neon/30 mt-2">
+                    <div class="w-3 h-3 rounded-full bg-neon animate-pulse shadow-[0_0_8px_#39FF14]"></div>
+                    <span class="text-sm font-mono text-gray-300">Solo <span class="text-white font-bold text-base">8 de
+                            50</span> cupos exclusivos disponibles.</span>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <footer class="text-center py-8 border-t border-border mt-12 bg-dark text-gray-500 font-mono text-xs">
+        © 2026 PSMILE. Todos los derechos reservados.
+    </footer>
+
+    <!-- Interactive Script -->
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const btn = document.getElementById('generate-routine-btn');
+            const triggerSelect = document.getElementById('trigger-point');
+            const anchorSelect = document.getElementById('physical-anchor');
+            const emptyState = document.getElementById('routine-empty');
+            const resultState = document.getElementById('routine-result');
+
+            const resTrigger = document.getElementById('res-trigger');
+            const resAnchor = document.getElementById('res-anchor');
+
+            // Form validation to enable button
+            function checkForm() {
+                if (triggerSelect.value && anchorSelect.value) {
+                    btn.classList.remove('opacity-50', 'cursor-not-allowed');
+                    btn.classList.add('bg-electric', 'text-dark', 'border-transparent', 'hover:bg-electric/90');
+                    btn.classList.remove('bg-white/5', 'text-white', 'border-white/10');
+                } else {
+                    btn.classList.add('opacity-50', 'cursor-not-allowed');
+                    btn.classList.remove('bg-electric', 'text-dark', 'border-transparent', 'hover:bg-electric/90');
+                    btn.classList.add('bg-white/5', 'text-white', 'border-white/10');
+                }
+            }
+
+            triggerSelect.addEventListener('change', checkForm);
+            anchorSelect.addEventListener('change', checkForm);
+
+            btn.addEventListener('click', () => {
+                if (!triggerSelect.value || !anchorSelect.value) return;
+
+                // Simple loading effect
+                emptyState.innerHTML = '<div class="text-electric animate-pulse">Calculando biometría...</div>';
+
+                setTimeout(() => {
+                    emptyState.classList.add('hidden');
+                    resultState.classList.remove('hidden');
+
+                    // Populate results
+                    const triggers = {
+                        'fallo-pase': 'PÉRDIDA DE BALÓN EN ZONA DE CONSTRUCCIÓN',
+                        'antes-penal': 'ESTRÉS PRE-EJECUCIÓN (PENALTY KICK)',
+                        'tarjeta': 'ALTERACIÓN EMOCIONAL POR DECISIÓN ARBITRAL',
+                        'gol-contra': 'DESCOMPENSACIÓN TRAS GOL EN CONTRA'
+                    };
+
+                    const anchors = {
+                        'tocar-pulsera': 'TOCAR VENDAJE (ANCLAJE CINESTÉSICO)',
+                        'palabra-reset': 'DIÁLOGO INTERNO "RESET" + CERRAR PUÑO (AUDITIVO/CINESTÉSICO)',
+                        'tocar-cesped': 'CONTACTO CON CÉSPED (ANCLAJE ESPACIAL/CINESTÉSICO)',
+                        'ajustar-espinillera': 'REAJUSTE DE ESPINILLERA (RITUAL DE PROTECCIÓN)'
+                    };
+
+                    resTrigger.textContent = triggers[triggerSelect.value] || 'EVENTO CRÍTICO';
+                    resAnchor.textContent = anchors[anchorSelect.value] || 'ESTÍMULO SELECCIONADO';
+
+                }, 800);
+            });
+        });
+    </script>
+</body>
+
+</html>

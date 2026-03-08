@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Saga Neuro-Fútbol Vol.3 | Paneles para Canva</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800&family=Fira+Code:wght@400;500;700&display=swap"
+        rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        dark: '#0A0F1E',
+                        electric: '#00E5FF',
+                        neon: '#39FF14',
+                        card: '#131C31',
+                        border: '#1E2D4A',
+                        cyan: '#00FFFF',
+                        midnight: '#191970'
+                    },
+                    fontFamily: {
+                        sora: ['Sora', 'sans-serif'],
+                        mono: ['Fira Code', 'monospace'],
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            background-color: #f0f2f5;
+            color: #FFFFFF;
+            font-family: 'Sora', sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 40px 20px;
+            gap: 40px;
+        }
+
+        .canva-panel {
+            width: 800px;
+            height: 1130px;
+            background-color: #0A0F1E;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+            padding: 60px 50px;
+            display: flex;
+            flex-direction: column;
+            border: 1px solid #1E2D4A;
+        }
+
+        .glass-panel {
+            background: rgba(19, 28, 49, 0.7);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(30, 45, 74, 0.8);
+        }
+
+        .ambient-glow-blue {
+            position: absolute;
+            background: #00E5FF;
+            filter: blur(150px);
+            opacity: 0.15;
+            z-index: 0;
+            border-radius: 50%;
+        }
+
+        .ambient-glow-green {
+            position: absolute;
+            background: #39FF14;
+            filter: blur(150px);
+            opacity: 0.1;
+            z-index: 0;
+            border-radius: 50%;
+        }
+
+        .ambient-glow-cyan {
+            position: absolute;
+            background: #00FFFF;
+            filter: blur(150px);
+            opacity: 0.15;
+            z-index: 0;
+            border-radius: 50%;
+        }
+
+        .z-content {
+            position: relative;
+            z-index: 10;
+        }
+
+        .panel-label {
+            color: #000;
+            font-family: monospace;
+            font-weight: bold;
+            font-size: 14px;
+            margin-bottom: -30px;
+            text-align: center;
+        }
+    </style>
+</head>
+
+<body>
+
+    <p class="text-black text-center max-w-2xl text-lg font-bold mb-8">
+        Formato "Paneles Exportables". Puedes tomar capturas de pantalla de estos paneles (están diseñados a escala
+        ideal) y pegarlos directamente en Canva o presentarlos.
+    </p>
+
+    <!-- ==============================================
+         PÁGINA 1: PORTADA
+         ============================================== -->
+    <div class="panel-label">CAPTURA 1: PORTADA</div>
+    <div class="canva-panel" id="page-1">
+        <div class="ambient-glow-blue w-96 h-96 -top-20 -left-20"></div>
+        <div class="ambient-glow-cyan w-96 h-96 -bottom-20 -right-20"></div>
+
+        <div class="z-content flex flex-col items-center h-full">
+
+            <div class="w-full flex justify-between items-center mb-16">
+                <span class="font-bold text-xl tracking-widest text-white">PSMILE<span
+                        class="text-electric">.</span></span>
+                <span
+                    class="font-mono text-[10px] text-electric px-3 py-1 border border-electric/30 rounded-full bg-electric/10">DOCUMENTO
+                    CONFIDENCIAL</span>
+            </div>
+
+            <h2 class="text-2xl font-bold text-gray-400 mb-2 mt-auto">NEURO-FÚTBOL VOL. 3</h2>
+            <h1 class="text-[65px] leading-[1.1] font-extrabold text-center mb-6 uppercase">
+                <span class="text-white">HIELO EN LAS</span><br>
+                <span class="text-electric">VENAS</span>
+            </h1>
+
+            <p class="text-center text-xl text-gray-300 max-w-lg mb-12">
+                Hackea tu sistema nervioso para decidir con claridad cuando el resto entra en pánico.
+            </p>
+
+            <div
+                class="relative w-full aspect-[4/3] rounded-2xl overflow-hidden shadow-2xl border border-electric/30 mt-auto mb-10">
+                <div class="absolute inset-0 bg-gradient-to-t from-dark to-transparent z-10"></div>
+                <img src="./public/images/hielo_en_las_venas.png" alt="Jugador Concentrado"
+                    class="w-full h-full object-cover">
+
+                <div class="absolute bottom-6 left-6 z-20 font-mono text-xs">
+                    <div class="flex items-center gap-2 mb-2">
+                        <div class="w-2 h-2 bg-electric rounded-full animate-pulse shadow-[0_0_10px_#00E5FF]"></div>
+                        <span class="text-electric tracking-widest">PULSACIONES BAJO CONTROL</span>
+                    </div>
+                    <span class="text-gray-400">ESTADO DE FLUJO: <span
+                            class="text-white font-bold">ESTABLE</span></span>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- ==============================================
+         PÁGINA 2: LA CIENCIA
+         ============================================== -->
+    <div class="panel-label">CAPTURA 2: EL POR QUÉ</div>
+    <div class="canva-panel" id="page-2">
+        <div class="ambient-glow-blue w-96 h-96 top-40 -left-40 opacity-10"></div>
+
+        <div class="z-content h-full flex flex-col justify-center">
+
+            <div class="mb-16">
+                <div class="text-electric font-bold text-5xl mb-2">01.</div>
+                <h2 class="text-5xl font-extrabold text-white">LA CIENCIA DEL <br><span class="text-electric">CONTROL
+                        CARDÍACO</span>
+                </h2>
+                <div class="w-24 h-1 bg-gradient-to-r from-electric to-transparent mt-6"></div>
+            </div>
+
+            <div class="glass-panel p-10 rounded-2xl mb-12 border-l-4 border-l-electric">
+                <p class="text-2xl italic font-light text-gray-200 leading-relaxed">
+                    "A más de 160 BPM, tu cerebro pierde la capacidad de escanear y visualizar. La respiración táctica
+                    es el único control remoto que tienes sobre tu corazón en medio del partido."
+                </p>
+            </div>
+
+            <div class="space-y-8 text-xl text-gray-300 leading-relaxed">
+                <p>
+                    <strong class="text-white font-bold block mb-2 text-2xl">Hackeo del Sistema Nervioso
+                        Autónomo</strong>
+                    Cuando el estrés competitivo dispara tus pulsaciones, entras en visión de túnel. Ya no ves las
+                    opciones de pase, solo la amenaza inmediata.
+                </p>
+                <div class="bg-electric/10 border border-electric/20 rounded-xl p-6 text-electric font-semibold">
+                    Regular tu respiración desactiva la respuesta de "lucha o huida" y reactiva tu córtex prefrontal
+                    logrando escaneo visual impecable.
+                </div>
+                <p>
+                    Aprender a controlar tu ritmo cardíaco mediante comandos respiratorios te permite pensar con
+                    frialdad mientras el rival colapsa por la presión.
+                </p>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- ==============================================
+         PÁGINA 3: PROTOCOLO
+         ============================================== -->
+    <div class="panel-label">CAPTURA 3: PROTOCOLO TÁCTICO 4-2-4</div>
+    <div class="canva-panel" id="page-3">
+        <div class="ambient-glow-cyan w-[500px] h-[500px] -top-20 -right-20 opacity-10"></div>
+
+        <div class="z-content h-full flex flex-col justify-center">
+
+            <div class="mb-12">
+                <div class="text-electric font-bold text-5xl mb-2">02.</div>
+                <h2 class="text-5xl font-extrabold text-white">EL CÓDIGO <br><span class="text-electric">4-2-4</span>
+                </h2>
+                <div class="w-24 h-1 bg-gradient-to-r from-electric to-transparent mt-6"></div>
+            </div>
+
+            <div class="flex flex-col gap-6 flex-grow">
+
+                <!-- Card 1 -->
+                <div class="glass-panel flex items-start gap-6 p-8 rounded-2xl">
+                    <div
+                        class="font-mono text-3xl font-bold text-gray-600 bg-dark w-16 h-16 flex items-center justify-center rounded-xl border border-gray-700 shrink-0">
+                        1</div>
+                    <div>
+                        <h3 class="text-2xl font-bold text-white mb-2">Carga de Oxígeno (4s)</h3>
+                        <p class="text-gray-400 text-lg">Inhala lenta y profundamente por la nariz durante <strong
+                                class="text-electric">4 segundos</strong> expandiendo el diafragma. Esto satura la
+                            sangre de O2 vital para el cerebro.</p>
+                    </div>
+                </div>
+
+                <!-- Card 2 -->
+                <div class="glass-panel flex items-start gap-6 p-8 rounded-2xl relative overflow-hidden">
+                    <div class="absolute left-0 top-0 bottom-0 w-1 bg-electric"></div>
+                    <div
+                        class="font-mono text-3xl font-bold text-electric bg-electric/10 w-16 h-16 flex items-center justify-center rounded-xl border border-electric/30 shrink-0">
+                        2</div>
+                    <div>
+                        <h3 class="text-2xl font-bold text-electric mb-2">Estabilización (2s)</h3>
+                        <p class="text-gray-300 text-lg">Retén el aire durante <strong class="text-electric">2
+                                segundos</strong>. Este punto de inflexión estabiliza la presión de CO2 y prepara el
+                            cuerpo para el reseteo neurológico.</p>
+                    </div>
+                </div>
+
+                <!-- Card 3 -->
+                <div class="glass-panel flex items-start gap-6 p-8 rounded-2xl">
+                    <div
+                        class="font-mono text-3xl font-bold text-gray-600 bg-dark w-16 h-16 flex items-center justify-center rounded-xl border border-gray-700 shrink-0">
+                        3</div>
+                    <div>
+                        <h3 class="text-2xl font-bold text-white mb-2">Activación Vagal (4s)</h3>
+                        <p class="text-gray-400 text-lg">Exhala lentamente por la boca durante <strong
+                                class="text-electric">4 segundos</strong>.
+                            Este paso es la clave: activa el nervio vago y genera una calma instantánea en tus
+                            pulsaciones.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ==============================================
+         PÁGINA 4: EJERCICIO PRÁCTICO
+         ============================================== -->
+    <div class="panel-label">CAPTURA 4: EJERCICIO DE ALTO RENDIMIENTO</div>
+    <div class="canva-panel" id="page-4">
+        <div
+            class="ambient-glow-blue w-96 h-96 top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 opacity-10">
+        </div>
+
+        <div class="z-content h-full flex flex-col">
+
+            <div class="mb-10 text-center mt-10">
+                <div class="font-mono text-cyan text-sm tracking-widest mb-3 uppercase">// Rutina de Bio-Hacking
+                </div>
+                <h2 class="text-4xl font-extrabold text-white">RESETEO SIMÉTRICO 6x6</h2>
+                <p class="text-gray-400 mt-4 text-lg">El ejercicio para bajar de 180 a 100 BPM en 60 segundos u oxigenar
+                    antes de la cancha.</p>
+            </div>
+
+            <!-- Dashboard Mockup -->
+            <div
+                class="w-full bg-card border border-border rounded-2xl flex-grow flex flex-col overflow-hidden shadow-2xl relative">
+
+                <div class="absolute top-0 w-full h-1 bg-gradient-to-r from-cyan to-electric"></div>
+
+                <div class="p-10 flex flex-col justify-center h-full gap-8">
+
+                    <div class="flex items-start gap-6">
+                        <div
+                            class="w-20 h-20 bg-dark border border-cyan/40 rounded-full flex items-center justify-center shrink-0 shadow-[0_0_20px_rgba(0,255,255,0.2)]">
+                            <span class="text-cyan font-bold text-3xl font-mono">IN</span>
+                        </div>
+                        <div>
+                            <h3 class="text-2xl font-bold text-white mb-2">INHALA: 6 Segundos (Solo Nariz)</h3>
+                            <p class="text-gray-300 text-lg leading-relaxed">
+                                Filtrarás el aire y aumentarás la producción de óxido nítrico, un vasodilatador natural.
+                                Tu cerebro recibe oxígeno puro rápidamente.
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="flex justify-center my-2">
+                        <div class="w-1 h-12 bg-gradient-to-b from-cyan/50 to-electric/50 rounded-full"></div>
+                    </div>
+
+                    <div class="flex items-start gap-6">
+                        <div
+                            class="w-20 h-20 bg-dark border border-electric/40 rounded-full flex items-center justify-center shrink-0 shadow-[0_0_20px_rgba(0,229,255,0.2)]">
+                            <span class="text-electric font-bold text-3xl font-mono">OUT</span>
+                        </div>
+                        <div>
+                            <h3 class="text-2xl font-bold text-white mb-2">EXHALA: 6 Segundos (Solo Nariz)</h3>
+                            <p class="text-gray-300 text-lg leading-relaxed">
+                                Ralentiza la salida del aire. Rompes el patrón de hiperventilación del pánico. El ritmo
+                                cardíaco obedece a tu respiración frenando de golpe.
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="mt-8 bg-dark/50 border border-border rounded-xl p-6 text-center">
+                        <strong
+                            class="text-white block mb-2 font-mono tracking-widest text-sm text-cyan uppercase">¿CUÁNDO
+                            USARLO?</strong>
+                        <p class="text-gray-400 text-md">En el vestuario antes del partido, o en una pausa técnica (ej.
+                            lesión de compañero). Realiza 5 ciclos seguidos para resetear.</p>
+                    </div>
+
+                </div>
+            </div>
+
+            <div class="mt-8 text-center font-mono text-xs text-border">PSMILE.PERFORMANCE // FISIOLOGÍA TÁCTICA</div>
+        </div>
+    </div>
+
+    <!-- ==============================================
+         PÁGINA 5: AUTORIDAD Y VENTAS
+         ============================================== -->
+    <div class="panel-label">CAPTURA 5: AUTORIDAD Y OFERTA</div>
+    <div class="canva-panel" id="page-5">
+        <div class="ambient-glow-blue w-[600px] h-[600px] -bottom-40 -left-40 opacity-15"></div>
+
+        <div class="z-content h-full flex flex-col">
+
+            <!-- Auth Profile -->
+            <div class="flex items-center gap-8 mb-16 mt-6">
+                <img src="./public/images/luis-oficina.jpg" alt="Luis Morales"
+                    class="w-40 h-40 rounded-full object-cover border-4 border-electric shadow-[0_0_30px_rgba(0,229,255,0.3)]">
+                <div>
+                    <h2 class="text-3xl font-extrabold text-white mb-2">Lic. Luis Enrique Morales Ramirez</h2>
+                    <div class="font-mono text-sm text-electric tracking-wide mb-4">ESPECIALIZADO EN NEUROCIENCIAS Y
+                        PSICOLOGÍA DEPORTIVA</div>
+                    <p class="text-gray-300 text-lg leading-relaxed max-w-md">
+                        Hielo en las venas no es una frase, es fisiología. No dejes que tu corazón decida por ti.
+                        Entrena tu calma con un profesional calificado por La Pizarra del DT.
+                    </p>
+                </div>
+            </div>
+
+            <div class="flex justify-center gap-10 mb-10 w-full px-8">
+                <img src="./public/images/Psicologia deportiva.jpeg"
+                    class="h-48 rounded opacity-90 mix-blend-screen object-contain" alt="Psicologia">
+                <img src="./public/images/Neurociencias.jpeg"
+                    class="h-48 rounded opacity-90 mix-blend-screen object-contain" alt="Neuro">
+            </div>
+
+            <!-- Massive CTA -->
+            <div
+                class="glass-panel p-8 rounded-3xl text-center border-t border-t-electric/50 mt-auto bg-gradient-to-b from-card to-dark w-full mx-auto">
+
+                <div
+                    class="inline-block bg-cyan text-dark font-mono font-bold px-3 py-1 text-xs rounded mb-4 transform -rotate-1">
+                    [ ATENCIÓN: Solo quedan 8 de los 50 cupos exclusivos para la semana ]
+                </div>
+
+                <h3 class="text-4xl font-extrabold text-white mb-4">RESERVAR DIAGNÓSTICO DE ÉLITE</h3>
+
+                <p class="text-lg text-gray-300 mb-6 max-w-lg mx-auto leading-relaxed">
+                    Controla tus pulsaciones, asegura tu titularidad.
+                </p>
+
+                <div
+                    class="bg-electric text-dark text-2xl font-extrabold py-4 px-10 rounded-2xl shadow-[0_10px_30px_rgba(0,229,255,0.3)] inline-flex flex-col items-center">
+                    <span>AGENDAR AHORA: $12.990 CLP</span>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+</body>
+
+</html>
