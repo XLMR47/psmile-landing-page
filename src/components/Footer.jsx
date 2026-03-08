@@ -1,4 +1,4 @@
-import { Globe, Linkedin, Mail } from "lucide-react";
+import { Facebook, Instagram, Linkedin, Mail, Youtube } from "lucide-react";
 
 export default function Footer() {
     return (
@@ -27,14 +27,20 @@ export default function Footer() {
                     </div>
 
                     {/* Socials */}
-                    <div className="flex gap-4">
-                        <a href="#" className="w-10 h-10 rounded-full bg-[#141414] border border-white/5 flex items-center justify-center hover:bg-[#0070F3] hover:border-[#0070F3] transition-colors group">
-                            <Globe size={18} className="text-[#9CA3AF] group-hover:text-white" />
+                    <div className="flex gap-4 flex-wrap justify-center">
+                        <a href="https://www.facebook.com/Apoyops.digital/" target="_blank" rel="noopener noreferrer" className="w-10 h-10 rounded-full bg-[#141414] border border-white/5 flex items-center justify-center hover:bg-[#1877F2] hover:border-[#1877F2] transition-colors group">
+                            <Facebook size={18} className="text-[#9CA3AF] group-hover:text-white" />
                         </a>
-                        <a href="#" className="w-10 h-10 rounded-full bg-[#141414] border border-white/5 flex items-center justify-center hover:bg-[#0070F3] hover:border-[#0070F3] transition-colors group">
+                        <a href="https://www.instagram.com/psmile_2025/" target="_blank" rel="noopener noreferrer" className="w-10 h-10 rounded-full bg-[#141414] border border-white/5 flex items-center justify-center hover:bg-[#E4405F] hover:border-[#E4405F] transition-colors group">
+                            <Instagram size={18} className="text-[#9CA3AF] group-hover:text-white" />
+                        </a>
+                        <a href="https://www.youtube.com/@Psmile-Performance" target="_blank" rel="noopener noreferrer" className="w-10 h-10 rounded-full bg-[#141414] border border-white/5 flex items-center justify-center hover:bg-[#FF0000] hover:border-[#FF0000] transition-colors group">
+                            <Youtube size={18} className="text-[#9CA3AF] group-hover:text-white" />
+                        </a>
+                        <a href="https://www.linkedin.com/in/luis-morales1704/" target="_blank" rel="noopener noreferrer" className="w-10 h-10 rounded-full bg-[#141414] border border-white/5 flex items-center justify-center hover:bg-[#0A66C2] hover:border-[#0A66C2] transition-colors group">
                             <Linkedin size={18} className="text-[#9CA3AF] group-hover:text-white" />
                         </a>
-                        <a href="#" className="w-10 h-10 rounded-full bg-[#141414] border border-white/5 flex items-center justify-center hover:bg-[#0070F3] hover:border-[#0070F3] transition-colors group">
+                        <a href="mailto:apoyopsicologicodigital@gmail.com" className="w-10 h-10 rounded-full bg-[#141414] border border-white/5 flex items-center justify-center hover:bg-[#0070F3] hover:border-[#0070F3] transition-colors group">
                             <Mail size={18} className="text-[#9CA3AF] group-hover:text-white" />
                         </a>
                     </div>
