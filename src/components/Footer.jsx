@@ -1,4 +1,5 @@
 import { Facebook, Instagram, Linkedin, Mail, Youtube } from "lucide-react";
+import { Link } from "react-router-dom";
 
 export default function Footer() {
     return (
@@ -47,10 +48,16 @@ export default function Footer() {
 
                 </div>
 
-                <div className="text-center border-t border-white/5 pt-8">
+                <div className="text-center border-t border-white/5 pt-8 flex flex-col md:flex-row items-center justify-between gap-4">
                     <p className="text-[#9CA3AF] text-[10px] tracking-widest uppercase">
-                        © {new Date().getFullYear()} PSMILE CHILE. TODOS LOS DERECHOS RESERVADOS. PRODUCIDO PARA EL ALTO RENDIMIENTO EN CHILE.
+                        © {new Date().getFullYear()} PSMILE CHILE. TODOS LOS DERECHOS RESERVADOS.
                     </p>
+                    <Link
+                        to="/portal"
+                        className="text-[10px] text-[#4B5563] hover:text-[#0070F3] tracking-widest uppercase transition-colors font-bold flex items-center gap-1.5"
+                    >
+                        🔒 Acceso Staff
+                    </Link>
                 </div>
 
             </div>

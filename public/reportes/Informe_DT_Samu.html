@@ -1,0 +1,1259 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Informe Psicodeportivo — Samu</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;800;900&family=Barlow:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --navy: #0D1B2A;
+    --navy-mid: #1A2E45;
+    --navy-light: #243B55;
+    --orange: #E8622A;
+    --orange-light: #F07A45;
+    --green: #00C896;
+    --amber: #F5A623;
+    --red: #E84444;
+    --white: #FFFFFF;
+    --text-light: #A8BDD0;
+    --card-bg: #1A2E45;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--navy);
+    color: var(--white);
+    font-family: 'Barlow', sans-serif;
+    font-size: 15px;
+    line-height: 1.6;
+  }
+
+  @media print {
+    body { background: #fff; color: #111; }
+    .no-print { display: none !important; }
+    .card, .list-card, .chart-card, .rec-card { background: #f5f7fa !important; border: 1px solid #ddd !important; }
+    .header { background: var(--navy) !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    .section-title { color: #1a2e45 !important; border-color: #1a2e45 !important; }
+    .section-title::before { background: #1a2e45 !important; }
+    .domain-card { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    .obs-table td, .obs-table th { color: #333 !important; }
+    .alert { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    .sub-bar-track { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  }
+
+  .wrapper {
+    max-width: 980px;
+    margin: 0 auto;
+    padding: 0 20px 60px;
+  }
+
+  /* === HEADER === */
+  .header {
+    background: linear-gradient(135deg, #0D1B2A 0%, #1c2e40 50%, #2a1a0d 100%);
+    border-bottom: 3px solid var(--orange);
+    padding: 48px 20px 40px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .header::before {
+    content: '';
+    position: absolute;
+    top: -80px; right: -80px;
+    width: 340px; height: 340px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(232,98,42,0.1) 0%, transparent 70%);
+  }
+
+  .header::after {
+    content: '';
+    position: absolute;
+    bottom: -60px; left: 30%;
+    width: 200px; height: 200px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(232,98,42,0.05) 0%, transparent 70%);
+  }
+
+  .header-inner {
+    max-width: 980px;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 24px;
+    flex-wrap: wrap;
+    position: relative;
+    z-index: 1;
+  }
+
+  .badge {
+    display: inline-block;
+    background: var(--orange);
+    color: var(--white);
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 700;
+    font-size: 11px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    padding: 4px 12px;
+    border-radius: 2px;
+    margin-bottom: 12px;
+  }
+
+  .header h1 {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 52px;
+    font-weight: 900;
+    line-height: 1;
+    letter-spacing: -1px;
+    color: var(--white);
+  }
+
+  .header h1 span { color: var(--orange); }
+
+  .header-sub {
+    font-size: 14px;
+    color: var(--text-light);
+    margin-top: 8px;
+    font-weight: 300;
+  }
+
+  .context-tag {
+    display: inline-block;
+    margin-top: 10px;
+    background: rgba(232,98,42,0.15);
+    border: 1px solid rgba(232,98,42,0.3);
+    border-radius: 4px;
+    padding: 4px 12px;
+    font-size: 12px;
+    color: #f0a080;
+    font-weight: 500;
+  }
+
+  .header-meta {
+    display: flex;
+    gap: 14px;
+    flex-wrap: wrap;
+  }
+
+  .meta-pill {
+    background: rgba(255,255,255,0.06);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 6px;
+    padding: 10px 16px;
+    text-align: center;
+    min-width: 100px;
+  }
+
+  .meta-pill .label {
+    font-size: 10px;
+    color: var(--text-light);
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    margin-bottom: 4px;
+  }
+
+  .meta-pill .value {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 17px;
+    font-weight: 700;
+    color: var(--white);
+    line-height: 1.2;
+  }
+
+  /* === ALERT CONTEXT === */
+  .alert-context {
+    background: rgba(232,98,42,0.08);
+    border: 1px solid rgba(232,98,42,0.25);
+    border-left: 4px solid var(--orange);
+    border-radius: 8px;
+    padding: 14px 18px;
+    margin: 24px 0;
+    font-size: 13.5px;
+    color: #f0c0a0;
+    line-height: 1.6;
+  }
+
+  .alert-context strong { color: var(--white); }
+
+  /* === SECTION TITLE === */
+  .section-title {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 22px;
+    font-weight: 800;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    color: var(--orange);
+    margin: 48px 0 20px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid rgba(232,98,42,0.2);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .section-title::before {
+    content: '';
+    display: inline-block;
+    width: 4px;
+    height: 22px;
+    background: var(--orange);
+    border-radius: 2px;
+    flex-shrink: 0;
+  }
+
+  /* === CARD === */
+  .card {
+    background: var(--card-bg);
+    border-radius: 10px;
+    padding: 24px;
+    border: 1px solid rgba(255,255,255,0.06);
+  }
+
+  /* === DOMAIN CARDS === */
+  .domains-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+    margin-bottom: 32px;
+  }
+
+  .domain-card {
+    background: var(--card-bg);
+    border-radius: 10px;
+    padding: 22px 20px;
+    border-left: 4px solid;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .domain-card.verde { border-color: var(--green); }
+  .domain-card.amarillo { border-color: var(--amber); }
+  .domain-card.rojo { border-color: var(--red); }
+
+  .domain-card .domain-name {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--text-light);
+    margin-bottom: 8px;
+  }
+
+  .domain-card .domain-score {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 58px;
+    font-weight: 900;
+    line-height: 1;
+    margin-bottom: 4px;
+  }
+
+  .domain-card.verde .domain-score { color: var(--green); }
+  .domain-card.amarillo .domain-score { color: var(--amber); }
+  .domain-card.rojo .domain-score { color: var(--red); }
+
+  .domain-card .domain-pct {
+    font-size: 12px;
+    color: var(--text-light);
+    margin-bottom: 10px;
+  }
+
+  .domain-card .domain-label {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--white);
+    background: rgba(255,255,255,0.07);
+    padding: 4px 10px;
+    border-radius: 4px;
+    display: inline-block;
+    line-height: 1.4;
+  }
+
+  /* === CHARTS === */
+  .charts-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+    margin-bottom: 32px;
+  }
+
+  .chart-card {
+    background: var(--card-bg);
+    border-radius: 10px;
+    padding: 24px;
+    border: 1px solid rgba(255,255,255,0.06);
+  }
+
+  .chart-card h3 {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 14px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    color: var(--text-light);
+    margin-bottom: 20px;
+  }
+
+  .chart-wrap { position: relative; height: 280px; }
+
+  /* === SUBESCALA BARS === */
+  .subescala-list { display: flex; flex-direction: column; gap: 14px; }
+
+  .sub-item {
+    display: grid;
+    grid-template-columns: 195px 1fr 56px;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .sub-name { font-size: 13px; color: var(--white); font-weight: 500; }
+
+  .sub-bar-track {
+    background: rgba(255,255,255,0.07);
+    border-radius: 999px;
+    height: 10px;
+    overflow: hidden;
+  }
+
+  .sub-bar-fill { height: 100%; border-radius: 999px; }
+
+  .sub-pct {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 16px;
+    font-weight: 700;
+    text-align: right;
+  }
+
+  .fill-green { background: linear-gradient(90deg, #00C896, #00E0A8); }
+  .fill-amber { background: linear-gradient(90deg, #F5A623, #FFC854); }
+  .fill-red   { background: linear-gradient(90deg, #E8444490, #E84444); }
+  .fill-dark-red { background: linear-gradient(90deg, #c0000090, #c00000); }
+
+  .color-green { color: var(--green); }
+  .color-amber { color: var(--amber); }
+  .color-red   { color: var(--red); }
+  .color-dark-red { color: #e03030; }
+
+  /* === ITEM SCORES === */
+  .items-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+  }
+
+  .item-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background: rgba(255,255,255,0.03);
+    border-radius: 8px;
+    padding: 10px 14px;
+    border-left: 3px solid transparent;
+  }
+
+  .item-row.alto  { border-color: var(--green); }
+  .item-row.medio { border-color: var(--amber); }
+  .item-row.bajo  { border-color: var(--red); }
+
+  .item-dots { display: flex; gap: 4px; flex-shrink: 0; }
+
+  .dot {
+    width: 9px; height: 9px;
+    border-radius: 50%;
+  }
+
+  .dot.on-green { background: var(--green); }
+  .dot.on-amber { background: var(--amber); }
+  .dot.on-red   { background: var(--red); }
+  .dot.off      { background: rgba(255,255,255,0.12); }
+
+  .item-text {
+    font-size: 13px;
+    color: var(--text-light);
+    flex: 1;
+    line-height: 1.4;
+  }
+
+  .item-score-label {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 15px;
+    font-weight: 700;
+    flex-shrink: 0;
+  }
+
+  /* === INCOHERENCIA BOX === */
+  .incoherencia-box {
+    background: rgba(232,98,42,0.06);
+    border: 1px solid rgba(232,98,42,0.25);
+    border-left: 4px solid var(--orange);
+    border-radius: 10px;
+    padding: 20px 24px;
+    margin-bottom: 32px;
+  }
+
+  .incoherencia-box h4 {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 16px;
+    font-weight: 800;
+    color: var(--orange);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 10px;
+  }
+
+  .incoherencia-box p {
+    font-size: 13.5px;
+    color: #d8c0b0;
+    line-height: 1.6;
+  }
+
+  .incoherencia-box strong { color: var(--white); }
+
+  /* === OBS TABLE === */
+  .obs-table { width: 100%; border-collapse: collapse; }
+
+  .obs-table th {
+    background: rgba(255,255,255,0.06);
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 12px;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: var(--text-light);
+    padding: 12px 16px;
+    text-align: left;
+    font-weight: 600;
+  }
+
+  .obs-table td {
+    padding: 12px 16px;
+    font-size: 13px;
+    border-bottom: 1px solid rgba(255,255,255,0.05);
+    vertical-align: top;
+    line-height: 1.5;
+    color: #c8d8e8;
+  }
+
+  .obs-table tr:last-child td { border-bottom: none; }
+  .obs-table tr:nth-child(even) td { background: rgba(255,255,255,0.02); }
+
+  .conf-badge {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 12px;
+    font-weight: 700;
+    padding: 3px 10px;
+    border-radius: 4px;
+    white-space: nowrap;
+  }
+
+  .conf-si     { background: rgba(0,200,150,0.15); color: var(--green); }
+  .conf-matiza { background: rgba(245,166,35,0.15); color: var(--amber); }
+
+  /* === TWO COL === */
+  .two-col {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+    margin-bottom: 20px;
+  }
+
+  .list-card {
+    background: var(--card-bg);
+    border-radius: 10px;
+    padding: 22px;
+    border: 1px solid rgba(255,255,255,0.06);
+  }
+
+  .list-card h3 {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 16px;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    margin-bottom: 16px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid rgba(255,255,255,0.08);
+  }
+
+  .list-card.green h3 { color: var(--green); border-color: rgba(0,200,150,0.2); }
+  .list-card.red h3   { color: var(--red);   border-color: rgba(232,68,68,0.2); }
+
+  .list-item {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 14px;
+    align-items: flex-start;
+  }
+
+  .list-item:last-child { margin-bottom: 0; }
+
+  .list-icon {
+    flex-shrink: 0;
+    width: 22px; height: 22px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 11px;
+    margin-top: 2px;
+  }
+
+  .icon-green { background: rgba(0,200,150,0.15); color: var(--green); }
+  .icon-red   { background: rgba(232,68,68,0.15); color: var(--red); }
+  .icon-amber { background: rgba(245,166,35,0.15); color: var(--amber); }
+
+  .list-item p {
+    font-size: 13px;
+    color: #c8d8e8;
+    line-height: 1.5;
+  }
+
+  .list-item p strong {
+    color: var(--white);
+    display: block;
+    font-size: 14px;
+    margin-bottom: 2px;
+  }
+
+  /* === REC CARDS === */
+  .rec-cards {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+  }
+
+  .rec-card {
+    background: var(--card-bg);
+    border-radius: 10px;
+    padding: 20px;
+    border-top: 3px solid;
+  }
+
+  .rec-card.orange { border-color: var(--orange); }
+  .rec-card.amber  { border-color: var(--amber); }
+  .rec-card.green  { border-color: var(--green); }
+
+  .rec-card .rec-num {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--text-light);
+    margin-bottom: 6px;
+  }
+
+  .rec-card h4 {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 17px;
+    font-weight: 800;
+    margin-bottom: 10px;
+    line-height: 1.2;
+  }
+
+  .rec-card.orange h4 { color: var(--orange); }
+  .rec-card.amber h4  { color: var(--amber); }
+  .rec-card.green h4  { color: var(--green); }
+
+  .rec-card p { font-size: 13px; color: #c8d8e8; line-height: 1.55; }
+
+  /* === CONCLUSION === */
+  .conclusion-box {
+    background: linear-gradient(135deg, rgba(232,98,42,0.07) 0%, rgba(232,98,42,0.02) 100%);
+    border: 1px solid rgba(232,98,42,0.2);
+    border-left: 4px solid var(--orange);
+    border-radius: 10px;
+    padding: 28px 32px;
+  }
+
+  .conclusion-box h3 {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 18px;
+    font-weight: 800;
+    color: var(--orange);
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    margin-bottom: 14px;
+  }
+
+  .conclusion-box p {
+    font-size: 14px;
+    color: #d0e4f0;
+    line-height: 1.7;
+    margin-bottom: 12px;
+  }
+
+  .conclusion-box p:last-child { margin-bottom: 0; }
+
+  /* === ALERT === */
+  .alert {
+    border-radius: 8px;
+    padding: 14px 18px;
+    margin-bottom: 12px;
+    font-size: 13px;
+    line-height: 1.5;
+    display: flex;
+    gap: 10px;
+    align-items: flex-start;
+  }
+
+  .alert.green  { background: rgba(0,200,150,0.08);  border: 1px solid rgba(0,200,150,0.2);  color: #a8f0de; }
+  .alert.amber  { background: rgba(245,166,35,0.08); border: 1px solid rgba(245,166,35,0.2); color: #f5d898; }
+  .alert.orange { background: rgba(232,98,42,0.08);  border: 1px solid rgba(232,98,42,0.2);  color: #f0c0a0; }
+
+  .alert-icon { font-size: 16px; flex-shrink: 0; margin-top: 1px; }
+
+  /* === VS EMMANUEL === */
+  .compare-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin-bottom: 32px;
+  }
+
+  .compare-card {
+    background: var(--card-bg);
+    border-radius: 10px;
+    padding: 20px;
+    border: 1px solid rgba(255,255,255,0.06);
+  }
+
+  .compare-card h4 {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 15px;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 14px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid rgba(255,255,255,0.07);
+  }
+
+  .compare-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 6px 0;
+    border-bottom: 1px solid rgba(255,255,255,0.04);
+    font-size: 13px;
+  }
+
+  .compare-row:last-child { border-bottom: none; }
+  .compare-row .label-col { color: var(--text-light); }
+  .compare-row .val-col {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 15px;
+    font-weight: 700;
+  }
+
+  /* === FOOTER === */
+  .footer {
+    background: rgba(255,255,255,0.03);
+    border-top: 1px solid rgba(255,255,255,0.07);
+    text-align: center;
+    padding: 20px;
+    margin-top: 60px;
+    font-size: 12px;
+    color: var(--text-light);
+  }
+
+  /* === PRINT BTN === */
+  .print-btn {
+    position: fixed;
+    bottom: 28px;
+    right: 28px;
+    background: var(--orange);
+    color: var(--white);
+    border: none;
+    cursor: pointer;
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 700;
+    font-size: 14px;
+    letter-spacing: 1px;
+    padding: 12px 22px;
+    border-radius: 6px;
+    box-shadow: 0 4px 20px rgba(232,98,42,0.35);
+    transition: transform 0.15s, box-shadow 0.15s;
+    z-index: 100;
+  }
+
+  .print-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 28px rgba(232,98,42,0.5);
+  }
+
+  @media (max-width: 680px) {
+    .domains-grid   { grid-template-columns: 1fr; }
+    .charts-grid    { grid-template-columns: 1fr; }
+    .two-col        { grid-template-columns: 1fr; }
+    .rec-cards      { grid-template-columns: 1fr; }
+    .items-grid     { grid-template-columns: 1fr; }
+    .compare-grid   { grid-template-columns: 1fr; }
+    .sub-item       { grid-template-columns: 140px 1fr 48px; }
+    .header h1      { font-size: 36px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<div class="header">
+  <div class="header-inner">
+    <div class="header-left">
+      <div class="badge">Informe para el cuerpo técnico</div>
+      <h1>SAMU <span>·</span><br>Informe <span>Psicológico</span></h1>
+      <p class="header-sub">Evaluación ePsD Lite — Observación en partido · Febrero 2026</p>
+      <span class="context-tag">⚠ Ingresó como suplente · Resultado adverso · Categoría superior</span>
+    </div>
+    <div class="header-meta">
+      <div class="meta-pill">
+        <div class="label">Edad</div>
+        <div class="value">13 años</div>
+      </div>
+      <div class="meta-pill">
+        <div class="label">Posición</div>
+        <div class="value">Delantero</div>
+      </div>
+      <div class="meta-pill">
+        <div class="label">Categoría</div>
+        <div class="value">Sub-13</div>
+      </div>
+      <div class="meta-pill">
+        <div class="label">Contexto</div>
+        <div class="value">Cat. Mayor</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="wrapper">
+
+  <!-- CONTEXTO IMPORTANTE -->
+  <div class="alert-context" style="margin-top: 28px;">
+    <strong>📌 Nota importante para leer este informe:</strong> Samu fue evaluado en condiciones de alta exigencia — entró suplente, con el partido perdiendo, y contra rivales físicamente más grandes. Eso hay que tenerlo en cuenta al leer los números: algunas limitaciones que aparecen acá se explican en parte por el contexto, no solo por el jugador.
+  </div>
+
+  <!-- PUNTAJES GLOBALES -->
+  <div class="section-title">Puntajes globales</div>
+
+  <div class="domains-grid">
+    <div class="domain-card verde">
+      <div class="domain-name">Mental / Cognitivo</div>
+      <div class="domain-score">71</div>
+      <div class="domain-pct">sobre 100 puntos</div>
+      <div class="domain-label">🟢 Su mejor área</div>
+    </div>
+    <div class="domain-card rojo">
+      <div class="domain-name">Emocional</div>
+      <div class="domain-score">48</div>
+      <div class="domain-pct">sobre 100 puntos</div>
+      <div class="domain-label">🔴 Área crítica</div>
+    </div>
+    <div class="domain-card amarillo">
+      <div class="domain-name">Grupal / Social</div>
+      <div class="domain-score">50</div>
+      <div class="domain-pct">sobre 100 puntos</div>
+      <div class="domain-label">🟡 Área a trabajar</div>
+    </div>
+  </div>
+
+  <!-- CHARTS -->
+  <div class="charts-grid">
+    <div class="chart-card">
+      <h3>Radar — perfil completo</h3>
+      <div class="chart-wrap">
+        <canvas id="radarChart"></canvas>
+      </div>
+    </div>
+    <div class="chart-card">
+      <h3>Barras — 3 dominios</h3>
+      <div class="chart-wrap">
+        <canvas id="barChart"></canvas>
+      </div>
+    </div>
+  </div>
+
+  <!-- SUBESCALAS -->
+  <div class="section-title">Desglose por área</div>
+
+  <div class="card" style="margin-bottom: 20px;">
+    <div class="subescala-list">
+      <div class="sub-item">
+        <div class="sub-name">Atención en el juego</div>
+        <div class="sub-bar-track"><div class="sub-bar-fill fill-green" style="width:86.7%"></div></div>
+        <div class="sub-pct color-green">87%</div>
+      </div>
+      <div class="sub-item">
+        <div class="sub-name">Liderazgo (desde el ejemplo)</div>
+        <div class="sub-bar-track"><div class="sub-bar-fill fill-green" style="width:80%"></div></div>
+        <div class="sub-pct color-green">80%</div>
+      </div>
+      <div class="sub-item">
+        <div class="sub-name">Confianza en sí mismo</div>
+        <div class="sub-bar-track"><div class="sub-bar-fill fill-green" style="width:73.3%"></div></div>
+        <div class="sub-pct color-green">73%</div>
+      </div>
+      <div class="sub-item">
+        <div class="sub-name">Toma de decisiones</div>
+        <div class="sub-bar-track"><div class="sub-bar-fill fill-amber" style="width:70%"></div></div>
+        <div class="sub-pct color-amber">70%</div>
+      </div>
+      <div class="sub-item">
+        <div class="sub-name">Lectura de juego</div>
+        <div class="sub-bar-track"><div class="sub-bar-fill fill-amber" style="width:50%"></div></div>
+        <div class="sub-pct color-amber">50%</div>
+      </div>
+      <div class="sub-item">
+        <div class="sub-name">Control emocional general</div>
+        <div class="sub-bar-track"><div class="sub-bar-fill fill-amber" style="width:50%"></div></div>
+        <div class="sub-pct color-amber">50%</div>
+      </div>
+      <div class="sub-item">
+        <div class="sub-name">Comunicación con compañeros</div>
+        <div class="sub-bar-track"><div class="sub-bar-fill fill-red" style="width:40%"></div></div>
+        <div class="sub-pct color-red">40%</div>
+      </div>
+      <div class="sub-item">
+        <div class="sub-name">Conexión con el grupo</div>
+        <div class="sub-bar-track"><div class="sub-bar-fill fill-red" style="width:30%"></div></div>
+        <div class="sub-pct color-red">30%</div>
+      </div>
+      <div class="sub-item">
+        <div class="sub-name">Rutinas mentales tras errores</div>
+        <div class="sub-bar-track"><div class="sub-bar-fill fill-dark-red" style="width:20%"></div></div>
+        <div class="sub-pct color-dark-red">20%</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- INCOHERENCIA INTERNA -->
+  <div class="incoherencia-box">
+    <h4>⚡ Algo que llama la atención — Dato para el DT</h4>
+    <p>
+      Samu tiene <strong>5/5 en "da el ejemplo con su actitud y respeto"</strong> — el máximo posible. Pero al mismo tiempo tiene <strong>1/5 en "evita el pensamiento negativo en cancha"</strong> — el mínimo posible.<br><br>
+      Eso quiere decir que hacia afuera se comporta bien: no falta el respeto, no genera problemas. Pero por adentro está cargando una frustración que no puede soltar. <strong>Este patrón puede ser invisible para el cuerpo técnico</strong> porque no explota ni protesta abiertamente — y por eso es importante nombrarlo.
+    </p>
+  </div>
+
+  <!-- ITEMS -->
+  <div class="section-title">Conductas observadas (ítem por ítem)</div>
+
+  <div class="items-grid" style="margin-bottom: 32px;">
+
+    <div class="item-row alto">
+      <div class="item-dots">
+        <div class="dot on-green"></div><div class="dot on-green"></div><div class="dot on-green"></div><div class="dot on-green"></div><div class="dot on-green"></div>
+      </div>
+      <div class="item-text">Se mantiene atento durante el partido</div>
+      <div class="item-score-label color-green">5/5</div>
+    </div>
+
+    <div class="item-row alto">
+      <div class="item-dots">
+        <div class="dot on-green"></div><div class="dot on-green"></div><div class="dot on-green"></div><div class="dot on-green"></div><div class="dot on-green"></div>
+      </div>
+      <div class="item-text">Es preciso en los momentos más difíciles del partido</div>
+      <div class="item-score-label color-green">5/5</div>
+    </div>
+
+    <div class="item-row alto">
+      <div class="item-dots">
+        <div class="dot on-green"></div><div class="dot on-green"></div><div class="dot on-green"></div><div class="dot on-green"></div><div class="dot on-green"></div>
+      </div>
+      <div class="item-text">Da el ejemplo con su actitud y respeto</div>
+      <div class="item-score-label color-green">5/5</div>
+    </div>
+
+    <div class="item-row alto">
+      <div class="item-dots">
+        <div class="dot on-green"></div><div class="dot on-green"></div><div class="dot on-green"></div><div class="dot on-green"></div><div class="dot off"></div>
+      </div>
+      <div class="item-text">Toma buenas decisiones según el momento del partido</div>
+      <div class="item-score-label color-green">4/5</div>
+    </div>
+
+    <div class="item-row alto">
+      <div class="item-dots">
+        <div class="dot on-green"></div><div class="dot on-green"></div><div class="dot on-green"></div><div class="dot on-green"></div><div class="dot off"></div>
+      </div>
+      <div class="item-text">Seguro y con energía cuando el partido está difícil</div>
+      <div class="item-score-label color-green">4/5</div>
+    </div>
+
+    <div class="item-row alto">
+      <div class="item-dots">
+        <div class="dot on-green"></div><div class="dot on-green"></div><div class="dot on-green"></div><div class="dot on-green"></div><div class="dot off"></div>
+      </div>
+      <div class="item-text">Se ofrece y asume responsabilidad en momentos clave</div>
+      <div class="item-score-label color-green">4/5</div>
+    </div>
+
+    <div class="item-row medio">
+      <div class="item-dots">
+        <div class="dot on-amber"></div><div class="dot on-amber"></div><div class="dot on-amber"></div><div class="dot off"></div><div class="dot off"></div>
+      </div>
+      <div class="item-text">Transmite calma al equipo bajo presión</div>
+      <div class="item-score-label color-amber">3/5</div>
+    </div>
+
+    <div class="item-row medio">
+      <div class="item-dots">
+        <div class="dot on-amber"></div><div class="dot on-amber"></div><div class="dot on-amber"></div><div class="dot off"></div><div class="dot off"></div>
+      </div>
+      <div class="item-text">Anticipa jugadas y reacciones del rival</div>
+      <div class="item-score-label color-amber">3/5</div>
+    </div>
+
+    <div class="item-row medio">
+      <div class="item-dots">
+        <div class="dot on-amber"></div><div class="dot on-amber"></div><div class="dot on-amber"></div><div class="dot off"></div><div class="dot off"></div>
+      </div>
+      <div class="item-text">Corrige sus errores y ajusta su juego</div>
+      <div class="item-score-label color-amber">3/5</div>
+    </div>
+
+    <div class="item-row medio">
+      <div class="item-dots">
+        <div class="dot on-amber"></div><div class="dot on-amber"></div><div class="dot on-amber"></div><div class="dot off"></div><div class="dot off"></div>
+      </div>
+      <div class="item-text">Se recupera después de una distracción o error</div>
+      <div class="item-score-label color-amber">3/5</div>
+    </div>
+
+    <div class="item-row medio">
+      <div class="item-dots">
+        <div class="dot on-amber"></div><div class="dot on-amber"></div><div class="dot on-amber"></div><div class="dot off"></div><div class="dot off"></div>
+      </div>
+      <div class="item-text">Persevera después de errar, sigue intentando</div>
+      <div class="item-score-label color-amber">3/5</div>
+    </div>
+
+    <div class="item-row medio">
+      <div class="item-dots">
+        <div class="dot on-amber"></div><div class="dot on-amber"></div><div class="dot on-amber"></div><div class="dot off"></div><div class="dot off"></div>
+      </div>
+      <div class="item-text">Transforma sus emociones en esfuerzo útil</div>
+      <div class="item-score-label color-amber">3/5</div>
+    </div>
+
+    <div class="item-row bajo">
+      <div class="item-dots">
+        <div class="dot on-red"></div><div class="dot on-red"></div><div class="dot off"></div><div class="dot off"></div><div class="dot off"></div>
+      </div>
+      <div class="item-text">Escanea el campo antes de recibir el balón</div>
+      <div class="item-score-label color-red">2/5</div>
+    </div>
+
+    <div class="item-row bajo">
+      <div class="item-dots">
+        <div class="dot on-red"></div><div class="dot on-red"></div><div class="dot off"></div><div class="dot off"></div><div class="dot off"></div>
+      </div>
+      <div class="item-text">Control emocional ante decisiones del árbitro</div>
+      <div class="item-score-label color-red">2/5</div>
+    </div>
+
+    <div class="item-row bajo">
+      <div class="item-dots">
+        <div class="dot on-red"></div><div class="dot on-red"></div><div class="dot off"></div><div class="dot off"></div><div class="dot off"></div>
+      </div>
+      <div class="item-text">Se comunica de forma asertiva y respetuosa</div>
+      <div class="item-score-label color-red">2/5</div>
+    </div>
+
+    <div class="item-row bajo">
+      <div class="item-dots">
+        <div class="dot on-red"></div><div class="dot on-red"></div><div class="dot off"></div><div class="dot off"></div><div class="dot off"></div>
+      </div>
+      <div class="item-text">Usa comunicación para animar o calmar al equipo</div>
+      <div class="item-score-label color-red">2/5</div>
+    </div>
+
+    <div class="item-row bajo">
+      <div class="item-dots">
+        <div class="dot on-red"></div><div class="dot on-red"></div><div class="dot off"></div><div class="dot off"></div><div class="dot off"></div>
+      </div>
+      <div class="item-text">Apoya a un compañero cuando se equivoca</div>
+      <div class="item-score-label color-red">2/5</div>
+    </div>
+
+    <div class="item-row bajo">
+      <div class="item-dots">
+        <div class="dot on-red"></div><div class="dot off"></div><div class="dot off"></div><div class="dot off"></div><div class="dot off"></div>
+      </div>
+      <div class="item-text">Celebra y se alegra con los logros del equipo</div>
+      <div class="item-score-label color-red">1/5</div>
+    </div>
+
+    <div class="item-row bajo">
+      <div class="item-dots">
+        <div class="dot on-red"></div><div class="dot off"></div><div class="dot off"></div><div class="dot off"></div><div class="dot off"></div>
+      </div>
+      <div class="item-text">Usa gestos o señales para reenfocar su mente</div>
+      <div class="item-score-label color-red">1/5</div>
+    </div>
+
+    <div class="item-row bajo">
+      <div class="item-dots">
+        <div class="dot on-red"></div><div class="dot off"></div><div class="dot off"></div><div class="dot off"></div><div class="dot off"></div>
+      </div>
+      <div class="item-text">Se celebra a sí mismo después de una buena acción</div>
+      <div class="item-score-label color-red">1/5</div>
+    </div>
+
+    <div class="item-row bajo">
+      <div class="item-dots">
+        <div class="dot on-red"></div><div class="dot off"></div><div class="dot off"></div><div class="dot off"></div><div class="dot off"></div>
+      </div>
+      <div class="item-text">Evita el pensamiento negativo en cancha</div>
+      <div class="item-score-label color-red">1/5</div>
+    </div>
+
+  </div>
+
+  <!-- LO QUE VISTE vs EL TEST -->
+  <div class="section-title">Lo que observaste vs. lo que dice el instrumento</div>
+
+  <div class="card" style="margin-bottom: 32px; padding: 0; overflow: hidden;">
+    <table class="obs-table">
+      <thead>
+        <tr>
+          <th style="width:40%">Tu observación</th>
+          <th style="width:12%">Test</th>
+          <th>Qué dice el número</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Intentaba conectarse pero se desenfocaba ante cualquier error</td>
+          <td><span class="conf-badge conf-si">✔ Confirma</span></td>
+          <td>Recuperación ante errores = 3/5. Autodiálogo en 20% (mínimo absoluto en los 3 ítems). Los números cuantifican exactamente lo que viste.</td>
+        </tr>
+        <tr>
+          <td>Ganas de ir para adelante, presionaba y conectaba pases</td>
+          <td><span class="conf-badge conf-si">✔ Confirma</span></td>
+          <td>Atención sostenida = 5/5. Disponibilidad en momentos clave = 4/5. Toma de decisiones = 4/5. Cuando pudo participar, participó bien.</td>
+        </tr>
+        <tr>
+          <td>Le costaba por el físico contra rivales más grandes</td>
+          <td><span class="conf-badge conf-si">✔ Contexto</span></td>
+          <td>Lectura de juego = 50% y escaneo del campo = 2/5. El factor físico afectó su procesamiento táctico. No es solo falta de habilidad: es el costo de jugar en categoría mayor.</td>
+        </tr>
+        <tr>
+          <td>Perdía el foco rápidamente</td>
+          <td><span class="conf-badge conf-si">✔ Confirma</span></td>
+          <td>Los tres ítems de "rutinas mentales" en 1/5. No tiene herramientas propias para reenfocar la mente. Cada error lo desestabiliza porque no sabe cómo manejarlo.</td>
+        </tr>
+        <tr>
+          <td>Con confianza pero desconectado del grupo</td>
+          <td><span class="conf-badge conf-si">✔ Confirma</span></td>
+          <td>Confianza = 73% vs. Conexión grupal = 30%. La diferencia de 43 puntos entre las dos áreas es exactamente lo que observaste.</td>
+        </tr>
+        <tr>
+          <td>Posiblemente frustrado por el resultado y el contacto físico</td>
+          <td><span class="conf-badge conf-matiza">⚠ Probable</span></td>
+          <td>El test no mide frustración directamente, pero sí aparece en: pensamiento negativo sin control (1/5), control emocional ante arbitraje (2/5) y cero celebración de acciones propias (1/5). La hipótesis tiene respaldo en los datos.</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- LO QUE TIENE Y LO QUE FALTA -->
+  <div class="section-title">Lo que tiene y lo que hay que trabajar</div>
+
+  <div class="two-col" style="margin-bottom: 20px;">
+    <div class="list-card green">
+      <h3>✅ Sus puntos fuertes</h3>
+      <div class="list-item">
+        <div class="list-icon icon-green">🎯</div>
+        <p><strong>Se concentra y es preciso cuando más se necesita</strong>Atención 87% y precisión en momentos clave = 5/5. Cuando entra al partido, está en el partido.</p>
+      </div>
+      <div class="list-item">
+        <div class="list-icon icon-green">⚡</div>
+        <p><strong>Iniciativa y ganas reales</strong>Se ofrece, presiona, busca participar. Confianza = 73%. No se esconde aunque las condiciones sean adversas.</p>
+      </div>
+      <div class="list-item">
+        <div class="list-icon icon-green">🤝</div>
+        <p><strong>Da el ejemplo con su actitud</strong>5/5 en modelaje de comportamiento. No genera conflictos, no falta el respeto. Es un chico bien parado.</p>
+      </div>
+      <div class="list-item">
+        <div class="list-icon icon-green">💡</div>
+        <p><strong>Decide bien cuando puede participar</strong>Toma de decisiones = 70%. Cuando pudo conectar pases, lo hizo con criterio.</p>
+      </div>
+    </div>
+
+    <div class="list-card red">
+      <h3>🔧 Lo que hay que trabajar</h3>
+      <div class="list-item">
+        <div class="list-icon icon-red">🧩</div>
+        <p><strong>No tiene cómo manejar sus propias emociones — URGENTE</strong>20% en "rutinas mentales". No usa nada para reenfocar la mente después de un error. Cada tropiezo le cuesta más de lo que debería porque no tiene herramientas.</p>
+      </div>
+      <div class="list-item">
+        <div class="list-icon icon-red">🌡️</div>
+        <p><strong>El árbitro y los errores lo sacan del partido</strong>Control emocional = 2/5. Necesita un protocolo concreto para esos momentos, no solo voluntad.</p>
+      </div>
+      <div class="list-item">
+        <div class="list-icon icon-red">👥</div>
+        <p><strong>Opera solo dentro del equipo</strong>Conexión grupal = 30%. No celebra, no apoya. Está tan ocupado con sus propias emociones que no le quedan recursos para conectar con sus compañeros.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="alert amber" style="margin-bottom: 32px;">
+    <div class="alert-icon">📌</div>
+    <div><strong>Para el cuerpo técnico:</strong> La desconexión grupal de Samu no es indiferencia ni falta de espíritu de equipo. Es una consecuencia directa de estar sobrecargado emocionalmente sin herramientas para manejarlo. Trabajar la regulación emocional debería mejorar también la conexión con el grupo.</div>
+  </div>
+
+  <!-- RECOMENDACIONES -->
+  <div class="section-title">¿Qué hacer con él?</div>
+
+  <div class="rec-cards" style="margin-bottom: 32px;">
+    <div class="rec-card orange">
+      <div class="rec-num">Prioridad 1 · Desde ya</div>
+      <h4>Darle una rutina para el error</h4>
+      <p>Diseñar con él un gesto concreto de "reset" cuando algo sale mal: puede ser ajustar la camiseta, un puño, una respiración. También una regla simple: "puedo enojarme 5 segundos — después vuelvo". Practicarlo en entrenamiento antes de exigírselo en partido.</p>
+    </div>
+    <div class="rec-card orange">
+      <div class="rec-num">Prioridad 2 · Desde ya</div>
+      <h4>Señal de apoyo desde la banca</h4>
+      <p>Acordar una palabra o gesto específico desde el banco que funcione como ancla cuando lo ven perder el foco. A los 13 años, los apoyos externos son parte legítima del proceso. No esperar que lo haga solo cuando todavía no tiene las herramientas.</p>
+    </div>
+    <div class="rec-card amber">
+      <div class="rec-num">Prioridad 3 · Próximas semanas</div>
+      <h4>Trabajar la reacción ante el árbitro</h4>
+      <p>Practicar en entrenamiento la respuesta ante decisiones adversas (simular situaciones). Que cuando llegue el momento en partido, la respuesta ya esté automatizada. Plantearlo como habilidad de jugador profesional, no como corrección.</p>
+    </div>
+  </div>
+
+  <!-- PROYECCIÓN -->
+  <div class="section-title">Proyección del jugador</div>
+
+  <div class="two-col" style="margin-bottom: 32px;">
+    <div class="alert green" style="margin-bottom: 0; flex-direction: column; align-items: flex-start; gap: 6px;">
+      <div style="font-family:'Barlow Condensed',sans-serif;font-size:15px;font-weight:800;letter-spacing:1px;color:var(--green);">🚀 POTENCIAL REAL</div>
+      <div>Tiene atención, decisión e iniciativa. Cuando las condiciones le ayudan, puede rendir bien. La base cognitiva está — y eso no es fácil de entrenar.</div>
+    </div>
+    <div class="alert orange" style="margin-bottom: 0; flex-direction: column; align-items: flex-start; gap: 6px;">
+      <div style="font-family:'Barlow Condensed',sans-serif;font-size:15px;font-weight:800;letter-spacing:1px;color:var(--orange);">⚠ CONDICIONADO AL TRABAJO</div>
+      <div>Tal como está hoy, la adversidad lo supera. Con intervención específica en regulación emocional, el techo sube mucho. Sin ella, seguirá siendo un jugador que "se pierde" cuando el partido se pone difícil.</div>
+    </div>
+  </div>
+
+  <!-- CONCLUSIÓN -->
+  <div class="conclusion-box">
+    <h3>En resumen para el DT</h3>
+    <p>Samu tiene motor: atención, ganas y decisión están presentes. El instrumento confirma que cuando pudo participar, lo hizo con calidad. El problema no es que le falte talento ni actitud — es que no tiene herramientas para manejar sus emociones cuando el partido se complica.</p>
+    <p>La clave está en el autodiálogo: 20% es el número más bajo de todo el informe, y los tres ítems en mínimo absoluto. Cada error sin herramienta de reenfoque es un error que le cuesta el doble. Trabajar eso es la inversión más eficiente que se puede hacer con este jugador ahora.</p>
+    <p><strong>Una sola frase para resumirlo:</strong> tiene todo para rendir — pero necesita aprender a manejarse cuando las cosas no salen bien. Esa es la diferencia entre el Samu que viste hoy y el que puede llegar a ser.</p>
+  </div>
+
+</div>
+
+<div class="footer">
+  Diagnóstico psicodeportivo · Instrumento ePsD Lite · Observación en partido · Uso exclusivo del cuerpo técnico · Febrero 2026
+</div>
+
+<button class="print-btn no-print" onclick="window.print()">🖨 Imprimir / Guardar PDF</button>
+
+<script>
+// === RADAR ===
+const radarCtx = document.getElementById('radarChart').getContext('2d');
+new Chart(radarCtx, {
+  type: 'radar',
+  data: {
+    labels: [
+      'Atención\nen partido',
+      'Liderazgo',
+      'Autoconfianza',
+      'Decisiones',
+      'Ctrl. Emocional',
+      'Lectura\nde juego',
+      'Comunicación',
+      'Conexión\ngrupal',
+      'Rutinas\nMentales'
+    ],
+    datasets: [{
+      label: 'Samu',
+      data: [86.7, 80, 73.3, 70, 50, 50, 40, 30, 20],
+      backgroundColor: 'rgba(232, 98, 42, 0.15)',
+      borderColor: 'rgba(232, 98, 42, 0.9)',
+      borderWidth: 2,
+      pointBackgroundColor: 'rgba(232, 98, 42, 1)',
+      pointBorderColor: '#fff',
+      pointRadius: 5,
+    }]
+  },
+  options: {
+    responsive: true,
+    maintainAspectRatio: false,
+    scales: {
+      r: {
+        beginAtZero: true,
+        max: 100,
+        min: 0,
+        ticks: {
+          stepSize: 25,
+          color: 'rgba(168,189,208,0.6)',
+          font: { size: 10, family: 'Barlow' },
+          backdropColor: 'transparent'
+        },
+        grid:        { color: 'rgba(255,255,255,0.08)' },
+        angleLines:  { color: 'rgba(255,255,255,0.08)' },
+        pointLabels: { color: '#A8BDD0', font: { size: 11, family: 'Barlow', weight: '500' } }
+      }
+    },
+    plugins: { legend: { display: false } }
+  }
+});
+
+// === BAR ===
+const barCtx = document.getElementById('barChart').getContext('2d');
+new Chart(barCtx, {
+  type: 'bar',
+  data: {
+    labels: ['Mental / Cognitivo', 'Grupal / Social', 'Emocional'],
+    datasets: [{
+      data: [71.4, 50.0, 47.5],
+      backgroundColor: [
+        'rgba(0,200,150,0.8)',
+        'rgba(245,166,35,0.8)',
+        'rgba(232,68,68,0.8)'
+      ],
+      borderColor: [
+        'rgba(0,200,150,1)',
+        'rgba(245,166,35,1)',
+        'rgba(232,68,68,1)'
+      ],
+      borderWidth: 2,
+      borderRadius: 6,
+    }]
+  },
+  options: {
+    responsive: true,
+    maintainAspectRatio: false,
+    indexAxis: 'y',
+    scales: {
+      x: {
+        beginAtZero: true,
+        max: 100,
+        grid:  { color: 'rgba(255,255,255,0.06)' },
+        ticks: { color: '#A8BDD0', font: { size: 12, family: 'Barlow' }, callback: v => v + '%' },
+        border: { color: 'rgba(255,255,255,0.1)' }
+      },
+      y: {
+        grid:  { display: false },
+        ticks: { color: '#FFFFFF', font: { size: 13, family: 'Barlow', weight: '600' } },
+        border: { color: 'rgba(255,255,255,0.1)' }
+      }
+    },
+    plugins: {
+      legend: { display: false },
+      tooltip: { callbacks: { label: ctx => ` ${ctx.raw}%` } }
+    }
+  }
+});
+</script>
+</body>
+</html>

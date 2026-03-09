@@ -1,3 +1,4 @@
+import { Routes, Route } from 'react-router-dom';
 import Header from './components/Header';
 import Hero from './components/Hero';
 import About from './components/About';
@@ -13,7 +14,12 @@ import LeadForm from './components/LeadForm';
 import Footer from './components/Footer';
 import Alliances from './components/Alliances';
 
-function App() {
+import LoginPage from './portal/LoginPage';
+import Dashboard from './portal/Dashboard';
+import ProtectedRoute from './portal/ProtectedRoute';
+
+// Landing Page (página pública)
+function LandingPage() {
   return (
     <div className="font-sans min-h-screen text-[#F3F4F6] bg-[#0C0C0C]">
       <Header />
@@ -33,6 +39,26 @@ function App() {
       </main>
       <Footer />
     </div>
+  );
+}
+
+function App() {
+  return (
+    <Routes>
+      {/* Landing Page pública */}
+      <Route path="/" element={<LandingPage />} />
+
+      {/* Portal de Inteligencia Mental */}
+      <Route path="/portal" element={<LoginPage />} />
+      <Route
+        path="/portal/dashboard"
+        element={
+          <ProtectedRoute>
+            <Dashboard />
+          </ProtectedRoute>
+        }
+      />
+    </Routes>
   );
 }
 

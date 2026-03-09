@@ -1,0 +1,294 @@
+import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../contexts/AuthContext';
+import { db } from '../firebase';
+import { collection, getDocs, orderBy, query, deleteDoc, doc } from 'firebase/firestore';
+import { Brain, LogOut, Plus, Users, Search, Trash2, X, ShieldCheck, Eye } from 'lucide-react';
+import PlayerCard from './PlayerCard';
+import AddPlayerModal from './AddPlayerModal';
+
+// ================================================================
+// CONFIGURACIÓN DE ROLES
+// Cambia este correo al email que usas como administrador.
+// Cualquier otro usuario que se loguee será tratado como DT (solo lectura).
+// ================================================================
+const ADMIN_EMAIL = 'psmile@psmile.cl';
+
+export default function Dashboard() {
+    const { currentUser, logout } = useAuth();
+    const navigate = useNavigate();
+    const [players, setPlayers] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const [showAddModal, setShowAddModal] = useState(false);
+    const [searchTerm, setSearchTerm] = useState('');
+    const [filterCategory, setFilterCategory] = useState('Todas');
+    const [reportModal, setReportModal] = useState(null);
+    const [deleteConfirm, setDeleteConfirm] = useState(null); // { id, nombre }
+
+    // Role check
+    const isAdmin = currentUser?.email === ADMIN_EMAIL;
+
+    const categorias = ['Todas', 'Sub-13', 'Sub-15', 'Sub-17', 'Sub-20'];
+
+    // Fetch players from Firestore
+    const fetchPlayers = async () => {
+        setLoading(true);
+        try {
+            const q = query(collection(db, 'jugadores'), orderBy('createdAt', 'desc'));
+            const snapshot = await getDocs(q);
+            const playerList = snapshot.docs.map(d => ({ id: d.id, ...d.data() }));
+            setPlayers(playerList);
+        } catch (err) {
+            console.error('Error fetching players:', err);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    useEffect(() => {
+        fetchPlayers();
+    }, []);
+
+    const handleLogout = async () => {
+        try {
+            await logout();
+            navigate('/portal');
+        } catch (err) {
+            console.error('Error al cerrar sesión:', err);
+        }
+    };
+
+    const handleDeletePlayer = async () => {
+        if (!deleteConfirm) return;
+        try {
+            await deleteDoc(doc(db, 'jugadores', deleteConfirm.id));
+            setDeleteConfirm(null);
+            await fetchPlayers();
+        } catch (err) {
+            console.error('Error al eliminar:', err);
+            alert('Error al eliminar: ' + err.message);
+        }
+    };
+
+    const handleViewReport = (player) => {
+        if (player.reporteURL) {
+            setReportModal(player);
+        }
+    };
+
+    // Filtered players
+    const filteredPlayers = players.filter(p => {
+        const matchesSearch = p.nombre?.toLowerCase().includes(searchTerm.toLowerCase());
+        const matchesCategory = filterCategory === 'Todas' || p.categoria === filterCategory;
+        return matchesSearch && matchesCategory;
+    });
+
+    return (
+        <div className="min-h-screen bg-[#0A0F1E]">
+            {/* Header */}
+            <header className="sticky top-0 z-40 bg-[#0A0F1E]/90 backdrop-blur-xl border-b border-white/5">
+                <div className="container mx-auto px-6 lg:px-12 py-4 flex items-center justify-between">
+                    <div className="flex items-center gap-3">
+                        <div className="w-10 h-10 bg-[#0070F3]/10 border border-[#0070F3]/30 rounded-xl flex items-center justify-center">
+                            <Brain className="text-[#0070F3]" size={20} />
+                        </div>
+                        <div>
+                            <h1 className="text-sm font-black text-white tracking-tight">PSMILE <span className="text-[#0070F3]">INTELLIGENCE</span></h1>
+                            <p className="text-[10px] text-[#6B7280] tracking-widest uppercase">Portal de Inteligencia Mental</p>
+                        </div>
+                    </div>
+
+                    <div className="flex items-center gap-4">
+                        <div className="hidden md:flex items-center gap-2 bg-[#111827] border border-white/5 rounded-full px-4 py-2">
+                            {isAdmin ? (
+                                <ShieldCheck size={12} className="text-[#39FF14]" />
+                            ) : (
+                                <Eye size={12} className="text-[#0070F3]" />
+                            )}
+                            <span className="text-[10px] text-[#6B7280] font-bold tracking-widest uppercase">
+                                {currentUser?.email?.split('@')[0]}
+                            </span>
+                            <span className={`text-[9px] font-black tracking-widest uppercase px-2 py-0.5 rounded-full ${isAdmin ? 'bg-[#39FF14]/10 text-[#39FF14]' : 'bg-[#0070F3]/10 text-[#0070F3]'}`}>
+                                {isAdmin ? 'ADMIN' : 'DT'}
+                            </span>
+                        </div>
+                        <button
+                            onClick={handleLogout}
+                            className="bg-[#111827] hover:bg-red-500/20 border border-white/5 hover:border-red-500/30 text-[#6B7280] hover:text-red-400 rounded-xl p-2.5 transition-all"
+                            title="Cerrar sesión"
+                        >
+                            <LogOut size={16} />
+                        </button>
+                    </div>
+                </div>
+            </header>
+
+            {/* Main Content */}
+            <main className="container mx-auto px-6 lg:px-12 py-8">
+                {/* Stats Bar + Search */}
+                <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-6 mb-10">
+                    <div>
+                        <h2 className="text-2xl md:text-3xl font-black text-white mb-1">
+                            Academia <span className="text-[#0070F3]">Bewe</span>
+                        </h2>
+                        <p className="text-[#6B7280] text-sm flex items-center gap-2">
+                            <Users size={14} />
+                            {players.length} jugadores registrados
+                        </p>
+                    </div>
+
+                    <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 w-full lg:w-auto">
+                        {/* Search */}
+                        <div className="relative flex-1 sm:flex-none">
+                            <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-[#6B7280]" size={16} />
+                            <input
+                                type="text"
+                                value={searchTerm}
+                                onChange={(e) => setSearchTerm(e.target.value)}
+                                placeholder="Buscar jugador..."
+                                className="w-full sm:w-60 bg-[#111827] border border-white/5 rounded-xl pl-10 pr-4 py-2.5 text-white text-sm placeholder-[#4B5563] outline-none focus:border-[#0070F3] transition-colors"
+                            />
+                        </div>
+
+                        {/* Category Filter */}
+                        <div className="flex gap-1 bg-[#111827] border border-white/5 rounded-xl p-1">
+                            {categorias.map(cat => (
+                                <button
+                                    key={cat}
+                                    onClick={() => setFilterCategory(cat)}
+                                    className={`px-3 py-1.5 rounded-lg text-[10px] font-bold tracking-wider uppercase transition-all ${filterCategory === cat
+                                        ? 'bg-[#0070F3] text-white'
+                                        : 'text-[#6B7280] hover:text-white'
+                                        }`}
+                                >
+                                    {cat}
+                                </button>
+                            ))}
+                        </div>
+                    </div>
+                </div>
+
+                {/* Players Grid */}
+                {loading ? (
+                    <div className="flex items-center justify-center py-20">
+                        <div className="text-center">
+                            <div className="w-12 h-12 border-2 border-[#0070F3]/30 border-t-[#0070F3] rounded-full animate-spin mx-auto mb-4"></div>
+                            <p className="text-[#6B7280] text-sm">Cargando perfiles de jugadores...</p>
+                        </div>
+                    </div>
+                ) : filteredPlayers.length === 0 ? (
+                    <div className="flex items-center justify-center py-20">
+                        <div className="text-center max-w-md">
+                            <Users size={48} className="text-white/5 mx-auto mb-4" />
+                            <h3 className="text-lg font-bold text-white mb-2">
+                                {players.length === 0 ? 'Sin jugadores registrados' : 'Sin resultados'}
+                            </h3>
+                            <p className="text-[#6B7280] text-sm mb-6">
+                                {players.length === 0
+                                    ? (isAdmin ? 'Presiona el botón (+) para añadir tu primer jugador al sistema.' : 'El administrador aún no ha registrado jugadores.')
+                                    : 'Intenta con otro término de búsqueda o categoría.'}
+                            </p>
+                        </div>
+                    </div>
+                ) : (
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                        {filteredPlayers.map(player => (
+                            <div key={player.id} className="relative group">
+                                <PlayerCard player={player} onViewReport={handleViewReport} />
+                                {/* Delete button (solo admin) */}
+                                {isAdmin && (
+                                    <button
+                                        onClick={() => setDeleteConfirm({ id: player.id, nombre: player.nombre })}
+                                        className="absolute top-3 left-3 bg-red-500/20 border border-red-500/30 text-red-400 p-2 rounded-lg opacity-0 group-hover:opacity-100 transition-all hover:bg-red-500 hover:text-white"
+                                        title="Eliminar jugador"
+                                    >
+                                        <Trash2 size={14} />
+                                    </button>
+                                )}
+                            </div>
+                        ))}
+                    </div>
+                )}
+            </main>
+
+            {/* Floating Add Button (solo admin) */}
+            {isAdmin && (
+                <button
+                    onClick={() => setShowAddModal(true)}
+                    className="fixed bottom-8 right-8 w-16 h-16 bg-[#0070F3] hover:bg-[#0060D0] text-white rounded-2xl shadow-2xl shadow-[#0070F3]/30 flex items-center justify-center transition-all hover:scale-110 active:scale-95 z-30"
+                    title="Añadir jugador"
+                >
+                    <Plus size={28} strokeWidth={3} />
+                </button>
+            )}
+
+            {/* Add Player Modal */}
+            <AddPlayerModal
+                isOpen={showAddModal}
+                onClose={() => setShowAddModal(false)}
+                onPlayerAdded={fetchPlayers}
+            />
+
+            {/* Report Viewer Modal */}
+            {reportModal && (
+                <div className="fixed inset-0 z-50 bg-black/90 backdrop-blur-sm flex items-center justify-center p-4">
+                    <div className="bg-[#111827] border border-white/10 rounded-2xl w-full max-w-5xl h-[85vh] flex flex-col shadow-2xl">
+                        <div className="flex items-center justify-between p-4 border-b border-white/5">
+                            <div>
+                                <h3 className="text-white font-bold">{reportModal.nombre}</h3>
+                                <p className="text-[10px] text-[#0070F3] uppercase tracking-widest font-bold">{reportModal.categoria} — Análisis de Élite</p>
+                            </div>
+                            <div className="flex items-center gap-2">
+                                <a
+                                    href={reportModal.reporteURL}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="text-xs text-[#6B7280] hover:text-white transition-colors px-3 py-1.5 border border-white/10 rounded-lg"
+                                >
+                                    Abrir en nueva pestaña
+                                </a>
+                                <button onClick={() => setReportModal(null)} className="text-[#6B7280] hover:text-white transition-colors p-1.5">
+                                    <X size={20} />
+                                </button>
+                            </div>
+                        </div>
+                        <iframe
+                            src={reportModal.reporteURL}
+                            className="flex-1 w-full rounded-b-2xl"
+                            title={`Reporte de ${reportModal.nombre}`}
+                        />
+                    </div>
+                </div>
+            )}
+
+            {/* Delete Confirmation Modal */}
+            {deleteConfirm && (
+                <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
+                    <div className="bg-[#111827] border border-red-500/20 rounded-2xl p-8 max-w-sm w-full shadow-2xl text-center">
+                        <div className="w-14 h-14 bg-red-500/10 border border-red-500/30 rounded-2xl flex items-center justify-center mx-auto mb-5">
+                            <Trash2 className="text-red-400" size={24} />
+                        </div>
+                        <h3 className="text-xl font-black text-white mb-2">¿Eliminar jugador?</h3>
+                        <p className="text-[#6B7280] text-sm mb-6">
+                            Vas a eliminar a <span className="text-white font-bold">{deleteConfirm.nombre}</span> del sistema. Esta acción no se puede deshacer.
+                        </p>
+                        <div className="flex gap-3">
+                            <button
+                                onClick={() => setDeleteConfirm(null)}
+                                className="flex-1 bg-[#1F2937] hover:bg-[#374151] text-white font-bold text-xs uppercase tracking-widest py-3 rounded-xl transition-colors"
+                            >
+                                Cancelar
+                            </button>
+                            <button
+                                onClick={handleDeletePlayer}
+                                className="flex-1 bg-red-500 hover:bg-red-600 text-white font-bold text-xs uppercase tracking-widest py-3 rounded-xl transition-colors"
+                            >
+                                Sí, eliminar
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
+        </div>
+    );
+}

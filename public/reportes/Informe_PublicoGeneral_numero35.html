@@ -1,0 +1,659 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Informe Psicodeportivo — numero 35</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;800;900&family=Barlow:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --navy:      #0D1B2A;
+    --card-bg:   #1A2E45;
+    --teal:      #00B4A0;
+    --teal-dark: #008A7A;
+    --green:     #00C896;
+    --amber:     #F5A623;
+    --red:       #E84444;
+    --white:     #FFFFFF;
+    --off:       #F0F4F8;
+    --muted:     #A8BDD0;
+  }
+
+  * { margin:0; padding:0; box-sizing:border-box; }
+
+  body {
+    background: var(--navy);
+    color: var(--white);
+    font-family: 'Barlow', sans-serif;
+    font-size: 15px;
+    line-height: 1.6;
+  }
+
+  @media print {
+    body { background:#fff; color:#111; }
+    .no-print { display:none !important; }
+    .card, .list-card, .chart-card, .rec-card, .alert-box { background:#f5f7fa !important; border:1px solid #ddd !important; }
+    .header { -webkit-print-color-adjust:exact; print-color-adjust:exact; }
+    .sub-bar-track, .dot, .domain-card { -webkit-print-color-adjust:exact; print-color-adjust:exact; }
+  }
+
+  .wrapper { max-width:980px; margin:0 auto; padding:0 20px 60px; }
+
+  /* HEADER */
+  .header {
+    background: linear-gradient(135deg, #0D1B2A 0%, #0d2a2a 55%, #0a1f2e 100%);
+    border-bottom: 3px solid var(--teal);
+    padding: 48px 20px 40px;
+    position: relative;
+    overflow: hidden;
+  }
+  .header::before {
+    content:'';
+    position:absolute; top:-80px; right:-80px;
+    width:340px; height:340px; border-radius:50%;
+    background: radial-gradient(circle, rgba(0,180,160,.1) 0%, transparent 70%);
+  }
+  .header-inner {
+    max-width:980px; margin:0 auto;
+    display:flex; align-items:center; justify-content:space-between;
+    gap:24px; flex-wrap:wrap; position:relative; z-index:1;
+  }
+  .badge {
+    display:inline-block;
+    background: var(--teal); color: var(--white);
+    font-family:'Barlow Condensed',sans-serif; font-weight:700;
+    font-size:11px; letter-spacing:2px; text-transform:uppercase;
+    padding:4px 12px; border-radius:2px; margin-bottom:12px;
+  }
+  .header h1 {
+    font-family:'Barlow Condensed',sans-serif;
+    font-size:52px; font-weight:900; line-height:1; letter-spacing:-1px;
+  }
+  .header h1 span { color: var(--teal); }
+  .header-sub { font-size:14px; color:var(--muted); margin-top:8px; font-weight:300; }
+  .header-meta { display:flex; gap:14px; flex-wrap:wrap; }
+  .meta-pill {
+    background:rgba(255,255,255,.06); border:1px solid rgba(255,255,255,.1);
+    border-radius:6px; padding:10px 16px; text-align:center; min-width:100px;
+  }
+  .meta-pill .label { font-size:10px; color:var(--muted); letter-spacing:1.5px; text-transform:uppercase; margin-bottom:4px; }
+  .meta-pill .value { font-family:'Barlow Condensed',sans-serif; font-size:17px; font-weight:700; line-height:1.2; }
+
+  /* SECTION TITLE */
+  .section-title {
+    font-family:'Barlow Condensed',sans-serif; font-size:22px; font-weight:800;
+    letter-spacing:1px; text-transform:uppercase; color:var(--teal);
+    margin:48px 0 20px; padding-bottom:10px;
+    border-bottom:1px solid rgba(0,180,160,.2);
+    display:flex; align-items:center; gap:10px;
+  }
+  .section-title::before {
+    content:''; display:inline-block; width:4px; height:22px;
+    background:var(--teal); border-radius:2px; flex-shrink:0;
+  }
+
+  /* CARD */
+  .card { background:var(--card-bg); border-radius:10px; padding:24px; border:1px solid rgba(255,255,255,.06); }
+
+  /* DOMAIN CARDS */
+  .domains-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:16px; margin-bottom:32px; }
+  .domain-card {
+    background:var(--card-bg); border-radius:10px; padding:22px 20px;
+    border-left:4px solid; position:relative; overflow:hidden;
+  }
+  .domain-card.amber  { border-color:var(--amber); }
+  .domain-card.verde  { border-color:var(--green); }
+  .domain-card .domain-name { font-family:'Barlow Condensed',sans-serif; font-size:12px; font-weight:700; letter-spacing:2px; text-transform:uppercase; color:var(--muted); margin-bottom:8px; }
+  .domain-card .domain-score { font-family:'Barlow Condensed',sans-serif; font-size:58px; font-weight:900; line-height:1; margin-bottom:4px; }
+  .domain-card.amber .domain-score { color:var(--amber); }
+  .domain-card.verde .domain-score { color:var(--green); }
+  .domain-card .domain-pct  { font-size:12px; color:var(--muted); margin-bottom:10px; }
+  .domain-card .domain-label { font-size:12px; font-weight:600; color:var(--white); background:rgba(255,255,255,.07); padding:4px 10px; border-radius:4px; display:inline-block; line-height:1.4; }
+
+  /* CHARTS */
+  .charts-grid { display:grid; grid-template-columns:1fr 1fr; gap:20px; margin-bottom:32px; }
+  .chart-card { background:var(--card-bg); border-radius:10px; padding:24px; border:1px solid rgba(255,255,255,.06); }
+  .chart-card h3 { font-family:'Barlow Condensed',sans-serif; font-size:14px; font-weight:700; text-transform:uppercase; letter-spacing:1.5px; color:var(--muted); margin-bottom:20px; }
+  .chart-wrap { position:relative; height:280px; }
+
+  /* BARS */
+  .subescala-list { display:flex; flex-direction:column; gap:14px; }
+  .sub-item { display:grid; grid-template-columns:210px 1fr 56px; align-items:center; gap:12px; }
+  .sub-name { font-size:13px; color:var(--white); font-weight:500; }
+  .sub-bar-track { background:rgba(255,255,255,.07); border-radius:999px; height:10px; overflow:hidden; }
+  .sub-bar-fill  { height:100%; border-radius:999px; }
+  .fill-amber    { background:linear-gradient(90deg,#F5A623,#FFC854); }
+  .fill-green    { background:linear-gradient(90deg,#00C896,#00E0A8); }
+  .sub-pct { font-family:'Barlow Condensed',sans-serif; font-size:16px; font-weight:700; text-align:right; }
+  .c-amber { color:var(--amber); }
+  .c-green { color:var(--green); }
+
+  /* ITEM ROWS */
+  .items-grid { display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+  .item-row { display:flex; align-items:center; gap:12px; background:rgba(255,255,255,.03); border-radius:8px; padding:10px 14px; border-left:3px solid transparent; }
+  .item-row.alto  { border-color:var(--teal); }
+  .item-row.medio { border-color:var(--amber); }
+  .item-row.bajo  { border-color:var(--red); }
+  .item-dots { display:flex; gap:4px; flex-shrink:0; }
+  .dot { width:9px; height:9px; border-radius:50%; }
+  .dot.on-teal  { background:var(--teal); }
+  .dot.on-green { background:var(--green); }
+  .dot.on-amber { background:var(--amber); }
+  .dot.on-red   { background:var(--red); }
+  .dot.off { background:rgba(255,255,255,.15); }
+  .item-text { flex:1; font-size:13px; line-height:1.4; }
+
+  /* ALERT BOXES */
+  .alert {
+    border-radius:10px; padding:18px 20px; margin-bottom:20px;
+    display:flex; align-items:flex-start; gap:14px; border-left:4px solid;
+  }
+  .alert.teal   { background:rgba(0,180,160,.08); border-color:var(--teal); }
+  .alert.amber  { background:rgba(245,166,35,.08); border-color:var(--amber); }
+  .alert.red    { background:rgba(232,68,68,.08); border-color:var(--red); }
+  .alert-icon { font-size:24px; line-height:1; flex-shrink:0; }
+
+  /* LIST ITEMS */
+  .list-card { background:var(--card-bg); border-radius:10px; padding:24px; margin-bottom:24px; border:1px solid rgba(255,255,255,.06); }
+  .list-item { display:flex; align-items:flex-start; gap:14px; padding:16px 0; border-bottom:1px solid rgba(255,255,255,.05); }
+  .list-item:last-child { border:none; padding-bottom:0; }
+  .list-icon { font-size:28px; line-height:1; flex-shrink:0; width:40px; height:40px; border-radius:8px; display:flex; align-items:center; justify-content:center; }
+  .icon-green { background:rgba(0,200,150,.15); }
+  .icon-red   { background:rgba(232,68,68,.15); }
+  .icon-amber { background:rgba(245,166,35,.15); }
+  .list-item p { flex:1; font-size:14px; line-height:1.6; }
+  .list-item strong { display:block; font-weight:600; margin-bottom:4px; }
+
+  /* REC CARDS */
+  .rec-cards { display:grid; grid-template-columns:1fr; gap:16px; }
+  .rec-card {
+    background:var(--card-bg); border-radius:10px; padding:22px 24px;
+    border-left:4px solid; border:1px solid rgba(255,255,255,.06);
+  }
+  .rec-card.teal  { border-left:4px solid var(--teal); }
+  .rec-card.amber { border-left:4px solid var(--amber); }
+  .rec-num {
+    font-family:'Barlow Condensed',sans-serif; font-size:11px; font-weight:700;
+    letter-spacing:1.5px; text-transform:uppercase; color:var(--muted); margin-bottom:10px;
+  }
+  .rec-card h4 {
+    font-family:'Barlow Condensed',sans-serif; font-size:18px; font-weight:700;
+    margin-bottom:10px; color:var(--white);
+  }
+  .rec-card p { font-size:14px; line-height:1.6; color:rgba(255,255,255,.85); }
+
+  /* TWO COL */
+  .two-col { display:grid; grid-template-columns:1fr 1fr; gap:20px; }
+
+  /* CONCLUSION BOX */
+  .conclusion-box {
+    background:var(--card-bg); border-radius:10px; padding:28px 32px;
+    border:1px solid rgba(0,180,160,.3); margin-bottom:32px;
+  }
+  .conclusion-box h3 {
+    font-family:'Barlow Condensed',sans-serif; font-size:20px; font-weight:800;
+    letter-spacing:1px; color:var(--teal); margin-bottom:16px;
+  }
+  .conclusion-box p { font-size:14px; line-height:1.7; margin-bottom:14px; }
+  .conclusion-box p:last-child { margin-bottom:0; }
+
+  /* FOOTER */
+  .footer {
+    text-align:center; padding:24px; font-size:12px; color:var(--muted);
+    border-top:1px solid rgba(255,255,255,.06); margin-top:60px;
+  }
+
+  /* PRINT BUTTON */
+  .print-btn {
+    position:fixed; bottom:30px; right:30px; z-index:9999;
+    background:var(--teal); color:var(--white); border:none; border-radius:8px;
+    padding:14px 24px; font-family:'Barlow',sans-serif; font-size:15px; font-weight:600;
+    cursor:pointer; box-shadow:0 4px 20px rgba(0,180,160,.3);
+    transition:all 0.2s;
+  }
+  .print-btn:hover { background:var(--teal-dark); transform:translateY(-2px); box-shadow:0 6px 25px rgba(0,180,160,.4); }
+
+  @media (max-width: 768px) {
+    .domains-grid { grid-template-columns:1fr; }
+    .charts-grid { grid-template-columns:1fr; }
+    .sub-item { grid-template-columns:1fr; }
+    .items-grid { grid-template-columns:1fr; }
+    .two-col { grid-template-columns:1fr; }
+    .header h1 { font-size:36px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-inner">
+    <div>
+      <div class="badge">Evaluación Psicodeportiva</div>
+      <h1>PERFIL DE <span>numero 35</span></h1>
+      <div class="header-sub">Instrumento ePsD · Marzo 2026</div>
+    </div>
+    <div class="header-meta">
+      <div class="meta-pill">
+        <div class="label">Posición</div>
+        <div class="value">MC</div>
+      </div>
+      <div class="meta-pill">
+        <div class="label">Edad</div>
+        <div class="value">13 años</div>
+      </div>
+      <div class="meta-pill">
+        <div class="label">Equipo</div>
+        <div class="value">Futbol Elite</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="wrapper">
+
+  <!-- RESULTADOS GLOBALES -->
+  <div class="section-title">Resultados globales</div>
+  <div class="domains-grid">
+    <div class="domain-card amber">
+      <div class="domain-name">Cognitivo</div>
+      <div class="domain-score">69</div>
+      <div class="domain-pct">de 100 puntos</div>
+      <div class="domain-label">Nivel Medio</div>
+    </div>
+    <div class="domain-card amber">
+      <div class="domain-name">Emocional</div>
+      <div class="domain-score">68</div>
+      <div class="domain-pct">de 100 puntos</div>
+      <div class="domain-label">Nivel Medio</div>
+    </div>
+    <div class="domain-card verde">
+      <div class="domain-name">Conductual-Social</div>
+      <div class="domain-score">73</div>
+      <div class="domain-pct">de 100 puntos</div>
+      <div class="domain-label">Nivel Alto</div>
+    </div>
+  </div>
+
+  <div class="alert amber">
+    <div class="alert-icon">⚡</div>
+    <div><strong>Perfil general:</strong> numero 35 tiene un perfil <strong>equilibrado</strong> con dos áreas en nivel medio y una en nivel alto. Su mayor fortaleza es el <strong>control emocional excepcional</strong> (90%), pero necesita desarrollar herramientas para reenfocarse cuando pierde concentración.</div>
+  </div>
+
+  <!-- GRÁFICOS -->
+  <div class="section-title">Análisis visual</div>
+  <div class="charts-grid">
+    <div class="chart-card">
+      <h3>Perfil completo por subdimensiones</h3>
+      <div class="chart-wrap">
+        <canvas id="radarChart"></canvas>
+      </div>
+    </div>
+    <div class="chart-card">
+      <h3>Comparación por dominios</h3>
+      <div class="chart-wrap">
+        <canvas id="barChart"></canvas>
+      </div>
+    </div>
+  </div>
+
+  <!-- DETALLE POR SUBDIMENSIÓN -->
+  <div class="section-title">Detalle por subdimensión</div>
+  <div class="card" style="margin-bottom:32px;">
+    <div class="subescala-list">
+      <div class="sub-item">
+        <div class="sub-name">Gestión emocional</div>
+        <div class="sub-bar-track"><div class="sub-bar-fill fill-green" style="width:90%"></div></div>
+        <div class="sub-pct c-green">90%</div>
+      </div>
+      <div class="sub-item">
+        <div class="sub-name">Comunicación emocional</div>
+        <div class="sub-bar-track"><div class="sub-bar-fill fill-green" style="width:80%"></div></div>
+        <div class="sub-pct c-green">80%</div>
+      </div>
+      <div class="sub-item">
+        <div class="sub-name">Liderazgo emocional</div>
+        <div class="sub-bar-track"><div class="sub-bar-fill fill-green" style="width:80%"></div></div>
+        <div class="sub-pct c-green">80%</div>
+      </div>
+      <div class="sub-item">
+        <div class="sub-name">Control atencional</div>
+        <div class="sub-bar-track"><div class="sub-bar-fill fill-green" style="width:73.3%"></div></div>
+        <div class="sub-pct c-green">73%</div>
+      </div>
+      <div class="sub-item">
+        <div class="sub-name">Autoconfianza y resiliencia</div>
+        <div class="sub-bar-track"><div class="sub-bar-fill fill-green" style="width:73.3%"></div></div>
+        <div class="sub-pct c-green">73%</div>
+      </div>
+      <div class="sub-item">
+        <div class="sub-name">Toma de decisiones</div>
+        <div class="sub-bar-track"><div class="sub-bar-fill fill-green" style="width:70%"></div></div>
+        <div class="sub-pct c-green">70%</div>
+      </div>
+      <div class="sub-item">
+        <div class="sub-name">Percepción del entorno</div>
+        <div class="sub-bar-track"><div class="sub-bar-fill fill-amber" style="width:60%"></div></div>
+        <div class="sub-pct c-amber">60%</div>
+      </div>
+      <div class="sub-item">
+        <div class="sub-name">Vínculo y cohesión</div>
+        <div class="sub-bar-track"><div class="sub-bar-fill fill-amber" style="width:60%"></div></div>
+        <div class="sub-pct c-amber">60%</div>
+      </div>
+      <div class="sub-item">
+        <div class="sub-name">Autodiálogo y enfoque mental</div>
+        <div class="sub-bar-track"><div class="sub-bar-fill fill-amber" style="width:46.7%"></div></div>
+        <div class="sub-pct c-amber">47%</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- CONDUCTAS EVALUADAS -->
+  <div class="section-title">Conductas específicas evaluadas</div>
+  <div class="card" style="margin-bottom:32px;">
+    <div class="items-grid">
+      <!-- COGNITIVO -->
+      <div class="item-row medio">
+        <div class="item-dots">
+          <div class="dot on-amber"></div><div class="dot on-amber"></div><div class="dot on-amber"></div><div class="dot off"></div><div class="dot off"></div>
+        </div>
+        <div class="item-text">Escanea el campo antes de recibir</div>
+      </div>
+      <div class="item-row medio">
+        <div class="item-dots">
+          <div class="dot on-amber"></div><div class="dot on-amber"></div><div class="dot on-amber"></div><div class="dot off"></div><div class="dot off"></div>
+        </div>
+        <div class="item-text">Anticipa jugadas del rival</div>
+      </div>
+      <div class="item-row medio">
+        <div class="item-dots">
+          <div class="dot on-amber"></div><div class="dot on-amber"></div><div class="dot on-amber"></div><div class="dot off"></div><div class="dot off"></div>
+        </div>
+        <div class="item-text">Toma decisiones acordes al contexto</div>
+      </div>
+      <div class="item-row alto">
+        <div class="item-dots">
+          <div class="dot on-teal"></div><div class="dot on-teal"></div><div class="dot on-teal"></div><div class="dot on-teal"></div><div class="dot off"></div>
+        </div>
+        <div class="item-text">Corrige errores y ajusta decisiones</div>
+      </div>
+      <div class="item-row medio">
+        <div class="item-dots">
+          <div class="dot on-amber"></div><div class="dot on-amber"></div><div class="dot on-amber"></div><div class="dot off"></div><div class="dot off"></div>
+        </div>
+        <div class="item-text">Mantiene atención sostenida</div>
+      </div>
+      <div class="item-row alto">
+        <div class="item-dots">
+          <div class="dot on-teal"></div><div class="dot on-teal"></div><div class="dot on-teal"></div><div class="dot on-teal"></div><div class="dot off"></div>
+        </div>
+        <div class="item-text">Se recupera de distracciones</div>
+      </div>
+      <div class="item-row alto">
+        <div class="item-dots">
+          <div class="dot on-teal"></div><div class="dot on-teal"></div><div class="dot on-teal"></div><div class="dot on-teal"></div><div class="dot off"></div>
+        </div>
+        <div class="item-text">Precisión mental en momentos clave</div>
+      </div>
+
+      <!-- EMOCIONAL -->
+      <div class="item-row alto">
+        <div class="item-dots">
+          <div class="dot on-green"></div><div class="dot on-green"></div><div class="dot on-green"></div><div class="dot on-green"></div><div class="dot on-green"></div>
+        </div>
+        <div class="item-text">Control emocional ante errores/arbitraje</div>
+      </div>
+      <div class="item-row alto">
+        <div class="item-dots">
+          <div class="dot on-teal"></div><div class="dot on-teal"></div><div class="dot on-teal"></div><div class="dot on-teal"></div><div class="dot off"></div>
+        </div>
+        <div class="item-text">Transforma emociones en acción útil</div>
+      </div>
+      <div class="item-row medio">
+        <div class="item-dots">
+          <div class="dot on-amber"></div><div class="dot on-amber"></div><div class="dot on-amber"></div><div class="dot off"></div><div class="dot off"></div>
+        </div>
+        <div class="item-text">Celebra acciones como refuerzo positivo</div>
+      </div>
+      <div class="item-row bajo">
+        <div class="item-dots">
+          <div class="dot on-red"></div><div class="dot off"></div><div class="dot off"></div><div class="dot off"></div><div class="dot off"></div>
+        </div>
+        <div class="item-text">Usa autoinstrucciones para reenfocar</div>
+      </div>
+      <div class="item-row medio">
+        <div class="item-dots">
+          <div class="dot on-amber"></div><div class="dot on-amber"></div><div class="dot on-amber"></div><div class="dot off"></div><div class="dot off"></div>
+        </div>
+        <div class="item-text">Evita autodiálogo negativo</div>
+      </div>
+      <div class="item-row medio">
+        <div class="item-dots">
+          <div class="dot on-amber"></div><div class="dot on-amber"></div><div class="dot on-amber"></div><div class="dot off"></div><div class="dot off"></div>
+        </div>
+        <div class="item-text">Seguridad en adversidad</div>
+      </div>
+      <div class="item-row alto">
+        <div class="item-dots">
+          <div class="dot on-teal"></div><div class="dot on-teal"></div><div class="dot on-teal"></div><div class="dot on-teal"></div><div class="dot off"></div>
+        </div>
+        <div class="item-text">Persevera tras fallos</div>
+      </div>
+      <div class="item-row alto">
+        <div class="item-dots">
+          <div class="dot on-teal"></div><div class="dot on-teal"></div><div class="dot on-teal"></div><div class="dot on-teal"></div><div class="dot off"></div>
+        </div>
+        <div class="item-text">Disponible en momentos críticos</div>
+      </div>
+
+      <!-- CONDUCTUAL-SOCIAL -->
+      <div class="item-row alto">
+        <div class="item-dots">
+          <div class="dot on-teal"></div><div class="dot on-teal"></div><div class="dot on-teal"></div><div class="dot on-teal"></div><div class="dot off"></div>
+        </div>
+        <div class="item-text">Comunicación asertiva y respetuosa</div>
+      </div>
+      <div class="item-row alto">
+        <div class="item-dots">
+          <div class="dot on-teal"></div><div class="dot on-teal"></div><div class="dot on-teal"></div><div class="dot on-teal"></div><div class="dot off"></div>
+        </div>
+        <div class="item-text">Regula ambiente emocional del equipo</div>
+      </div>
+      <div class="item-row alto">
+        <div class="item-dots">
+          <div class="dot on-teal"></div><div class="dot on-teal"></div><div class="dot on-teal"></div><div class="dot on-teal"></div><div class="dot off"></div>
+        </div>
+        <div class="item-text">Apoya a compañeros</div>
+      </div>
+      <div class="item-row bajo">
+        <div class="item-dots">
+          <div class="dot on-red"></div><div class="dot on-red"></div><div class="dot off"></div><div class="dot off"></div><div class="dot off"></div>
+        </div>
+        <div class="item-text">Celebra logros colectivos</div>
+      </div>
+      <div class="item-row medio">
+        <div class="item-dots">
+          <div class="dot on-amber"></div><div class="dot on-amber"></div><div class="dot on-amber"></div><div class="dot off"></div><div class="dot off"></div>
+        </div>
+        <div class="item-text">Serenidad bajo presión</div>
+      </div>
+      <div class="item-row alto">
+        <div class="item-dots">
+          <div class="dot on-green"></div><div class="dot on-green"></div><div class="dot on-green"></div><div class="dot on-green"></div><div class="dot on-green"></div>
+        </div>
+        <div class="item-text">Modela autocontrol y compromiso</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- HALLAZGO CENTRAL -->
+  <div class="section-title">Hallazgo central</div>
+  <div class="alert amber" style="margin-bottom:32px;">
+    <div class="alert-icon">💡</div>
+    <div><strong>Asimetría emocional:</strong> numero 35 tiene un <strong>control emocional externo excepcional</strong> (90%) — mantiene calma, no protesta, canaliza emociones bien. Pero <strong>no tiene herramientas internas para reenfocarse</strong> cuando pierde concentración (1/5 en autoinstrucciones). Se "porta bien" pero cuando pierde el foco no sabe cómo recuperarlo.</div>
+  </div>
+
+  <!-- FORTALEZAS Y ÁREAS CRÍTICAS -->
+  <div class="section-title">Lo que hace muy bien</div>
+  <div class="list-card">
+    <div class="list-item">
+      <div class="list-icon icon-green">😌</div>
+      <p><strong>Control emocional excepcional (90%) — SU MAYOR FORTALEZA</strong>Mantiene calma perfecta ante errores y arbitraje (5/5), y además canaliza esas emociones hacia esfuerzo útil (4/5). No explota, no reclama, y usa la emoción de forma funcional. Esto es raro y valioso.</p>
+    </div>
+    <div class="list-item">
+      <div class="list-icon icon-green">💬</div>
+      <p><strong>Comunicación proactiva (80%)</strong>Se comunica bien (4/5) y además usa esa comunicación para calmar o motivar al equipo (4/5). No solo habla — regula el clima emocional de forma activa.</p>
+    </div>
+    <div class="list-item">
+      <div class="list-icon icon-green">👤</div>
+      <p><strong>Modelo de compromiso (5/5)</strong>Ejemplifica autocontrol y compromiso de forma consistente. Es un referente de comportamiento para el equipo.</p>
+    </div>
+    <div class="list-item">
+      <div class="list-icon icon-green">🔄</div>
+      <p><strong>Capacidad de ajuste en tiempo real (4/5)</strong>Corrige errores durante el partido y aprende de lo que le pasa. Buena autorregulación cognitiva.</p>
+    </div>
+  </div>
+
+  <div class="section-title">Lo que necesita mejorar</div>
+  <div class="list-card">
+    <div class="list-item">
+      <div class="list-icon icon-red">🔧</div>
+      <p><strong>No tiene herramientas para reenfocarse (1/5) — CRÍTICO</strong>Cuando pierde concentración, no usa frases, gestos ni señales para volver al foco. Simplemente no tiene recursos conscientes. Controla perfecto hacia afuera pero no sabe cómo volver hacia adentro. Este es su déficit más urgente.</p>
+    </div>
+    <div class="list-item">
+      <div class="list-icon icon-red">👀</div>
+      <p><strong>Escanea de forma inconsistente (60%) — CRÍTICO PARA MEDIOCAMPISTA</strong>Escanea el campo antes de recibir y anticipa jugadas de forma intermitente (3/5 en ambos). A veces lo hace, a veces no. Como mediocampista necesita escanear SIEMPRE — su posición lo exige. Cuando recibe sin mirar, las decisiones son peores.</p>
+    </div>
+    <div class="list-item">
+      <div class="list-icon icon-amber">🎉</div>
+      <p><strong>Celebra poco con el equipo (2/5)</strong>Apoya bien tras errores ajenos (4/5) pero celebra poco los aciertos colectivos (2/5). Refuerza lo negativo pero no lo positivo. Esto puede afectar la percepción de cohesión del equipo con él.</p>
+    </div>
+  </div>
+
+  <!-- RECOMENDACIONES -->
+  <div class="section-title">Qué hacer con él</div>
+  <div class="rec-cards" style="margin-bottom:32px;">
+    <div class="rec-card teal">
+      <div class="rec-num">Prioridad 1 · Inmediato</div>
+      <h4>Enseñarle una frase de reenfoque</h4>
+      <p>Acordar con numero 35 <strong>una frase concreta</strong> para cuando pierde el foco. Ejemplos: "Reset — siguiente jugada", "Respira — foco aquí", "Calma — sigo". Practicarla en entrenamientos cada vez que falla. Combinarla con un gesto físico (respiración, señal con las manos). El objetivo es automatizarla.</p>
+    </div>
+    <div class="rec-card teal">
+      <div class="rec-num">Prioridad 2 · Inmediato para mediocampista</div>
+      <h4>Automatizar el escaneo visual</h4>
+      <p>Trabajar ejercicios donde <strong>antes de recibir el balón</strong> debe nombrar en voz alta dónde están sus salidas o referencias. En rondos o posesión, el entrenador pregunta "¿dónde está tu salida?" justo antes de que reciba. Si no puede responder, devuelve y escanea antes del siguiente. Video-análisis: mostrarle cuándo recibió sin mirar vs cuándo escaneó. Contrastar la calidad de las decisiones.</p>
+    </div>
+    <div class="rec-card amber">
+      <div class="rec-num">Prioridad 3 · Próximas semanas</div>
+      <h4>Reforzar celebración colectiva</h4>
+      <p>Conversación directa sobre la importancia de celebrar aciertos del equipo, no solo apoyar tras errores. Celebrar es liderazgo y cohesión. Observar y reforzar cuando celebra logros de compañeros.</p>
+    </div>
+  </div>
+
+  <!-- CONCLUSIÓN -->
+  <div class="conclusion-box">
+    <h3>En resumen</h3>
+    <p>numero 35 tiene un <strong>control emocional excepcional</strong> (90%) que es su mayor activo. Mantiene calma perfecta y canaliza emociones de forma funcional. Esto es raro y valioso, especialmente para un mediocampista que opera en zona de alta presión.</p>
+    <p>Sus dos áreas críticas son muy específicas y muy entrenables: <strong>(1) no tiene herramientas mentales para reenfocarse</strong> cuando pierde concentración (autoinstrucciones 1/5), y <strong>(2) escanea de forma inconsistente</strong> antes de recibir el balón (3/5). Como mediocampista, estas dos limitaciones afectan directamente su capacidad de anticipación y toma de decisiones.</p>
+    <p>Si aprende a <strong>usar una frase de reenfoque</strong> y automatiza el <strong>escaneo visual sistemático</strong>, su rendimiento mejorará significativamente. Tiene la base emocional perfecta — solo necesita herramientas conscientes para complementarla.</p>
+  </div>
+
+</div>
+
+<div class="footer">
+  Diagnóstico psicodeportivo · Instrumento ePsD · Evaluación individual · Marzo 2026
+</div>
+
+<button class="print-btn no-print" onclick="window.print()">🖨 Imprimir / Guardar PDF</button>
+
+<script>
+// RADAR
+new Chart(document.getElementById('radarChart').getContext('2d'), {
+  type: 'radar',
+  data: {
+    labels: ['Percepción','Decisiones','Atención','Gest.\nEmocional','Autodiálogo','Autoconfianza','Comunicación','Vínculo','Liderazgo'],
+    datasets: [{
+      label: 'numero 35',
+      data: [60, 70, 73.3, 90, 46.7, 73.3, 80, 60, 80],
+      backgroundColor: 'rgba(245,166,35,0.15)',
+      borderColor: 'rgba(245,166,35,0.9)',
+      borderWidth: 2,
+      pointBackgroundColor: 'rgba(245,166,35,1)',
+      pointBorderColor: '#fff',
+      pointRadius: 5,
+    }]
+  },
+  options: {
+    responsive: true,
+    maintainAspectRatio: false,
+    scales: {
+      r: {
+        beginAtZero: true,
+        max: 100,
+        min: 0,
+        ticks: {
+          stepSize: 25,
+          color: 'rgba(168,189,208,.6)',
+          font: { size: 10, family: 'Barlow' },
+          backdropColor: 'transparent'
+        },
+        grid: { color: 'rgba(255,255,255,.08)' },
+        angleLines: { color: 'rgba(255,255,255,.08)' },
+        pointLabels: {
+          color: '#A8BDD0',
+          font: { size: 11, family: 'Barlow', weight: '500' }
+        }
+      }
+    },
+    plugins: { legend: { display: false } }
+  }
+});
+
+// BAR CHART
+new Chart(document.getElementById('barChart').getContext('2d'), {
+  type: 'bar',
+  data: {
+    labels: ['Cognitivo', 'Emocional', 'Conductual-Social'],
+    datasets: [{
+      label: 'Porcentaje',
+      data: [68.6, 67.5, 73.3],
+      backgroundColor: [
+        'rgba(245,166,35,0.3)',
+        'rgba(245,166,35,0.3)',
+        'rgba(0,200,150,0.3)'
+      ],
+      borderColor: [
+        'rgba(245,166,35,1)',
+        'rgba(245,166,35,1)',
+        'rgba(0,200,150,1)'
+      ],
+      borderWidth: 2,
+    }]
+  },
+  options: {
+    responsive: true,
+    maintainAspectRatio: false,
+    scales: {
+      y: {
+        beginAtZero: true,
+        max: 100,
+        grid: { color: 'rgba(255,255,255,.06)' },
+        ticks: { color: '#A8BDD0', font: { size: 11, family: 'Barlow' }, callback: v => v + '%' },
+        border: { color: 'rgba(255,255,255,.1)' }
+      },
+      x: {
+        grid: { display: false },
+        ticks: { color: '#FFFFFF', font: { size: 11, family: 'Barlow', weight: '500' } },
+        border: { color: 'rgba(255,255,255,.1)' }
+      }
+    },
+    plugins: {
+      legend: { display: false },
+      tooltip: { callbacks: { label: c => ` ${c.raw}%` } }
+    }
+  }
+});
+</script>
+</body>
+</html>

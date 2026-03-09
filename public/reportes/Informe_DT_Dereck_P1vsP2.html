@@ -1,0 +1,488 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Informe Psicodeportivo — Dereck P1 vs P2</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;800;900&family=Barlow:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --navy:      #0D1B2A;
+    --card-bg:   #1A2E45;
+    --teal:      #00B4A0;
+    --teal-dark: #008A7A;
+    --green:     #00C896;
+    --amber:     #F5A623;
+    --red:       #E84444;
+    --white:     #FFFFFF;
+    --off:       #F0F4F8;
+    --muted:     #A8BDD0;
+  }
+
+  * { margin:0; padding:0; box-sizing:border-box; }
+
+  body {
+    background: var(--navy);
+    color: var(--white);
+    font-family: 'Barlow', sans-serif;
+    font-size: 15px;
+    line-height: 1.6;
+  }
+
+  @media print {
+    body { background:#fff; color:#111; }
+    .no-print { display:none !important; }
+    .card, .list-card, .chart-card, .rec-card, .alert-box { background:#f5f7fa !important; border:1px solid #ddd !important; }
+    .header { -webkit-print-color-adjust:exact; print-color-adjust:exact; }
+    .sub-bar-track, .dot, .domain-card { -webkit-print-color-adjust:exact; print-color-adjust:exact; }
+  }
+
+  .wrapper { max-width:980px; margin:0 auto; padding:0 20px 60px; }
+
+  /* HEADER */
+  .header {
+    background: linear-gradient(135deg, #0D1B2A 0%, #0d2a2a 55%, #0a1f2e 100%);
+    border-bottom: 3px solid var(--teal);
+    padding: 48px 20px 40px;
+    position: relative;
+    overflow: hidden;
+  }
+  .header::before {
+    content:'';
+    position:absolute; top:-80px; right:-80px;
+    width:340px; height:340px; border-radius:50%;
+    background: radial-gradient(circle, rgba(0,180,160,.1) 0%, transparent 70%);
+  }
+  .header-inner {
+    max-width:980px; margin:0 auto;
+    display:flex; align-items:center; justify-content:space-between;
+    gap:24px; flex-wrap:wrap; position:relative; z-index:1;
+  }
+  .badge {
+    display:inline-block;
+    background: var(--teal); color: var(--white);
+    font-family:'Barlow Condensed',sans-serif; font-weight:700;
+    font-size:11px; letter-spacing:2px; text-transform:uppercase;
+    padding:4px 12px; border-radius:2px; margin-bottom:12px;
+  }
+  .header h1 {
+    font-family:'Barlow Condensed',sans-serif;
+    font-size:52px; font-weight:900; line-height:1; letter-spacing:-1px;
+  }
+  .header h1 span { color: var(--teal); }
+  .header-sub { font-size:14px; color:var(--muted); margin-top:8px; font-weight:300; }
+  .header-meta { display:flex; gap:14px; flex-wrap:wrap; }
+  .meta-pill {
+    background:rgba(255,255,255,.06); border:1px solid rgba(255,255,255,.1);
+    border-radius:6px; padding:10px 16px; text-align:center; min-width:100px;
+  }
+  .meta-pill .label { font-size:10px; color:var(--muted); letter-spacing:1.5px; text-transform:uppercase; margin-bottom:4px; }
+  .meta-pill .value { font-family:'Barlow Condensed',sans-serif; font-size:17px; font-weight:700; line-height:1.2; }
+
+  /* SECTION TITLE */
+  .section-title {
+    font-family:'Barlow Condensed',sans-serif; font-size:22px; font-weight:800;
+    letter-spacing:1px; text-transform:uppercase; color:var(--teal);
+    margin:48px 0 20px; padding-bottom:10px;
+    border-bottom:1px solid rgba(0,180,160,.2);
+    display:flex; align-items:center; gap:10px;
+  }
+  .section-title::before {
+    content:''; display:inline-block; width:4px; height:22px;
+    background:var(--teal); border-radius:2px; flex-shrink:0;
+  }
+
+  /* CARD */
+  .card { background:var(--card-bg); border-radius:10px; padding:24px; border:1px solid rgba(255,255,255,.06); }
+
+  /* DOMAIN CARDS */
+  .domains-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:16px; margin-bottom:32px; }
+  .domain-card {
+    background:var(--card-bg); border-radius:10px; padding:22px 20px;
+    border-left:4px solid; position:relative; overflow:hidden;
+  }
+  .domain-card.red    { border-color:var(--red); }
+  .domain-card.amber  { border-color:var(--amber); }
+  .domain-card.verde  { border-color:var(--green); }
+  .domain-card .domain-name { font-family:'Barlow Condensed',sans-serif; font-size:12px; font-weight:700; letter-spacing:2px; text-transform:uppercase; color:var(--muted); margin-bottom:8px; }
+  .domain-card .domain-score { font-family:'Barlow Condensed',sans-serif; font-size:58px; font-weight:900; line-height:1; margin-bottom:4px; }
+  .domain-card.red   .domain-score { color:var(--red); }
+  .domain-card.amber .domain-score { color:var(--amber); }
+  .domain-card.verde .domain-score { color:var(--green); }
+  .domain-card .domain-pct  { font-size:12px; color:var(--muted); margin-bottom:10px; }
+  .domain-card .domain-label { font-size:12px; font-weight:600; color:var(--white); background:rgba(255,255,255,.07); padding:4px 10px; border-radius:4px; display:inline-block; line-height:1.4; }
+
+  /* TREND BOX */
+  .trend-box {
+    background:rgba(255,255,255,.05); border-radius:8px; padding:16px 20px; margin-bottom:24px;
+    border-left:3px solid var(--red);
+  }
+  .trend-box .trend-title {
+    font-family:'Barlow Condensed',sans-serif; font-size:13px; font-weight:700;
+    letter-spacing:1.5px; text-transform:uppercase; color:var(--red); margin-bottom:8px;
+  }
+  .trend-items { display:flex; gap:20px; flex-wrap:wrap; }
+  .trend-item { display:flex; align-items:center; gap:8px; }
+  .trend-arrow { font-size:20px; }
+  .trend-label { font-size:13px; color:var(--muted); }
+  .trend-value { font-family:'Barlow Condensed',sans-serif; font-size:16px; font-weight:700; }
+  .down-red { color:var(--red); }
+
+  /* CHARTS */
+  .charts-grid { display:grid; grid-template-columns:1fr 1fr; gap:20px; margin-bottom:32px; }
+  .chart-card { background:var(--card-bg); border-radius:10px; padding:24px; border:1px solid rgba(255,255,255,.06); }
+  .chart-card h3 { font-family:'Barlow Condensed',sans-serif; font-size:14px; font-weight:700; text-transform:uppercase; letter-spacing:1.5px; color:var(--muted); margin-bottom:20px; }
+  .chart-wrap { position:relative; height:280px; }
+
+  /* ALERT BOXES */
+  .alert {
+    border-radius:10px; padding:18px 20px; margin-bottom:20px;
+    display:flex; align-items:flex-start; gap:14px; border-left:4px solid;
+  }
+  .alert.teal   { background:rgba(0,180,160,.08); border-color:var(--teal); }
+  .alert.amber  { background:rgba(245,166,35,.08); border-color:var(--amber); }
+  .alert.red    { background:rgba(232,68,68,.08); border-color:var(--red); }
+  .alert-icon { font-size:24px; line-height:1; flex-shrink:0; }
+
+  /* LIST ITEMS */
+  .list-card { background:var(--card-bg); border-radius:10px; padding:24px; margin-bottom:24px; border:1px solid rgba(255,255,255,.06); }
+  .list-item { display:flex; align-items:flex-start; gap:14px; padding:16px 0; border-bottom:1px solid rgba(255,255,255,.05); }
+  .list-item:last-child { border:none; padding-bottom:0; }
+  .list-icon { font-size:28px; line-height:1; flex-shrink:0; width:40px; height:40px; border-radius:8px; display:flex; align-items:center; justify-content:center; }
+  .icon-green { background:rgba(0,200,150,.15); }
+  .icon-red   { background:rgba(232,68,68,.15); }
+  .icon-amber { background:rgba(245,166,35,.15); }
+  .list-item p { flex:1; font-size:14px; line-height:1.6; }
+  .list-item strong { display:block; font-weight:600; margin-bottom:4px; }
+
+  /* REC CARDS */
+  .rec-cards { display:grid; grid-template-columns:1fr; gap:16px; }
+  .rec-card {
+    background:var(--card-bg); border-radius:10px; padding:22px 24px;
+    border-left:4px solid; border:1px solid rgba(255,255,255,.06);
+  }
+  .rec-card.teal  { border-left:4px solid var(--teal); }
+  .rec-card.amber { border-left:4px solid var(--amber); }
+  .rec-num {
+    font-family:'Barlow Condensed',sans-serif; font-size:11px; font-weight:700;
+    letter-spacing:1.5px; text-transform:uppercase; color:var(--muted); margin-bottom:10px;
+  }
+  .rec-card h4 {
+    font-family:'Barlow Condensed',sans-serif; font-size:18px; font-weight:700;
+    margin-bottom:10px; color:var(--white);
+  }
+  .rec-card p { font-size:14px; line-height:1.6; color:rgba(255,255,255,.85); }
+
+  /* TWO COL */
+  .two-col { display:grid; grid-template-columns:1fr 1fr; gap:20px; }
+
+  /* CONCLUSION BOX */
+  .conclusion-box {
+    background:var(--card-bg); border-radius:10px; padding:28px 32px;
+    border:1px solid rgba(232,68,68,.3); margin-bottom:32px;
+  }
+  .conclusion-box h3 {
+    font-family:'Barlow Condensed',sans-serif; font-size:20px; font-weight:800;
+    letter-spacing:1px; color:var(--red); margin-bottom:16px;
+  }
+  .conclusion-box p { font-size:14px; line-height:1.7; margin-bottom:14px; }
+  .conclusion-box p:last-child { margin-bottom:0; }
+
+  /* FOOTER */
+  .footer {
+    text-align:center; padding:24px; font-size:12px; color:var(--muted);
+    border-top:1px solid rgba(255,255,255,.06); margin-top:60px;
+  }
+
+  /* PRINT BUTTON */
+  .print-btn {
+    position:fixed; bottom:30px; right:30px; z-index:9999;
+    background:var(--teal); color:var(--white); border:none; border-radius:8px;
+    padding:14px 24px; font-family:'Barlow',sans-serif; font-size:15px; font-weight:600;
+    cursor:pointer; box-shadow:0 4px 20px rgba(0,180,160,.3);
+    transition:all 0.2s;
+  }
+  .print-btn:hover { background:var(--teal-dark); transform:translateY(-2px); box-shadow:0 6px 25px rgba(0,180,160,.4); }
+
+  @media (max-width: 768px) {
+    .domains-grid { grid-template-columns:1fr; }
+    .charts-grid { grid-template-columns:1fr; }
+    .two-col { grid-template-columns:1fr; }
+    .header h1 { font-size:36px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-inner">
+    <div>
+      <div class="badge">Análisis Comparativo</div>
+      <h1>DERECK: <span>P1 vs SEMIFINAL</span></h1>
+      <div class="header-sub">Instrumento ePsD · Marzo 2026</div>
+    </div>
+    <div class="header-meta">
+      <div class="meta-pill">
+        <div class="label">Posición</div>
+        <div class="value">DEF</div>
+      </div>
+      <div class="meta-pill">
+        <div class="label">Edad</div>
+        <div class="value">13 años</div>
+      </div>
+      <div class="meta-pill">
+        <div class="label">Equipo</div>
+        <div class="value">Futbol Elite</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="wrapper">
+
+  <!-- COMPARACIÓN DE DOMINIOS -->
+  <div class="section-title">Comparación P1 → Semifinal (P2)</div>
+  <div class="domains-grid">
+    <div class="domain-card red">
+      <div class="domain-name">Cognitivo</div>
+      <div class="domain-score">▼ 26%</div>
+      <div class="domain-pct">89% → 63%</div>
+      <div class="domain-label">Deterioro Severo</div>
+    </div>
+    <div class="domain-card red">
+      <div class="domain-name">Emocional</div>
+      <div class="domain-score">▼ 18%</div>
+      <div class="domain-pct">70% → 53%</div>
+      <div class="domain-label">Deterioro Relevante</div>
+    </div>
+    <div class="domain-card red">
+      <div class="domain-name">Conductual-Social</div>
+      <div class="domain-score">▼ 27%</div>
+      <div class="domain-pct">87% → 60%</div>
+      <div class="domain-label">Deterioro Severo</div>
+    </div>
+  </div>
+
+  <div class="trend-box">
+    <div class="trend-title">⚠️ Cambios más dramáticos</div>
+    <div class="trend-items">
+      <div class="trend-item">
+        <span class="trend-label">Liderazgo:</span>
+        <span class="trend-arrow down-red">▼</span>
+        <span class="trend-value down-red">-50%</span>
+      </div>
+      <div class="trend-item">
+        <span class="trend-label">Toma decisiones:</span>
+        <span class="trend-arrow down-red">▼</span>
+        <span class="trend-value down-red">-30%</span>
+      </div>
+      <div class="trend-item">
+        <span class="trend-label">Gestión emocional:</span>
+        <span class="trend-arrow down-red">▼</span>
+        <span class="trend-value down-red">-30%</span>
+      </div>
+      <div class="trend-item">
+        <span class="trend-label">Control atención:</span>
+        <span class="trend-arrow down-red">▼</span>
+        <span class="trend-value down-red">-27%</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="alert red">
+    <div class="alert-icon">🚨</div>
+    <div><strong>Hallazgo central:</strong> Dereck <strong>colapsó bajo la presión de la semifinal</strong>. Todo lo que funcionaba bien en P1 (liderazgo 100%, atención 93%, decisiones 90%) se desplomó en P2. No es que no pueda — es que <strong>no tiene herramientas para mantener el nivel cuando la presión sube</strong>.</div>
+  </div>
+
+  <!-- GRÁFICOS COMPARATIVOS -->
+  <div class="section-title">Análisis visual comparativo</div>
+  <div class="charts-grid">
+    <div class="chart-card">
+      <h3>Comparación por subdimensión</h3>
+      <div class="chart-wrap">
+        <canvas id="comparisonChart"></canvas>
+      </div>
+    </div>
+    <div class="chart-card">
+      <h3>Perfil Semifinal (P2)</h3>
+      <div class="chart-wrap">
+        <canvas id="radarChart"></canvas>
+      </div>
+    </div>
+  </div>
+
+  <!-- QUÉ PASÓ EN LA SEMIFINAL -->
+  <div class="section-title">Qué pasó en la semifinal</div>
+  <div class="list-card">
+    <div class="list-item">
+      <div class="list-icon icon-red">👑</div>
+      <p><strong>Liderazgo colapsó: 100% → 50% (▼-50%) — LO MÁS GRAVE</strong>Serenidad bajo presión 5→2 (nivel bajo). Modelaje 5→3. El jugador que en P1 era ancla emocional del equipo, en semifinal se descompuso y contagió nerviosismo. El liderazgo que era su mayor activo se fragmentó completamente.</p>
+    </div>
+    <div class="list-item">
+      <div class="list-icon icon-red">😤</div>
+      <p><strong>Control emocional colapsó: 5→2 — CRÍTICO</strong>Gestión emocional cayó de perfecta (5/5) a nivel bajo (2/5). Reacciones exageradas ante errores, frustración prolongada, afectó el flujo del juego. En P1 mantenía calma perfecta, en P2 explotó cuando las cosas no salieron.</p>
+    </div>
+    <div class="list-item">
+      <div class="list-icon icon-red">⚡</div>
+      <p><strong>Decisiones colapsaron: 90% → 60% (▼-30%)</strong>Decide peor (5→3) y no corrige errores (4→3). En P1 tomaba decisiones rápidas y precisas, en P2 las decisiones fueron erráticas y no ajustaba cuando fallaba. Crítico para un defensa bajo presión.</p>
+    </div>
+    <div class="list-item">
+      <div class="list-icon icon-red">🧠</div>
+      <p><strong>Atención colapsó: 93% → 67% (▼-27%)</strong>Atención sostenida 5→3, recuperación 4→3, precisión 5→4. Todo el control atencional que en P1 era su fortaleza máxima se deterioró. Hubo lapsos largos de desconexión que no existían en P1.</p>
+    </div>
+  </div>
+
+  <!-- LO ÚNICO QUE RESISTIÓ -->
+  <div class="section-title">Lo que resistió relativamente</div>
+  <div class="list-card">
+    <div class="list-item">
+      <div class="list-icon icon-amber">💪</div>
+      <p><strong>Autoconfianza: 73% → 67% (▼-7%)</strong>Es el área que mejor aguantó. Seguridad en adversidad incluso mejoró (3→4), como si intentara forzar protagonismo. Aunque perseverancia cayó (5→3), no se rindió.</p>
+    </div>
+    <div class="list-item">
+      <div class="list-icon icon-amber">🤝</div>
+      <p><strong>Vínculo con equipo: 80% → 70% (▼-10%)</strong>Mantuvo conexión básica con compañeros. No se aisló. Apoyo se mantuvo (3→3) y celebración bajó poco (5→4). Aunque dejó de ser ancla emocional, no se desconectó del equipo.</p>
+    </div>
+  </div>
+
+  <!-- POR QUÉ PASÓ ESTO -->
+  <div class="section-title">Por qué pasó esto</div>
+  <div class="alert amber" style="margin-bottom:32px;">
+    <div class="alert-icon">💡</div>
+    <div><strong>Explicación central:</strong> Dereck <strong>no tiene herramientas mentales para reenfocarse cuando pierde control</strong>. Autoinstrucciones 1/5 tanto en P1 como en P2 — este déficit es estructural y consistente. Cuando el control emocional falló (5→2), no tenía nada que hacer para recuperarlo. Sin herramientas conscientes de reenfoque, <strong>el colapso se propagó sin freno</strong> a todas las áreas. La presión de la semifinal desató el deterioro y la ausencia de herramientas lo dejó correr.</div>
+  </div>
+
+  <!-- QUÉ HACER -->
+  <div class="section-title">Qué hacer URGENTE antes del próximo partido importante</div>
+  <div class="rec-cards" style="margin-bottom:32px;">
+    <div class="rec-card teal">
+      <div class="rec-num">Prioridad 1 · URGENTE para próximo partido de presión</div>
+      <h4>Enseñarle una frase de reenfoque YA</h4>
+      <p>Acordar con Dereck <strong>una frase concreta</strong> para cuando sienta presión o cometa errores. Ejemplos: <strong>"Respira — uno a la vez"</strong>, <strong>"Reset — siguiente jugada"</strong>, <strong>"Calma — sigo aquí"</strong>. Practicar en entrenamientos de alta intensidad. Combinar con respiración profunda o gesto físico. Sin esta herramienta, el patrón se va a repetir en el próximo partido importante. Esta es la intervención MÁS urgente.</p>
+    </div>
+    <div class="rec-card teal">
+      <div class="rec-num">Prioridad 2 · URGENTE antes de próxima semifinal/final</div>
+      <h4>Protocolo de control emocional cuando se frustra</h4>
+      <p>Acordar una respuesta específica para cuando pierde el control emocional (que fue donde colapsó: 5→2). Puede ser <strong>3 respiraciones profundas</strong>, una palabra clave como <strong>"CALMA"</strong>, o un gesto. Lo crítico es que sea practicada en entrenamientos cuando falla. Ahora mismo no tiene nada — y cuando llegó la frustración de la semifinal, se ahogó sin recursos.</p>
+    </div>
+    <div class="rec-card amber">
+      <div class="rec-num">Prioridad 3 · Próximas semanas</div>
+      <h4>Simular presión en entrenamiento</h4>
+      <p>Crear situaciones que repliquen la presión de semifinal: marcador adverso con tiempo limitado, consecuencias reales por errores, "público" simulado. El objetivo es exponer a Dereck a presión controlada donde pueda <strong>practicar mantener control</strong> sin que sea en partido real. No esperar hasta la próxima semifinal para probar si tiene herramientas.</p>
+    </div>
+  </div>
+
+  <!-- CONCLUSIÓN PARA EL DT -->
+  <div class="conclusion-box">
+    <h3>En resumen para el DT</h3>
+    <p>Dereck no es un jugador sin talento ni compromiso — en el Partido 1 estuvo al 89% en lo cognitivo, 100% en liderazgo, 93% en atención. <strong>Esa capacidad existe</strong>.</p>
+    <p>Lo que pasó en la semifinal fue un <strong>colapso sistémico bajo presión extrema</strong>. Todo lo que funcionaba en P1 se desplomó en P2: liderazgo -50%, control emocional 5→2, decisiones -30%, atención -27%. No es falta de capacidad — es <strong>falta de herramientas para mantener esa capacidad cuando la presión sube</strong>.</p>
+    <p>El problema central es que <strong>no tiene herramientas conscientes de reenfoque</strong> (autoinstrucciones 1/5 en ambos partidos). Cuando el control emocional falló, no tenía recursos para recuperarlo. El colapso se propagó sin freno porque no sabía cómo detenerlo.</p>
+    <p><strong>Sin intervención urgente, esto se va a repetir</strong> en el próximo partido de alta presión. Con trabajo dirigido — principalmente enseñarle una frase de reenfoque y un protocolo de control emocional — puede aprender a mantener su nivel de P1 incluso en semifinales.</p>
+    <p><strong>Acción inmediata requerida:</strong> antes del próximo partido importante, enseñarle herramientas conscientes de reenfoque. No es opcional — es urgente.</p>
+  </div>
+
+</div>
+
+<div class="footer">
+  Diagnóstico psicodeportivo · Instrumento ePsD · Análisis comparativo P1 vs P2 (Semifinal) · Marzo 2026
+</div>
+
+<button class="print-btn no-print" onclick="window.print()">🖨 Imprimir / Guardar PDF</button>
+
+<script>
+// COMPARISON CHART
+new Chart(document.getElementById('comparisonChart').getContext('2d'), {
+  type: 'bar',
+  data: {
+    labels: ['Percepción\nentorno','Toma de\ndecisiones','Control\natencional','Gestión\nemocional','Autodiálogo','Autoconfianza','Comunicación','Vínculo','Liderazgo'],
+    datasets: [
+      {
+        label: 'Partido 1',
+        data: [80, 90, 93.3, 80, 60, 73.3, 80, 80, 100],
+        backgroundColor: 'rgba(168,189,208,0.3)',
+        borderColor: 'rgba(168,189,208,0.8)',
+        borderWidth: 2,
+      },
+      {
+        label: 'Semifinal (P2)',
+        data: [60, 60, 66.7, 50, 40, 66.7, 60, 70, 50],
+        backgroundColor: 'rgba(232,68,68,0.3)',
+        borderColor: 'rgba(232,68,68,1)',
+        borderWidth: 2,
+      }
+    ]
+  },
+  options: {
+    responsive: true,
+    maintainAspectRatio: false,
+    scales: {
+      y: {
+        beginAtZero: true,
+        max: 100,
+        grid: { color: 'rgba(255,255,255,.06)' },
+        ticks: { color: '#A8BDD0', font: { size: 11, family: 'Barlow' }, callback: v => v + '%' },
+        border: { color: 'rgba(255,255,255,.1)' }
+      },
+      x: {
+        grid: { display: false },
+        ticks: { color: '#FFFFFF', font: { size: 10, family: 'Barlow', weight: '500' } },
+        border: { color: 'rgba(255,255,255,.1)' }
+      }
+    },
+    plugins: {
+      legend: {
+        display: true,
+        position: 'bottom',
+        labels: { color: '#A8BDD0', font: { size: 12, family: 'Barlow' }, padding: 15 }
+      },
+      tooltip: { callbacks: { label: c => ` ${c.dataset.label}: ${c.raw}%` } }
+    }
+  }
+});
+
+// RADAR
+new Chart(document.getElementById('radarChart').getContext('2d'), {
+  type: 'radar',
+  data: {
+    labels: ['Percepción','Decisiones','Atención','Gest.\nEmocional','Autodiálogo','Autoconfianza','Comunicación','Vínculo','Liderazgo'],
+    datasets: [{
+      label: 'Dereck Semifinal',
+      data: [60, 60, 66.7, 50, 40, 66.7, 60, 70, 50],
+      backgroundColor: 'rgba(232,68,68,0.15)',
+      borderColor: 'rgba(232,68,68,0.9)',
+      borderWidth: 2,
+      pointBackgroundColor: 'rgba(232,68,68,1)',
+      pointBorderColor: '#fff',
+      pointRadius: 5,
+    }]
+  },
+  options: {
+    responsive: true,
+    maintainAspectRatio: false,
+    scales: {
+      r: {
+        beginAtZero: true,
+        max: 100,
+        min: 0,
+        ticks: {
+          stepSize: 25,
+          color: 'rgba(168,189,208,.6)',
+          font: { size: 10, family: 'Barlow' },
+          backdropColor: 'transparent'
+        },
+        grid: { color: 'rgba(255,255,255,.08)' },
+        angleLines: { color: 'rgba(255,255,255,.08)' },
+        pointLabels: {
+          color: '#A8BDD0',
+          font: { size: 11, family: 'Barlow', weight: '500' }
+        }
+      }
+    },
+    plugins: { legend: { display: false } }
+  }
+});
+</script>
+</body>
+</html>
