@@ -7,7 +7,7 @@ import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { getUserConfig } from './academyConfig';
 import {
     Brain, ArrowLeft, Edit3, Save, X, Upload, FileText, Plus,
-    Calendar, Clock, CheckCircle, Circle, User, Loader, Trash2
+    Calendar, Clock, CheckCircle, Circle, User, Loader, Trash2, Shield
 } from 'lucide-react';
 
 export default function PlayerDetail() {
@@ -44,6 +44,9 @@ export default function PlayerDetail() {
     const [newPhotoPreview, setNewPhotoPreview] = useState(null);
 
     const tiposSesion = ['Evaluación', 'Intervención', 'Seguimiento', 'Sesión grupal'];
+    const cargos = ['Director Técnico', 'Asistente Técnico', 'Preparador Físico', 'Kinesiólogo', 'Coordinador'];
+    const isStaff = player?.tipo === 'staff';
+    const accentColor = isStaff ? '#F59E0B' : '#0070F3';
 
     // Fetch player data
     const fetchPlayer = async () => {
@@ -101,11 +104,16 @@ export default function PlayerDetail() {
                 photoURL = await getDownloadURL(snap.ref);
             }
 
-            await updateDoc(doc(db, 'jugadores', id), {
+            const updateData = {
                 nombre: editData.nombre,
-                categoria: editData.categoria,
                 photoURL
-            });
+            };
+            if (isStaff) {
+                updateData.cargo = editData.cargo;
+            } else {
+                updateData.categoria = editData.categoria;
+            }
+            await updateDoc(doc(db, 'jugadores', id), updateData);
 
             setEditing(false);
             setNewPhotoFile(null);
@@ -266,7 +274,7 @@ export default function PlayerDetail() {
                                 <img src={player.photoURL} alt={player.nombre} className="w-full h-full object-cover object-top" />
                             ) : (
                                 <div className="w-full h-full flex items-center justify-center">
-                                    <User size={64} className="text-white/10" />
+                                    {isStaff ? <Shield size={64} className="text-[#F59E0B]/10" /> : <User size={64} className="text-white/10" />}
                                 </div>
                             )}
                         </div>
@@ -281,8 +289,21 @@ export default function PlayerDetail() {
                                         onChange={(e) => setEditData({ ...editData, nombre: e.target.value })}
                                         className="w-full bg-[#0A0F1E] border border-white/10 rounded-xl px-4 py-3 text-white text-lg font-bold outline-none focus:border-[#0070F3]"
                                     />
-                                    <div className="flex gap-2">
-                                        {['Sub-13', 'Sub-15', 'Sub-17', 'Sub-20'].map(cat => (
+                                    <div className="flex flex-wrap gap-2">
+                                        {isStaff ? cargos.map(cargo => (
+                                            <button
+                                                key={cargo}
+                                                type="button"
+                                                onClick={() => setEditData({ ...editData, cargo })}
+                                                className={`px-3 py-2 rounded-lg border text-xs font-bold transition-all ${
+                                                    editData.cargo === cargo
+                                                        ? 'bg-[#F59E0B]/10 text-[#F59E0B] border-[#F59E0B]'
+                                                        : 'bg-[#0A0F1E] border-white/10 text-[#6B7280]'
+                                                }`}
+                                            >
+                                                {cargo}
+                                            </button>
+                                        )) : ['Sub-13', 'Sub-15', 'Sub-17', 'Sub-20'].map(cat => (
                                             <button
                                                 key={cat}
                                                 type="button"
@@ -313,8 +334,8 @@ export default function PlayerDetail() {
                                         <div>
                                             <h2 className="text-2xl font-black text-white">{player.nombre}</h2>
                                             <div className="flex items-center gap-3 mt-1">
-                                                <span className="bg-[#0070F3]/10 text-[#0070F3] text-[10px] font-black tracking-widest uppercase px-3 py-1 rounded-full border border-[#0070F3]/30">
-                                                    {player.categoria}
+                                                <span className={`text-[10px] font-black tracking-widest uppercase px-3 py-1 rounded-full border ${isStaff ? 'bg-[#F59E0B]/10 text-[#F59E0B] border-[#F59E0B]/30' : 'bg-[#0070F3]/10 text-[#0070F3] border-[#0070F3]/30'}`}>
+                                                    {isStaff ? (player.cargo || 'Staff') : player.categoria}
                                                 </span>
                                                 {player.academiaId && (
                                                     <span className="bg-[#39FF14]/10 text-[#39FF14] text-[10px] font-black tracking-widest uppercase px-3 py-1 rounded-full border border-[#39FF14]/30">
@@ -330,8 +351,8 @@ export default function PlayerDetail() {
                                         )}
                                     </div>
                                     <div className="flex items-center gap-2 mt-4 text-[#6B7280] text-xs">
-                                        <Brain size={12} className="text-[#0070F3]" />
-                                        <span>{reportes.length} reportes</span>
+                                        {isStaff ? <Shield size={12} className="text-[#F59E0B]" /> : <Brain size={12} className="text-[#0070F3]" />}
+                                        <span>{reportes.length} {isStaff ? 'documentos' : 'reportes'}</span>
                                         <span className="text-white/10">•</span>
                                         <Calendar size={12} className="text-[#0070F3]" />
                                         <span>{upcoming.length} sesiones programadas</span>
@@ -347,8 +368,8 @@ export default function PlayerDetail() {
                     <div className="lg:col-span-2">
                         <div className="flex items-center justify-between mb-4">
                             <h3 className="text-lg font-black text-white flex items-center gap-2">
-                                <FileText size={18} className="text-[#0070F3]" />
-                                Historial de Reportes
+                                <FileText size={18} className={`text-[${accentColor}]`} />
+                                {isStaff ? 'Documentos del Staff' : 'Historial de Reportes'}
                             </h3>
                             {isAdmin && (
                                 <button onClick={() => setShowAddReport(!showAddReport)} className="flex items-center gap-1.5 text-[10px] font-bold tracking-widest uppercase text-[#0070F3] hover:text-white transition-colors">

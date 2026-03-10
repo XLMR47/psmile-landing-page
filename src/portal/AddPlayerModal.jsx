@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { X, Upload, Plus, Loader, User, FileText } from 'lucide-react';
+import { X, Upload, Plus, Loader, User, FileText, Users, Shield } from 'lucide-react';
 import { db, storage } from '../firebase';
 import { collection, addDoc } from 'firebase/firestore';
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
@@ -11,9 +11,11 @@ export default function AddPlayerModal({ isOpen, onClose, onPlayerAdded }) {
     const userConfig = getUserConfig(currentUser?.email);
     const isAdmin = userConfig.role === 'admin';
 
+    const [tipo, setTipo] = useState('jugador'); // 'jugador' o 'staff'
     const [formData, setFormData] = useState({
         nombre: '',
         categoria: 'Sub-15',
+        cargo: 'Director Técnico',
         academiaId: isAdmin ? '' : userConfig.academiaId,
     });
     const [photoFile, setPhotoFile] = useState(null);
@@ -23,6 +25,7 @@ export default function AddPlayerModal({ isOpen, onClose, onPlayerAdded }) {
     const [error, setError] = useState('');
 
     const categorias = ['Sub-13', 'Sub-15', 'Sub-17', 'Sub-20'];
+    const cargos = ['Director Técnico', 'Asistente Técnico', 'Preparador Físico', 'Kinesiólogo', 'Coordinador'];
 
     const handlePhotoChange = (e) => {
         const file = e.target.files[0];
@@ -43,7 +46,7 @@ export default function AddPlayerModal({ isOpen, onClose, onPlayerAdded }) {
         e.preventDefault();
         if (!formData.nombre) return;
         if (isAdmin && !formData.academiaId) {
-            setError('Selecciona una academia para este jugador.');
+            setError('Selecciona una academia.');
             return;
         }
         setLoading(true);
@@ -53,7 +56,7 @@ export default function AddPlayerModal({ isOpen, onClose, onPlayerAdded }) {
             let photoURL = '';
             let reporteURL = '';
 
-            // Upload foto a Firebase Storage
+            // Upload foto
             if (photoFile) {
                 const timestamp = Date.now();
                 const photoRef = ref(storage, `jugadores/fotos/${formData.academiaId}/${timestamp}_${photoFile.name}`);
@@ -61,29 +64,37 @@ export default function AddPlayerModal({ isOpen, onClose, onPlayerAdded }) {
                 photoURL = await getDownloadURL(snap.ref);
             }
 
-            // Upload reporte HTML a Firebase Storage
+            // Upload reporte
             if (reportFile) {
                 const timestamp = Date.now();
-                const reportRef = ref(storage, `jugadores/reportes/${formData.academiaId}/${timestamp}_${reportFile.name}`);
+                const folder = tipo === 'staff' ? 'staff' : 'reportes';
+                const reportRef = ref(storage, `jugadores/${folder}/${formData.academiaId}/${timestamp}_${reportFile.name}`);
                 const snap = await uploadBytes(reportRef, reportFile);
                 reporteURL = await getDownloadURL(snap.ref);
             }
 
             const playerData = {
                 nombre: formData.nombre,
-                categoria: formData.categoria,
+                tipo, // 'jugador' o 'staff'
                 academiaId: formData.academiaId,
                 photoURL,
                 reporteURL,
                 createdAt: new Date().toISOString()
             };
 
+            // Campos específicos por tipo
+            if (tipo === 'jugador') {
+                playerData.categoria = formData.categoria;
+            } else {
+                playerData.cargo = formData.cargo;
+            }
+
             const playerDoc = await addDoc(collection(db, 'jugadores'), playerData);
 
-            // Si se subió un reporte, también agregarlo al historial (sub-colección)
+            // Si se subió un reporte, agregarlo al historial
             if (reporteURL) {
                 await addDoc(collection(db, 'jugadores', playerDoc.id, 'reportes'), {
-                    titulo: `Evaluación Inicial`,
+                    titulo: tipo === 'staff' ? `Informe ${formData.cargo}` : 'Evaluación Inicial',
                     reporteURL,
                     fecha: new Date().toLocaleDateString('es-CL', { year: 'numeric', month: 'long', day: 'numeric' }),
                     createdAt: new Date().toISOString()
@@ -91,7 +102,8 @@ export default function AddPlayerModal({ isOpen, onClose, onPlayerAdded }) {
             }
 
             // Reset
-            setFormData({ nombre: '', categoria: 'Sub-15', academiaId: isAdmin ? '' : userConfig.academiaId });
+            setFormData({ nombre: '', categoria: 'Sub-15', cargo: 'Director Técnico', academiaId: isAdmin ? '' : userConfig.academiaId });
+            setTipo('jugador');
             setPhotoFile(null);
             setPhotoPreview(null);
             setReportFile(null);
@@ -99,7 +111,7 @@ export default function AddPlayerModal({ isOpen, onClose, onPlayerAdded }) {
             if (onPlayerAdded) onPlayerAdded();
             onClose();
         } catch (err) {
-            console.error('Error al guardar jugador:', err);
+            console.error('Error al guardar:', err);
             setError('Error al guardar: ' + err.message);
         } finally {
             setLoading(false);
@@ -114,7 +126,9 @@ export default function AddPlayerModal({ isOpen, onClose, onPlayerAdded }) {
                 {/* Header */}
                 <div className="sticky top-0 bg-[#111827] border-b border-white/5 p-6 flex items-center justify-between rounded-t-2xl z-10">
                     <div>
-                        <h3 className="text-xl font-black text-white">Añadir Jugador</h3>
+                        <h3 className="text-xl font-black text-white">
+                            {tipo === 'staff' ? 'Añadir Staff' : 'Añadir Jugador'}
+                        </h3>
                         <p className="text-[#6B7280] text-xs mt-1">Registro en el Sistema de Inteligencia Mental</p>
                     </div>
                     <button onClick={onClose} className="text-[#6B7280] hover:text-white transition-colors">
@@ -128,7 +142,38 @@ export default function AddPlayerModal({ isOpen, onClose, onPlayerAdded }) {
                         <div className="bg-red-500/10 border border-red-500/30 rounded-xl p-3 text-red-300 text-sm">{error}</div>
                     )}
 
-                    {/* Academia (solo admin ve esto) */}
+                    {/* Tipo: Jugador o Staff */}
+                    <div>
+                        <label className="block text-[10px] font-bold text-[#6B7280] tracking-[0.2em] uppercase mb-2">
+                            Tipo de Perfil
+                        </label>
+                        <div className="grid grid-cols-2 gap-2">
+                            <button
+                                type="button"
+                                onClick={() => setTipo('jugador')}
+                                className={`flex items-center justify-center gap-2 px-4 py-3 rounded-xl border text-xs font-bold transition-all ${
+                                    tipo === 'jugador'
+                                        ? 'bg-[#0070F3]/10 text-[#0070F3] border-[#0070F3] scale-[1.02]'
+                                        : 'bg-[#0A0F1E] border-white/10 text-[#6B7280] hover:border-white/20'
+                                }`}
+                            >
+                                <Users size={14} /> Jugador
+                            </button>
+                            <button
+                                type="button"
+                                onClick={() => setTipo('staff')}
+                                className={`flex items-center justify-center gap-2 px-4 py-3 rounded-xl border text-xs font-bold transition-all ${
+                                    tipo === 'staff'
+                                        ? 'bg-[#F59E0B]/10 text-[#F59E0B] border-[#F59E0B] scale-[1.02]'
+                                        : 'bg-[#0A0F1E] border-white/10 text-[#6B7280] hover:border-white/20'
+                                }`}
+                            >
+                                <Shield size={14} /> Staff / DT
+                            </button>
+                        </div>
+                    </div>
+
+                    {/* Academia (solo admin) */}
                     {isAdmin && (
                         <div>
                             <label className="block text-[10px] font-bold text-[#6B7280] tracking-[0.2em] uppercase mb-2">
@@ -156,7 +201,7 @@ export default function AddPlayerModal({ isOpen, onClose, onPlayerAdded }) {
                     {/* Nombre */}
                     <div>
                         <label className="block text-[10px] font-bold text-[#6B7280] tracking-[0.2em] uppercase mb-2">
-                            Nombre Completo
+                            {tipo === 'staff' ? 'Nombre del DT / Staff' : 'Nombre Completo'}
                         </label>
                         <input
                             type="text"
@@ -164,37 +209,61 @@ export default function AddPlayerModal({ isOpen, onClose, onPlayerAdded }) {
                             value={formData.nombre}
                             onChange={(e) => setFormData({ ...formData, nombre: e.target.value })}
                             className="w-full bg-[#0A0F1E] border border-white/10 rounded-xl px-4 py-3 text-white text-sm placeholder-white/20 outline-none focus:border-[#0070F3] transition-colors"
-                            placeholder="Nombre y apellido del jugador"
+                            placeholder={tipo === 'staff' ? 'Nombre del entrenador' : 'Nombre y apellido del jugador'}
                         />
                     </div>
 
-                    {/* Categoría */}
-                    <div>
-                        <label className="block text-[10px] font-bold text-[#6B7280] tracking-[0.2em] uppercase mb-2">
-                            Categoría
-                        </label>
-                        <div className="grid grid-cols-4 gap-2">
-                            {categorias.map((cat) => (
-                                <button
-                                    key={cat}
-                                    type="button"
-                                    onClick={() => setFormData({ ...formData, categoria: cat })}
-                                    className={`px-3 py-2.5 rounded-xl border text-xs font-bold transition-all ${
-                                        formData.categoria === cat
-                                            ? 'bg-[#0070F3]/10 text-[#0070F3] border-[#0070F3] scale-[1.02]'
-                                            : 'bg-[#0A0F1E] border-white/10 text-[#6B7280] hover:border-white/20'
-                                    }`}
-                                >
-                                    {cat}
-                                </button>
-                            ))}
+                    {/* Categoría (solo jugador) o Cargo (solo staff) */}
+                    {tipo === 'jugador' ? (
+                        <div>
+                            <label className="block text-[10px] font-bold text-[#6B7280] tracking-[0.2em] uppercase mb-2">
+                                Categoría
+                            </label>
+                            <div className="grid grid-cols-4 gap-2">
+                                {categorias.map((cat) => (
+                                    <button
+                                        key={cat}
+                                        type="button"
+                                        onClick={() => setFormData({ ...formData, categoria: cat })}
+                                        className={`px-3 py-2.5 rounded-xl border text-xs font-bold transition-all ${
+                                            formData.categoria === cat
+                                                ? 'bg-[#0070F3]/10 text-[#0070F3] border-[#0070F3] scale-[1.02]'
+                                                : 'bg-[#0A0F1E] border-white/10 text-[#6B7280] hover:border-white/20'
+                                        }`}
+                                    >
+                                        {cat}
+                                    </button>
+                                ))}
+                            </div>
                         </div>
-                    </div>
+                    ) : (
+                        <div>
+                            <label className="block text-[10px] font-bold text-[#6B7280] tracking-[0.2em] uppercase mb-2">
+                                Cargo
+                            </label>
+                            <div className="grid grid-cols-2 gap-2">
+                                {cargos.map((cargo) => (
+                                    <button
+                                        key={cargo}
+                                        type="button"
+                                        onClick={() => setFormData({ ...formData, cargo })}
+                                        className={`px-3 py-2.5 rounded-xl border text-xs font-bold transition-all ${
+                                            formData.cargo === cargo
+                                                ? 'bg-[#F59E0B]/10 text-[#F59E0B] border-[#F59E0B] scale-[1.02]'
+                                                : 'bg-[#0A0F1E] border-white/10 text-[#6B7280] hover:border-white/20'
+                                        }`}
+                                    >
+                                        {cargo}
+                                    </button>
+                                ))}
+                            </div>
+                        </div>
+                    )}
 
                     {/* Upload Foto */}
                     <div>
                         <label className="block text-[10px] font-bold text-[#6B7280] tracking-[0.2em] uppercase mb-2">
-                            Foto del Jugador
+                            {tipo === 'staff' ? 'Foto del DT' : 'Foto del Jugador'}
                         </label>
                         <label className="flex flex-col items-center justify-center w-full h-36 bg-[#0A0F1E] border-2 border-dashed border-white/10 rounded-xl cursor-pointer hover:border-[#0070F3]/50 transition-colors overflow-hidden group">
                             {photoPreview ? (
@@ -210,15 +279,15 @@ export default function AddPlayerModal({ isOpen, onClose, onPlayerAdded }) {
                         </label>
                     </div>
 
-                    {/* Upload Reporte */}
+                    {/* Upload Reporte/Documento */}
                     <div>
                         <label className="block text-[10px] font-bold text-[#6B7280] tracking-[0.2em] uppercase mb-2">
-                            Reporte de Análisis ePsD
+                            {tipo === 'staff' ? 'Documento / Informe' : 'Reporte de Análisis ePsD'}
                         </label>
                         <label className="flex items-center justify-center gap-3 w-full bg-[#0A0F1E] border border-dashed border-white/10 rounded-xl px-4 py-3.5 cursor-pointer hover:border-[#0070F3]/50 transition-colors group">
                             <FileText size={16} className="text-[#6B7280] group-hover:text-[#0070F3] transition-colors" />
                             <span className="text-xs text-[#6B7280] group-hover:text-white transition-colors truncate">
-                                {reportFile ? `📄 ${reportFile.name}` : 'Subir archivo HTML de ePsD'}
+                                {reportFile ? `📄 ${reportFile.name}` : (tipo === 'staff' ? 'Subir documento (HTML, PDF)' : 'Subir archivo HTML de ePsD')}
                             </span>
                             <input type="file" accept=".html,.htm,.pdf" className="hidden" onChange={handleReportChange} />
                         </label>
@@ -229,7 +298,11 @@ export default function AddPlayerModal({ isOpen, onClose, onPlayerAdded }) {
                     <button
                         type="submit"
                         disabled={loading || !formData.nombre}
-                        className="w-full bg-[#0070F3] hover:bg-[#0060D0] text-white font-black uppercase tracking-widest text-xs py-4 rounded-xl transition-all hover:scale-[1.02] shadow-lg shadow-[#0070F3]/20 flex items-center justify-center gap-2 disabled:opacity-50 disabled:hover:scale-100"
+                        className={`w-full font-black uppercase tracking-widest text-xs py-4 rounded-xl transition-all hover:scale-[1.02] shadow-lg flex items-center justify-center gap-2 disabled:opacity-50 disabled:hover:scale-100 ${
+                            tipo === 'staff'
+                                ? 'bg-[#F59E0B] hover:bg-[#D97706] text-black shadow-[#F59E0B]/20'
+                                : 'bg-[#0070F3] hover:bg-[#0060D0] text-white shadow-[#0070F3]/20'
+                        }`}
                     >
                         {loading ? (
                             <>
@@ -239,7 +312,7 @@ export default function AddPlayerModal({ isOpen, onClose, onPlayerAdded }) {
                         ) : (
                             <>
                                 <Plus size={16} />
-                                Registrar Jugador
+                                {tipo === 'staff' ? 'Registrar Staff' : 'Registrar Jugador'}
                             </>
                         )}
                     </button>
