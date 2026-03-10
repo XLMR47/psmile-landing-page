@@ -1,45 +1,106 @@
 import { useState } from 'react';
-import { X, Link as LinkIcon, Plus, Loader, User } from 'lucide-react';
-import { db } from '../firebase';
+import { X, Upload, Plus, Loader, User, FileText } from 'lucide-react';
+import { db, storage } from '../firebase';
 import { collection, addDoc } from 'firebase/firestore';
+import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
+import { useAuth } from '../contexts/AuthContext';
+import { getUserConfig, ACADEMIAS } from './academyConfig';
 
 export default function AddPlayerModal({ isOpen, onClose, onPlayerAdded }) {
+    const { currentUser } = useAuth();
+    const userConfig = getUserConfig(currentUser?.email);
+    const isAdmin = userConfig.role === 'admin';
+
     const [formData, setFormData] = useState({
         nombre: '',
         categoria: 'Sub-15',
-        photoURL: '',
-        reporteURL: ''
+        academiaId: isAdmin ? '' : userConfig.academiaId,
     });
+    const [photoFile, setPhotoFile] = useState(null);
+    const [photoPreview, setPhotoPreview] = useState(null);
+    const [reportFile, setReportFile] = useState(null);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
 
     const categorias = ['Sub-13', 'Sub-15', 'Sub-17', 'Sub-20'];
 
+    const handlePhotoChange = (e) => {
+        const file = e.target.files[0];
+        if (file) {
+            setPhotoFile(file);
+            const reader = new FileReader();
+            reader.onload = (ev) => setPhotoPreview(ev.target.result);
+            reader.readAsDataURL(file);
+        }
+    };
+
+    const handleReportChange = (e) => {
+        const file = e.target.files[0];
+        if (file) setReportFile(file);
+    };
+
     const handleSubmit = async (e) => {
         e.preventDefault();
         if (!formData.nombre) return;
+        if (isAdmin && !formData.academiaId) {
+            setError('Selecciona una academia para este jugador.');
+            return;
+        }
         setLoading(true);
         setError('');
 
         try {
+            let photoURL = '';
+            let reporteURL = '';
+
+            // Upload foto a Firebase Storage
+            if (photoFile) {
+                const timestamp = Date.now();
+                const photoRef = ref(storage, `jugadores/fotos/${formData.academiaId}/${timestamp}_${photoFile.name}`);
+                const snap = await uploadBytes(photoRef, photoFile);
+                photoURL = await getDownloadURL(snap.ref);
+            }
+
+            // Upload reporte HTML a Firebase Storage
+            if (reportFile) {
+                const timestamp = Date.now();
+                const reportRef = ref(storage, `jugadores/reportes/${formData.academiaId}/${timestamp}_${reportFile.name}`);
+                const snap = await uploadBytes(reportRef, reportFile);
+                reporteURL = await getDownloadURL(snap.ref);
+            }
+
             const playerData = {
                 nombre: formData.nombre,
                 categoria: formData.categoria,
-                photoURL: formData.photoURL || '',
-                reporteURL: formData.reporteURL || '',
+                academiaId: formData.academiaId,
+                photoURL,
+                reporteURL,
                 createdAt: new Date().toISOString()
             };
 
-            await addDoc(collection(db, 'jugadores'), playerData);
+            const playerDoc = await addDoc(collection(db, 'jugadores'), playerData);
 
-            // Reset form
-            setFormData({ nombre: '', categoria: 'Sub-15', photoURL: '', reporteURL: '' });
+            // Si se subió un reporte, también agregarlo al historial (sub-colección)
+            if (reporteURL) {
+                await addDoc(collection(db, 'jugadores', playerDoc.id, 'reportes'), {
+                    titulo: `Evaluación Inicial`,
+                    reporteURL,
+                    fecha: new Date().toLocaleDateString('es-CL', { year: 'numeric', month: 'long', day: 'numeric' }),
+                    createdAt: new Date().toISOString()
+                });
+            }
+
+            // Reset
+            setFormData({ nombre: '', categoria: 'Sub-15', academiaId: isAdmin ? '' : userConfig.academiaId });
+            setPhotoFile(null);
+            setPhotoPreview(null);
+            setReportFile(null);
 
             if (onPlayerAdded) onPlayerAdded();
             onClose();
         } catch (err) {
             console.error('Error al guardar jugador:', err);
-            setError('Error al guardar. Verifica tu conexión e inténtalo de nuevo.');
+            setError('Error al guardar: ' + err.message);
         } finally {
             setLoading(false);
         }
@@ -62,9 +123,34 @@ export default function AddPlayerModal({ isOpen, onClose, onPlayerAdded }) {
                 </div>
 
                 {/* Form */}
-                <form onSubmit={handleSubmit} className="p-6 space-y-6">
+                <form onSubmit={handleSubmit} className="p-6 space-y-5">
                     {error && (
                         <div className="bg-red-500/10 border border-red-500/30 rounded-xl p-3 text-red-300 text-sm">{error}</div>
+                    )}
+
+                    {/* Academia (solo admin ve esto) */}
+                    {isAdmin && (
+                        <div>
+                            <label className="block text-[10px] font-bold text-[#6B7280] tracking-[0.2em] uppercase mb-2">
+                                Academia
+                            </label>
+                            <div className="grid grid-cols-2 gap-2">
+                                {ACADEMIAS.map((ac) => (
+                                    <button
+                                        key={ac.id}
+                                        type="button"
+                                        onClick={() => setFormData({ ...formData, academiaId: ac.id })}
+                                        className={`px-4 py-3 rounded-xl border text-xs font-bold transition-all ${
+                                            formData.academiaId === ac.id
+                                                ? 'bg-[#39FF14]/10 text-[#39FF14] border-[#39FF14] scale-[1.02]'
+                                                : 'bg-[#0A0F1E] border-white/10 text-[#6B7280] hover:border-white/20'
+                                        }`}
+                                    >
+                                        {ac.nombre}
+                                    </button>
+                                ))}
+                            </div>
+                        </div>
                     )}
 
                     {/* Nombre */}
@@ -93,10 +179,11 @@ export default function AddPlayerModal({ isOpen, onClose, onPlayerAdded }) {
                                     key={cat}
                                     type="button"
                                     onClick={() => setFormData({ ...formData, categoria: cat })}
-                                    className={`px-3 py-2.5 rounded-xl border text-xs font-bold transition-all ${formData.categoria === cat
-                                        ? 'bg-[#0070F3]/10 text-[#0070F3] border-[#0070F3] scale-[1.02]'
-                                        : 'bg-[#0A0F1E] border-white/10 text-[#6B7280] hover:border-white/20'
-                                        }`}
+                                    className={`px-3 py-2.5 rounded-xl border text-xs font-bold transition-all ${
+                                        formData.categoria === cat
+                                            ? 'bg-[#0070F3]/10 text-[#0070F3] border-[#0070F3] scale-[1.02]'
+                                            : 'bg-[#0A0F1E] border-white/10 text-[#6B7280] hover:border-white/20'
+                                    }`}
                                 >
                                     {cat}
                                 </button>
@@ -104,48 +191,38 @@ export default function AddPlayerModal({ isOpen, onClose, onPlayerAdded }) {
                         </div>
                     </div>
 
-                    {/* Foto URL */}
+                    {/* Upload Foto */}
                     <div>
                         <label className="block text-[10px] font-bold text-[#6B7280] tracking-[0.2em] uppercase mb-2">
-                            Foto del Jugador (URL)
+                            Foto del Jugador
                         </label>
-                        <div className="flex gap-3 items-start">
-                            <div className="w-16 h-16 bg-[#0A0F1E] border border-white/10 rounded-xl flex items-center justify-center shrink-0 overflow-hidden">
-                                {formData.photoURL ? (
-                                    <img src={formData.photoURL} alt="Preview" className="w-full h-full object-cover" onError={(e) => { e.target.style.display = 'none'; }} />
-                                ) : (
-                                    <User size={24} className="text-white/10" />
-                                )}
-                            </div>
-                            <div className="flex-1">
-                                <input
-                                    type="url"
-                                    value={formData.photoURL}
-                                    onChange={(e) => setFormData({ ...formData, photoURL: e.target.value })}
-                                    className="w-full bg-[#0A0F1E] border border-white/10 rounded-xl px-4 py-3 text-white text-sm placeholder-white/20 outline-none focus:border-[#0070F3] transition-colors"
-                                    placeholder="https://drive.google.com/... o URL de imagen"
-                                />
-                                <p className="text-[10px] text-[#4B5563] mt-1.5">Pega un enlace de Google Drive, Instagram o cualquier URL de imagen</p>
-                            </div>
-                        </div>
+                        <label className="flex flex-col items-center justify-center w-full h-36 bg-[#0A0F1E] border-2 border-dashed border-white/10 rounded-xl cursor-pointer hover:border-[#0070F3]/50 transition-colors overflow-hidden group">
+                            {photoPreview ? (
+                                <img src={photoPreview} alt="Preview" className="w-full h-full object-cover" />
+                            ) : (
+                                <div className="text-center">
+                                    <Upload size={22} className="mx-auto text-[#6B7280] group-hover:text-[#0070F3] transition-colors mb-2" />
+                                    <p className="text-xs text-[#6B7280]">Seleccionar imagen</p>
+                                    <p className="text-[10px] text-[#4B5563] mt-1">JPG, PNG — Máx 5MB</p>
+                                </div>
+                            )}
+                            <input type="file" accept="image/*" className="hidden" onChange={handlePhotoChange} />
+                        </label>
                     </div>
 
-                    {/* Reporte URL */}
+                    {/* Upload Reporte */}
                     <div>
                         <label className="block text-[10px] font-bold text-[#6B7280] tracking-[0.2em] uppercase mb-2">
                             Reporte de Análisis ePsD
                         </label>
-                        <div className="relative">
-                            <LinkIcon className="absolute left-3 top-1/2 -translate-y-1/2 text-[#4B5563]" size={16} />
-                            <input
-                                type="text"
-                                value={formData.reporteURL}
-                                onChange={(e) => setFormData({ ...formData, reporteURL: e.target.value })}
-                                className="w-full bg-[#0A0F1E] border border-white/10 rounded-xl pl-10 pr-4 py-3 text-white text-sm placeholder-white/20 outline-none focus:border-[#0070F3] transition-colors"
-                                placeholder="/reportes/emmanuel-martinez.html"
-                            />
-                        </div>
-                        <p className="text-[10px] text-[#4B5563] mt-1.5">Coloca el HTML en <span className="text-[#0070F3]">public/reportes/</span> y escribe <span className="text-white/40">/reportes/nombre.html</span></p>
+                        <label className="flex items-center justify-center gap-3 w-full bg-[#0A0F1E] border border-dashed border-white/10 rounded-xl px-4 py-3.5 cursor-pointer hover:border-[#0070F3]/50 transition-colors group">
+                            <FileText size={16} className="text-[#6B7280] group-hover:text-[#0070F3] transition-colors" />
+                            <span className="text-xs text-[#6B7280] group-hover:text-white transition-colors truncate">
+                                {reportFile ? `📄 ${reportFile.name}` : 'Subir archivo HTML de ePsD'}
+                            </span>
+                            <input type="file" accept=".html,.htm,.pdf" className="hidden" onChange={handleReportChange} />
+                        </label>
+                        <p className="text-[10px] text-[#4B5563] mt-1.5">El archivo se almacenará de forma segura en Firebase Storage</p>
                     </div>
 
                     {/* Submit */}
@@ -157,7 +234,7 @@ export default function AddPlayerModal({ isOpen, onClose, onPlayerAdded }) {
                         {loading ? (
                             <>
                                 <Loader size={16} className="animate-spin" />
-                                Guardando en base de datos...
+                                Subiendo archivos y guardando...
                             </>
                         ) : (
                             <>

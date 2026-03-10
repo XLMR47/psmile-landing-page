@@ -16,6 +16,7 @@ import Alliances from './components/Alliances';
 
 import LoginPage from './portal/LoginPage';
 import Dashboard from './portal/Dashboard';
+import PlayerDetail from './portal/PlayerDetail';
 import ProtectedRoute from './portal/ProtectedRoute';
 
 // Landing Page (página pública)
@@ -55,6 +56,14 @@ function App() {
         element={
           <ProtectedRoute>
             <Dashboard />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/portal/jugador/:id"
+        element={
+          <ProtectedRoute>
+            <PlayerDetail />
           </ProtectedRoute>
         }
       />

@@ -1,0 +1,1384 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Materiales de Sesión — Entrenador Bewe Fútbol</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=Lora:ital,wght@0,400;0,500;1,400&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --s1: #b83232; --s1-light: #fdf0f0; --s1-mid: #e8c0c0;
+  --s2: #1a7a6e; --s2-light: #edf8f7; --s2-mid: #b3ddd9;
+  --s3: #5c3d9e; --s3-light: #f3effe; --s3-mid: #c9b8f0;
+  --s4: #1f6b35; --s4-light: #edf7f0; --s4-mid: #b3d9be;
+  --ink: #1a1f2e; --muted: #6b7280; --border: #e2e8f0;
+  --paper: #fafbfc; --white: #ffffff;
+  --font-head: 'Syne', sans-serif;
+  --font-body: 'Lora', serif;
+  --font-mono: 'JetBrains Mono', monospace;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  font-family: var(--font-body);
+  background: var(--paper);
+  color: var(--ink);
+}
+
+/* ── NAV ──────────────────────────── */
+.nav {
+  position: sticky; top: 0; z-index: 100;
+  background: var(--ink);
+  display: flex; align-items: center;
+  padding: 0 32px;
+  height: 56px;
+  gap: 8px;
+}
+.nav-brand {
+  font-family: var(--font-head);
+  font-size: 13px; font-weight: 800;
+  color: white; letter-spacing: 2px;
+  text-transform: uppercase;
+  margin-right: auto;
+}
+.nav-tab {
+  padding: 6px 16px;
+  border-radius: 100px;
+  font-family: var(--font-head);
+  font-size: 12px; font-weight: 700;
+  cursor: pointer; transition: all 0.2s;
+  border: none; background: transparent;
+  color: rgba(255,255,255,0.5);
+  letter-spacing: 0.5px;
+}
+.nav-tab:hover { color: white; background: rgba(255,255,255,0.1); }
+.nav-tab.active { color: white; background: rgba(255,255,255,0.18); }
+.nav-tab[data-s="1"].active { background: var(--s1); color: white; }
+.nav-tab[data-s="2"].active { background: var(--s2); color: white; }
+.nav-tab[data-s="3"].active { background: var(--s3); color: white; }
+.nav-tab[data-s="4"].active { background: var(--s4); color: white; }
+
+.print-btn {
+  margin-left: 16px;
+  padding: 7px 18px;
+  background: white; color: var(--ink);
+  border: none; border-radius: 100px;
+  font-family: var(--font-head);
+  font-size: 12px; font-weight: 700;
+  cursor: pointer; transition: opacity 0.2s;
+  letter-spacing: 0.5px;
+}
+.print-btn:hover { opacity: 0.85; }
+
+/* ── HERO ──────────────────────────── */
+.hero {
+  background: var(--ink);
+  padding: 64px 48px 72px;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+.hero::before {
+  content: '';
+  position: absolute; inset: 0;
+  background: radial-gradient(ellipse 70% 90% at 30% 60%, rgba(92,61,158,0.15) 0%, transparent 60%),
+              radial-gradient(ellipse 50% 60% at 75% 20%, rgba(26,122,110,0.12) 0%, transparent 55%);
+}
+.hero-kicker {
+  font-family: var(--font-mono); font-size: 11px;
+  letter-spacing: 3px; color: rgba(255,255,255,0.4);
+  text-transform: uppercase; margin-bottom: 20px;
+  position: relative;
+}
+.hero h1 {
+  font-family: var(--font-head); font-size: clamp(36px, 6vw, 64px);
+  font-weight: 800; color: white; line-height: 1.05;
+  position: relative; margin-bottom: 16px;
+}
+.hero h1 em { font-style: normal; color: rgba(255,255,255,0.45); }
+.hero-sub {
+  font-family: var(--font-body); font-size: 17px;
+  font-style: italic; color: rgba(255,255,255,0.55);
+  position: relative; margin-bottom: 36px;
+}
+.session-pills {
+  display: flex; gap: 10px; justify-content: center;
+  flex-wrap: wrap; position: relative;
+}
+.pill {
+  padding: 8px 20px; border-radius: 100px;
+  font-family: var(--font-head); font-size: 12px; font-weight: 700;
+  cursor: pointer; transition: all 0.25s; border: 2px solid transparent;
+}
+.pill[data-s="1"] { background: rgba(184,50,50,0.25); color: #ff9999; border-color: rgba(184,50,50,0.4); }
+.pill[data-s="2"] { background: rgba(26,122,110,0.25); color: #7dd8d0; border-color: rgba(26,122,110,0.4); }
+.pill[data-s="3"] { background: rgba(92,61,158,0.25); color: #c4a8ff; border-color: rgba(92,61,158,0.4); }
+.pill[data-s="4"] { background: rgba(31,107,53,0.25); color: #88d4a0; border-color: rgba(31,107,53,0.4); }
+.pill:hover { transform: translateY(-2px); }
+
+/* ── SESSIONS ──────────────────────── */
+.session { display: none; max-width: 860px; margin: 0 auto; padding: 48px 32px 80px; }
+.session.active { display: block; }
+
+/* Session Header */
+.sess-header {
+  display: grid; grid-template-columns: 80px 1fr;
+  border-radius: 20px; overflow: hidden;
+  margin-bottom: 40px;
+  box-shadow: 0 4px 24px rgba(0,0,0,0.08);
+}
+.sess-num {
+  display: flex; align-items: center; justify-content: center;
+  font-family: var(--font-head); font-size: 42px; font-weight: 800;
+  color: white;
+}
+.sess-info { padding: 28px 32px; }
+.sess-kicker {
+  font-family: var(--font-mono); font-size: 10px;
+  letter-spacing: 2px; text-transform: uppercase;
+  margin-bottom: 8px; font-weight: 600;
+}
+.sess-title {
+  font-family: var(--font-head); font-size: 26px; font-weight: 800;
+  line-height: 1.1; margin-bottom: 6px;
+}
+.sess-subtitle {
+  font-family: var(--font-body); font-size: 15px;
+  font-style: italic;
+}
+
+[data-session="1"] .sess-num, [data-session="1"] .block-label, [data-session="1"] .step-num { background: var(--s1); }
+[data-session="1"] .sess-info { background: var(--s1-light); border-top: 1px solid var(--s1-mid); border-right: 1px solid var(--s1-mid); border-bottom: 1px solid var(--s1-mid); }
+[data-session="1"] .sess-kicker { color: var(--s1); }
+[data-session="1"] .sess-title { color: var(--s1); }
+[data-session="1"] .accent { color: var(--s1); }
+[data-session="1"] .tag { background: var(--s1-mid); color: var(--s1); }
+[data-session="1"] .block { border-left-color: var(--s1); }
+
+[data-session="2"] .sess-num, [data-session="2"] .block-label, [data-session="2"] .step-num { background: var(--s2); }
+[data-session="2"] .sess-info { background: var(--s2-light); border-top: 1px solid var(--s2-mid); border-right: 1px solid var(--s2-mid); border-bottom: 1px solid var(--s2-mid); }
+[data-session="2"] .sess-kicker { color: var(--s2); }
+[data-session="2"] .sess-title { color: var(--s2); }
+[data-session="2"] .accent { color: var(--s2); }
+[data-session="2"] .tag { background: var(--s2-mid); color: var(--s2); }
+[data-session="2"] .block { border-left-color: var(--s2); }
+
+[data-session="3"] .sess-num, [data-session="3"] .block-label, [data-session="3"] .step-num { background: var(--s3); }
+[data-session="3"] .sess-info { background: var(--s3-light); border-top: 1px solid var(--s3-mid); border-right: 1px solid var(--s3-mid); border-bottom: 1px solid var(--s3-mid); }
+[data-session="3"] .sess-kicker { color: var(--s3); }
+[data-session="3"] .sess-title { color: var(--s3); }
+[data-session="3"] .accent { color: var(--s3); }
+[data-session="3"] .tag { background: var(--s3-mid); color: var(--s3); }
+[data-session="3"] .block { border-left-color: var(--s3); }
+
+[data-session="4"] .sess-num, [data-session="4"] .block-label, [data-session="4"] .step-num { background: var(--s4); }
+[data-session="4"] .sess-info { background: var(--s4-light); border-top: 1px solid var(--s4-mid); border-right: 1px solid var(--s4-mid); border-bottom: 1px solid var(--s4-mid); }
+[data-session="4"] .sess-kicker { color: var(--s4); }
+[data-session="4"] .sess-title { color: var(--s4); }
+[data-session="4"] .accent { color: var(--s4); }
+[data-session="4"] .tag { background: var(--s4-mid); color: var(--s4); }
+[data-session="4"] .block { border-left-color: var(--s4); }
+
+/* ── MATERIAL BLOCKS ───────────────── */
+.mat-section { margin-bottom: 40px; }
+.mat-section-title {
+  font-family: var(--font-head); font-size: 11px; font-weight: 700;
+  letter-spacing: 3px; text-transform: uppercase;
+  color: var(--muted); margin-bottom: 16px;
+  display: flex; align-items: center; gap: 8px;
+}
+.mat-section-title::after {
+  content: ''; flex: 1; height: 1px; background: var(--border);
+}
+
+/* Block (ficha / card) */
+.block {
+  background: white; border-radius: 16px;
+  border: 1px solid var(--border); border-left: 4px solid;
+  overflow: hidden; margin-bottom: 16px;
+  box-shadow: 0 1px 8px rgba(0,0,0,0.04);
+}
+.block-label {
+  padding: 12px 20px;
+  font-family: var(--font-head); font-size: 13px; font-weight: 700;
+  color: white; letter-spacing: 0.5px;
+  display: flex; align-items: center; gap: 8px;
+}
+.block-body { padding: 24px; }
+.block-body p {
+  font-size: 15px; line-height: 1.75; color: var(--ink);
+  margin-bottom: 12px;
+}
+.block-body p:last-child { margin-bottom: 0; }
+
+/* Tag */
+.tag {
+  display: inline-block;
+  padding: 3px 10px; border-radius: 100px;
+  font-family: var(--font-mono); font-size: 10px; font-weight: 600;
+  letter-spacing: 1px; text-transform: uppercase;
+  margin-bottom: 12px;
+}
+
+/* ── FICHA DE TRABAJO ──────────────── */
+.ficha {
+  background: white; border-radius: 16px;
+  border: 1px solid var(--border);
+  overflow: hidden; margin-bottom: 16px;
+  page-break-inside: avoid;
+}
+.ficha-header {
+  padding: 16px 24px;
+  display: flex; align-items: center; gap: 12px;
+}
+.ficha-icon { font-size: 22px; }
+.ficha-header-text {}
+.ficha-header-text h3 {
+  font-family: var(--font-head); font-size: 16px; font-weight: 700;
+  color: white; line-height: 1.1;
+}
+.ficha-header-text span {
+  font-family: var(--font-mono); font-size: 10px; font-weight: 600;
+  color: rgba(255,255,255,0.65); letter-spacing: 1px; text-transform: uppercase;
+}
+.ficha-body { padding: 24px; }
+
+/* Input lines */
+.field-label {
+  font-family: var(--font-head); font-size: 11px; font-weight: 700;
+  letter-spacing: 1.5px; text-transform: uppercase; color: var(--muted);
+  margin-bottom: 6px; margin-top: 16px;
+}
+.field-label:first-child { margin-top: 0; }
+.write-line {
+  width: 100%; border: none; border-bottom: 1.5px solid var(--border);
+  outline: none; font-family: var(--font-body); font-size: 14px;
+  padding: 6px 0; color: var(--ink); background: transparent;
+  margin-bottom: 8px; display: block;
+}
+.write-line::placeholder { color: #c4c9d4; }
+.write-area {
+  width: 100%; border: 1.5px solid var(--border); border-radius: 10px;
+  outline: none; font-family: var(--font-body); font-size: 14px;
+  padding: 12px 14px; color: var(--ink); resize: vertical;
+  min-height: 80px; background: var(--paper);
+  margin-bottom: 8px; display: block; line-height: 1.6;
+}
+.write-area::placeholder { color: #c4c9d4; }
+
+/* Scale */
+.scale-row {
+  display: flex; gap: 6px; align-items: center; margin: 12px 0;
+}
+.scale-label { font-family: var(--font-mono); font-size: 11px; color: var(--muted); }
+.scale-dots { display: flex; gap: 6px; flex: 1; justify-content: center; }
+.scale-dot {
+  width: 32px; height: 32px; border-radius: 50%;
+  border: 2px solid var(--border);
+  display: flex; align-items: center; justify-content: center;
+  font-family: var(--font-mono); font-size: 11px; font-weight: 600;
+  color: var(--muted); cursor: pointer; transition: all 0.2s;
+  background: white;
+}
+.scale-dot:hover { border-color: currentColor; }
+
+/* Columns grid */
+.cols-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px; }
+.cols-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; margin-bottom: 16px; }
+
+/* Mini step row */
+.step-row { display: grid; grid-template-columns: 36px 1fr; gap: 12px; align-items: start; margin-bottom: 12px; }
+.step-num {
+  width: 36px; height: 36px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-family: var(--font-head); font-size: 14px; font-weight: 800;
+  color: white; flex-shrink: 0;
+}
+.step-content { padding-top: 6px; }
+.step-content strong {
+  display: block; font-family: var(--font-head); font-size: 13px;
+  font-weight: 700; margin-bottom: 4px;
+}
+.step-content p { font-size: 13px; line-height: 1.55; color: var(--muted); }
+
+/* Situation cards strip */
+.cards-strip { display: flex; flex-direction: column; gap: 8px; }
+.sit-card {
+  background: var(--paper); border: 1px solid var(--border);
+  border-radius: 12px; padding: 14px 18px;
+  display: grid; grid-template-columns: 40px 1fr 100px;
+  gap: 12px; align-items: center;
+}
+.sit-num {
+  font-family: var(--font-mono); font-size: 11px; font-weight: 600;
+  color: var(--muted);
+}
+.sit-text { font-size: 14px; line-height: 1.4; }
+.sit-scale {
+  display: flex; gap: 4px; justify-content: flex-end;
+}
+.sit-dot {
+  width: 20px; height: 20px; border-radius: 50%;
+  border: 1.5px solid var(--border); cursor: pointer;
+  transition: all 0.15s;
+}
+.sit-dot:hover { transform: scale(1.2); }
+
+/* Guión highlight */
+.guion-box {
+  background: var(--ink); border-radius: 14px;
+  padding: 24px 28px; margin-bottom: 12px;
+}
+.guion-moment {
+  font-family: var(--font-mono); font-size: 10px; font-weight: 600;
+  letter-spacing: 2px; text-transform: uppercase;
+  margin-bottom: 10px;
+}
+.guion-box p {
+  font-family: var(--font-body); font-size: 16px;
+  font-style: italic; color: rgba(255,255,255,0.88);
+  line-height: 1.65;
+}
+
+/* EAR cards */
+.ear-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; margin-bottom: 20px; }
+.ear-card { border-radius: 14px; padding: 20px 16px; text-align: center; }
+.ear-letter {
+  font-family: var(--font-head); font-size: 56px; font-weight: 800;
+  line-height: 1; margin-bottom: 6px;
+}
+.ear-name {
+  font-family: var(--font-head); font-size: 12px; font-weight: 700;
+  letter-spacing: 1px; text-transform: uppercase;
+  margin-bottom: 8px;
+}
+.ear-desc { font-size: 13px; line-height: 1.5; color: var(--muted); }
+
+/* Mindfulness timer */
+.breath-timer {
+  background: var(--ink); border-radius: 20px;
+  padding: 36px; text-align: center; margin-bottom: 16px;
+  position: relative; overflow: hidden;
+}
+.breath-circle-wrap { position: relative; width: 160px; height: 160px; margin: 0 auto 24px; }
+.breath-circle-bg {
+  width: 160px; height: 160px; border-radius: 50%;
+  border: 3px solid rgba(255,255,255,0.1);
+  position: absolute; inset: 0;
+}
+.breath-ring {
+  width: 160px; height: 160px; border-radius: 50%;
+  position: absolute; inset: 0;
+  background: conic-gradient(rgba(255,255,255,0.6) 0%, transparent 0%);
+  transition: background 0.1s;
+}
+.breath-center {
+  position: absolute; inset: 0;
+  display: flex; align-items: center; justify-content: center;
+  flex-direction: column;
+}
+.breath-count {
+  font-family: var(--font-head); font-size: 48px; font-weight: 800;
+  color: white; line-height: 1;
+}
+.breath-phase {
+  font-family: var(--font-mono); font-size: 10px; font-weight: 600;
+  letter-spacing: 2px; text-transform: uppercase;
+  color: rgba(255,255,255,0.5);
+}
+.breath-instruction {
+  font-family: var(--font-body); font-size: 17px; font-style: italic;
+  color: rgba(255,255,255,0.75); margin-bottom: 20px;
+}
+.breath-controls { display: flex; gap: 10px; justify-content: center; }
+.btn-breath {
+  padding: 10px 24px; border-radius: 100px;
+  font-family: var(--font-head); font-size: 13px; font-weight: 700;
+  border: none; cursor: pointer; transition: all 0.2s;
+}
+.btn-start { background: white; color: var(--ink); }
+.btn-start:hover { opacity: 0.9; transform: scale(1.02); }
+.btn-reset { background: rgba(255,255,255,0.1); color: rgba(255,255,255,0.7); }
+.btn-reset:hover { background: rgba(255,255,255,0.15); }
+.breath-progress {
+  font-family: var(--font-mono); font-size: 11px; font-weight: 600;
+  color: rgba(255,255,255,0.4); margin-top: 16px; letter-spacing: 1px;
+}
+
+/* Observation table */
+.obs-table { width: 100%; border-collapse: collapse; }
+.obs-table th {
+  background: var(--ink); color: white;
+  font-family: var(--font-head); font-size: 11px; font-weight: 700;
+  letter-spacing: 1px; text-transform: uppercase;
+  padding: 12px 14px; text-align: left;
+}
+.obs-table td {
+  border-bottom: 1px solid var(--border);
+  padding: 14px;
+  font-size: 13px; color: var(--ink);
+  vertical-align: top;
+}
+.obs-table tr:last-child td { border-bottom: none; }
+.obs-table tr:nth-child(even) td { background: var(--paper); }
+.obs-table input[type="text"] {
+  width: 100%; border: none; border-bottom: 1px solid var(--border);
+  font-family: var(--font-body); font-size: 13px; padding: 4px 0;
+  background: transparent; outline: none; color: var(--ink);
+}
+.obs-indicator {
+  display: flex; gap: 4px;
+}
+.obs-dot {
+  width: 18px; height: 18px; border-radius: 50%;
+  border: 1.5px solid var(--border); cursor: pointer;
+}
+.obs-dot.r { border-color: #e53e3e; }
+.obs-dot.y { border-color: #d69e2e; }
+.obs-dot.g { border-color: #38a169; }
+
+/* Tarea card */
+.tarea-card {
+  border-radius: 16px; overflow: hidden;
+  border: 1px solid var(--border); margin-top: 8px;
+}
+.tarea-header {
+  padding: 14px 20px;
+  font-family: var(--font-head); font-size: 13px; font-weight: 700;
+  color: white; display: flex; align-items: center; gap: 8px;
+}
+.tarea-body { padding: 20px; background: var(--paper); }
+.tarea-body ul { list-style: none; display: flex; flex-direction: column; gap: 10px; }
+.tarea-body li {
+  display: grid; grid-template-columns: 22px 1fr;
+  gap: 10px; align-items: start;
+  font-size: 14px; line-height: 1.55;
+}
+.tarea-check {
+  width: 20px; height: 20px; border: 2px solid var(--border);
+  border-radius: 5px; flex-shrink: 0; margin-top: 1px; cursor: pointer;
+  transition: all 0.15s;
+}
+.tarea-check:hover { border-color: var(--muted); }
+
+/* ── PRINT ──────────────────────────── */
+@media print {
+  .nav, .hero, .session-pills { display: none !important; }
+  .session { display: block !important; padding: 0; }
+  .block, .ficha { break-inside: avoid; }
+  body { background: white; }
+  .breath-timer { background: #1a1f2e !important; -webkit-print-color-adjust: exact; }
+}
+
+/* ── ANIM ──────────────────────────── */
+.session.active { animation: fadeIn 0.3s ease; }
+@keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+@media (max-width: 640px) {
+  .cols-2, .cols-3, .ear-grid { grid-template-columns: 1fr; }
+  .nav { padding: 0 16px; gap: 4px; }
+  .nav-tab { padding: 5px 10px; font-size: 11px; }
+  .session { padding: 32px 16px; }
+}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav class="nav">
+  <div class="nav-brand">Bewe Fútbol · Materiales</div>
+  <button class="nav-tab active" data-s="1" onclick="showSession(1)">S1 · Autorregulación</button>
+  <button class="nav-tab" data-s="2" onclick="showSession(2)">S2 · Vínculo</button>
+  <button class="nav-tab" data-s="3" onclick="showSession(3)">S3 · Mindfulness</button>
+  <button class="nav-tab" data-s="4" onclick="showSession(4)">S4 · ePsD</button>
+  <button class="print-btn" onclick="window.print()">🖨 Imprimir</button>
+</nav>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-kicker">Departamento de Psicología Deportiva · 2026</div>
+  <h1>Materiales de <em>Sesión</em></h1>
+  <p class="hero-sub">Fichas de trabajo, guiones y herramientas para las 4 sesiones de intervención</p>
+  <div class="session-pills">
+    <div class="pill" data-s="1" onclick="showSession(1)">01 · Autorregulación</div>
+    <div class="pill" data-s="2" onclick="showSession(2)">02 · Vínculo y EAR</div>
+    <div class="pill" data-s="3" onclick="showSession(3)">03 · Mindfulness</div>
+    <div class="pill" data-s="4" onclick="showSession(4)">04 · ePsD + Campo</div>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════ -->
+<!-- SESIÓN 1 -->
+<!-- ════════════════════════════════════════ -->
+<div class="session active" id="s1" data-session="1">
+
+  <div class="sess-header">
+    <div class="sess-num">01</div>
+    <div class="sess-info">
+      <div class="sess-kicker">Ruta 4 — Control de Clima</div>
+      <div class="sess-title">Autorregulación Emocional del Entrenador</div>
+      <div class="sess-subtitle">Cómo mantener el control cuando el partido aprieta</div>
+    </div>
+  </div>
+
+  <!-- GUIÓN -->
+  <div class="mat-section">
+    <div class="mat-section-title">🎙 Guión del Facilitador</div>
+    <div class="guion-box">
+      <div class="guion-moment accent">Apertura</div>
+      <p>"Hoy no vamos a hablar de táctica. Vamos a hablar de vos como líder en los momentos donde más te necesitan — cuando el partido se pone difícil y todos te están mirando. Lo que hacés en ese momento vale más que cualquier pizarrón."</p>
+    </div>
+    <div class="guion-box">
+      <div class="guion-moment accent">Cierre</div>
+      <p>"Lo que construimos hoy no es teoría — es tu herramienta personal. La próxima vez que sientas que se te va el control, ya sabés lo que hacés. Esa rutina es tuya."</p>
+    </div>
+  </div>
+
+  <!-- FICHA 1: TERMÓMETRO -->
+  <div class="mat-section">
+    <div class="mat-section-title">📋 Ficha de Trabajo · Check-in y Activación</div>
+    <div class="ficha">
+      <div class="ficha-header" style="background: var(--s1)">
+        <span class="ficha-icon">🌡️</span>
+        <div class="ficha-header-text">
+          <span>Ficha 1.1 · Inicio</span>
+          <h3>El Termómetro del Entrenador</h3>
+        </div>
+      </div>
+      <div class="ficha-body">
+        <div class="field-label">¿Cómo llegás hoy? (1 = muy bajo, 10 = excelente)</div>
+        <div class="scale-row">
+          <span class="scale-label">1</span>
+          <div class="scale-dots" id="checkin-scale">
+            <div class="scale-dot" onclick="selectDot('checkin-scale', this, 'var(--s1)')">1</div>
+            <div class="scale-dot" onclick="selectDot('checkin-scale', this, 'var(--s1)')">2</div>
+            <div class="scale-dot" onclick="selectDot('checkin-scale', this, 'var(--s1)')">3</div>
+            <div class="scale-dot" onclick="selectDot('checkin-scale', this, 'var(--s1)')">4</div>
+            <div class="scale-dot" onclick="selectDot('checkin-scale', this, 'var(--s1)')">5</div>
+            <div class="scale-dot" onclick="selectDot('checkin-scale', this, 'var(--s1)')">6</div>
+            <div class="scale-dot" onclick="selectDot('checkin-scale', this, 'var(--s1)')">7</div>
+            <div class="scale-dot" onclick="selectDot('checkin-scale', this, 'var(--s1)')">8</div>
+            <div class="scale-dot" onclick="selectDot('checkin-scale', this, 'var(--s1)')">9</div>
+            <div class="scale-dot" onclick="selectDot('checkin-scale', this, 'var(--s1)')">10</div>
+          </div>
+          <span class="scale-label">10</span>
+        </div>
+
+        <div class="field-label">¿En qué momentos sentís que perdés el control de cómo reaccionás?</div>
+        <textarea class="write-area" placeholder="Ej: cuando el jugador repite el mismo error, cuando el árbitro cobra algo injusto..."></textarea>
+
+        <p style="font-size:13px; color:var(--muted); margin-bottom:16px; margin-top:4px">Puntuá del 1 al 5 cuánto te afectan estas situaciones típicas (1=poco, 5=mucho)</p>
+        <div class="cards-strip">
+          <div class="sit-card">
+            <span class="sit-num">01</span>
+            <span class="sit-text">Un jugador repite el mismo error técnico por tercera vez</span>
+            <div class="sit-scale">
+              <div class="sit-dot" style="background: #fee2e2" onclick="toggleDot(this)"></div>
+              <div class="sit-dot" style="background: #fecaca" onclick="toggleDot(this)"></div>
+              <div class="sit-dot" style="background: #fca5a5" onclick="toggleDot(this)"></div>
+              <div class="sit-dot" style="background: #f87171" onclick="toggleDot(this)"></div>
+              <div class="sit-dot" style="background: #ef4444" onclick="toggleDot(this)"></div>
+            </div>
+          </div>
+          <div class="sit-card">
+            <span class="sit-num">02</span>
+            <span class="sit-text">El árbitro cobra algo que considerás totalmente injusto</span>
+            <div class="sit-scale">
+              <div class="sit-dot" style="background: #fee2e2" onclick="toggleDot(this)"></div>
+              <div class="sit-dot" style="background: #fecaca" onclick="toggleDot(this)"></div>
+              <div class="sit-dot" style="background: #fca5a5" onclick="toggleDot(this)"></div>
+              <div class="sit-dot" style="background: #f87171" onclick="toggleDot(this)"></div>
+              <div class="sit-dot" style="background: #ef4444" onclick="toggleDot(this)"></div>
+            </div>
+          </div>
+          <div class="sit-card">
+            <span class="sit-num">03</span>
+            <span class="sit-text">Perdés por un gol que era totalmente evitable</span>
+            <div class="sit-scale">
+              <div class="sit-dot" style="background: #fee2e2" onclick="toggleDot(this)"></div>
+              <div class="sit-dot" style="background: #fecaca" onclick="toggleDot(this)"></div>
+              <div class="sit-dot" style="background: #fca5a5" onclick="toggleDot(this)"></div>
+              <div class="sit-dot" style="background: #f87171" onclick="toggleDot(this)"></div>
+              <div class="sit-dot" style="background: #ef4444" onclick="toggleDot(this)"></div>
+            </div>
+          </div>
+          <div class="sit-card">
+            <span class="sit-num">04</span>
+            <span class="sit-text">Un jugador cuestiona tu decisión táctica frente al grupo</span>
+            <div class="sit-scale">
+              <div class="sit-dot" style="background: #fee2e2" onclick="toggleDot(this)"></div>
+              <div class="sit-dot" style="background: #fecaca" onclick="toggleDot(this)"></div>
+              <div class="sit-dot" style="background: #fca5a5" onclick="toggleDot(this)"></div>
+              <div class="sit-dot" style="background: #f87171" onclick="toggleDot(this)"></div>
+              <div class="sit-dot" style="background: #ef4444" onclick="toggleDot(this)"></div>
+            </div>
+          </div>
+          <div class="sit-card">
+            <span class="sit-num">05</span>
+            <span class="sit-text">El equipo no ejecuta la táctica que trabajaste toda la semana</span>
+            <div class="sit-scale">
+              <div class="sit-dot" style="background: #fee2e2" onclick="toggleDot(this)"></div>
+              <div class="sit-dot" style="background: #fecaca" onclick="toggleDot(this)"></div>
+              <div class="sit-dot" style="background: #fca5a5" onclick="toggleDot(this)"></div>
+              <div class="sit-dot" style="background: #f87171" onclick="toggleDot(this)"></div>
+              <div class="sit-dot" style="background: #ef4444" onclick="toggleDot(this)"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- FICHA 1.2: MAPA DE DISPARADORES -->
+    <div class="ficha">
+      <div class="ficha-header" style="background: var(--s1)">
+        <span class="ficha-icon">🗺️</span>
+        <div class="ficha-header-text">
+          <span>Ficha 1.2 · Desarrollo</span>
+          <h3>Mapa de Disparadores Personales</h3>
+        </div>
+      </div>
+      <div class="ficha-body">
+        <p style="font-size:13px; color:var(--muted); margin-bottom:20px">Completá las 3 situaciones que más te desregulan. Seguí el flujo de cada una.</p>
+        <div id="disparadores">
+          <div style="background:#fafbfc; border:1px solid var(--border); border-radius:12px; padding:20px; margin-bottom:14px;">
+            <div class="field-label">Disparador #1 — Situación</div>
+            <input type="text" class="write-line" placeholder="Ej: El árbitro me cobra algo injusto...">
+            <div class="cols-2" style="margin-top:16px">
+              <div>
+                <div class="field-label">Emoción que aparece</div>
+                <input type="text" class="write-line" placeholder="Ej: Rabia, frustración...">
+              </div>
+              <div>
+                <div class="field-label">Pensamiento automático</div>
+                <input type="text" class="write-line" placeholder="Ej: 'Nos están perjudicando'">
+              </div>
+            </div>
+            <div class="field-label">Conducta habitual</div>
+            <input type="text" class="write-line" placeholder="Ej: Me levanto del banco, protesto...">
+            <div class="field-label">¿Eso le sirve al equipo en ese momento?</div>
+            <input type="text" class="write-line" placeholder="Reflexión honesta...">
+          </div>
+          <div style="background:#fafbfc; border:1px solid var(--border); border-radius:12px; padding:20px; margin-bottom:14px;">
+            <div class="field-label">Disparador #2 — Situación</div>
+            <input type="text" class="write-line" placeholder="">
+            <div class="cols-2" style="margin-top:16px">
+              <div>
+                <div class="field-label">Emoción que aparece</div>
+                <input type="text" class="write-line" placeholder="">
+              </div>
+              <div>
+                <div class="field-label">Pensamiento automático</div>
+                <input type="text" class="write-line" placeholder="">
+              </div>
+            </div>
+            <div class="field-label">Conducta habitual</div>
+            <input type="text" class="write-line" placeholder="">
+            <div class="field-label">¿Eso le sirve al equipo en ese momento?</div>
+            <input type="text" class="write-line" placeholder="">
+          </div>
+          <div style="background:#fafbfc; border:1px solid var(--border); border-radius:12px; padding:20px;">
+            <div class="field-label">Disparador #3 — Situación</div>
+            <input type="text" class="write-line" placeholder="">
+            <div class="cols-2" style="margin-top:16px">
+              <div>
+                <div class="field-label">Emoción que aparece</div>
+                <input type="text" class="write-line" placeholder="">
+              </div>
+              <div>
+                <div class="field-label">Pensamiento automático</div>
+                <input type="text" class="write-line" placeholder="">
+              </div>
+            </div>
+            <div class="field-label">Conducta habitual</div>
+            <input type="text" class="write-line" placeholder="">
+            <div class="field-label">¿Eso le sirve al equipo en ese momento?</div>
+            <input type="text" class="write-line" placeholder="">
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- FICHA 1.3: RUTINA RRR -->
+    <div class="ficha">
+      <div class="ficha-header" style="background: var(--s1)">
+        <span class="ficha-icon">⚡</span>
+        <div class="ficha-header-text">
+          <span>Ficha 1.3 · Tarjeta de Bolsillo</span>
+          <h3>Mi Rutina RRR Personal</h3>
+        </div>
+      </div>
+      <div class="ficha-body">
+        <div class="step-row">
+          <div class="step-num">R</div>
+          <div class="step-content">
+            <strong>RECONOZCO</strong>
+            <p>La señal en mi cuerpo cuando la presión sube:</p>
+            <input type="text" class="write-line" placeholder="Ej: Tensión en la mandíbula, respiración corta...">
+          </div>
+        </div>
+        <div class="step-row">
+          <div class="step-num">R</div>
+          <div class="step-content">
+            <strong>RESETEO</strong>
+            <p>Mi gesto físico personal (tiene que ser sutil, propio):</p>
+            <input type="text" class="write-line" placeholder="Ej: Sacudo las manos, aprieto el puño una vez...">
+          </div>
+        </div>
+        <div class="step-row">
+          <div class="step-num">R</div>
+          <div class="step-content">
+            <strong>REENFOCO</strong>
+            <p>Respiración 4-2-4 + mi palabra ancla:</p>
+            <input type="text" class="write-line" placeholder="Mi palabra ancla es: ej. 'calma', 'ya', 'proceso'...">
+          </div>
+        </div>
+        <div style="background:#fff3cd; border-radius:10px; padding:14px; margin-top:16px; font-size:13px; color:#664d03;">
+          💡 <strong>Recordá:</strong> La rutina tarda 3-5 segundos. El equipo no la nota — pero vos ya estás de vuelta en el presente.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- TAREA -->
+  <div class="mat-section">
+    <div class="mat-section-title">📝 Tarea para Casa</div>
+    <div class="tarea-card">
+      <div class="tarea-header" style="background: var(--s1)">📅 Esta semana — Diario de Autorregulación</div>
+      <div class="tarea-body">
+        <ul>
+          <li><div class="tarea-check" onclick="this.style.background='var(--s1)'; this.style.borderColor='var(--s1)'"></div>Anotá 3 momentos de presión — qué sentiste, qué hiciste, qué hubieras querido hacer.</li>
+          <li><div class="tarea-check" onclick="this.style.background='var(--s1)'; this.style.borderColor='var(--s1)'"></div>Practicar el entrenador de pulsaciones en <strong>psmilechile.com</strong> — 5 min al despertar y 5 min antes de dormir.</li>
+          <li><div class="tarea-check" onclick="this.style.background='var(--s1)'; this.style.borderColor='var(--s1)'"></div>Poner una alarma en el celular con el nombre <em>"Entrenamiento mental"</em> para recordar la práctica.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ════════════════════════════════════════ -->
+<!-- SESIÓN 2 -->
+<!-- ════════════════════════════════════════ -->
+<div class="session" id="s2" data-session="2">
+
+  <div class="sess-header">
+    <div class="sess-num">02</div>
+    <div class="sess-info">
+      <div class="sess-kicker">Ruta 2 — Evolución del Liderazgo</div>
+      <div class="sess-title">Vínculo Afectivo y Comunicación Asertiva</div>
+      <div class="sess-subtitle">Cómo llegar más profundo al jugador sin perder autoridad</div>
+    </div>
+  </div>
+
+  <div class="mat-section">
+    <div class="mat-section-title">🎙 Guión del Facilitador</div>
+    <div class="guion-box">
+      <div class="guion-moment accent">Apertura</div>
+      <p>"La sesión de hoy tiene que ver con una pregunta simple: ¿tus jugadores rinden para vos, o rinden con vos? Esa diferencia puede parecer pequeña, pero en un partido decisivo, es la que define si el grupo aguanta o se rompe."</p>
+    </div>
+    <div class="guion-box">
+      <div class="guion-moment accent">Cierre</div>
+      <p>"Liderar desde el vínculo no es ser el amigo del jugador. Es ser el entrenador que lo conoce lo suficiente para saber cómo hablarle cuando más importa. Esa habilidad se entrena — y hoy diste el primer paso."</p>
+    </div>
+  </div>
+
+  <div class="mat-section">
+    <div class="mat-section-title">📋 Fichas de Trabajo</div>
+
+    <!-- FICHA 2.1 JUGADOR DETRÁS DEL NÚMERO -->
+    <div class="ficha">
+      <div class="ficha-header" style="background: var(--s2)">
+        <span class="ficha-icon">👤</span>
+        <div class="ficha-header-text">
+          <span>Ficha 2.1 · Activación</span>
+          <h3>El Jugador Detrás del Número</h3>
+        </div>
+      </div>
+      <div class="ficha-body">
+        <p style="font-size:13px; color:var(--muted); margin-bottom:20px">Elegí 3 jugadores. Para cada uno completá los datos. Si no sabés algo, dejalo en blanco — eso también es información.</p>
+        <div class="cols-3">
+          <div>
+            <div class="field-label">Jugador 1 — Nombre</div>
+            <input type="text" class="write-line" placeholder="">
+            <div class="field-label">Posición</div>
+            <input type="text" class="write-line" placeholder="">
+            <div class="field-label">Algo de su vida fuera del fútbol</div>
+            <input type="text" class="write-line" placeholder="">
+            <div class="field-label">¿Cómo lo motivás mejor?</div>
+            <input type="text" class="write-line" placeholder="">
+          </div>
+          <div>
+            <div class="field-label">Jugador 2 — Nombre</div>
+            <input type="text" class="write-line" placeholder="">
+            <div class="field-label">Posición</div>
+            <input type="text" class="write-line" placeholder="">
+            <div class="field-label">Algo de su vida fuera del fútbol</div>
+            <input type="text" class="write-line" placeholder="">
+            <div class="field-label">¿Cómo lo motivás mejor?</div>
+            <input type="text" class="write-line" placeholder="">
+          </div>
+          <div>
+            <div class="field-label">Jugador 3 — Nombre</div>
+            <input type="text" class="write-line" placeholder="">
+            <div class="field-label">Posición</div>
+            <input type="text" class="write-line" placeholder="">
+            <div class="field-label">Algo de su vida fuera del fútbol</div>
+            <input type="text" class="write-line" placeholder="">
+            <div class="field-label">¿Cómo lo motivás mejor?</div>
+            <input type="text" class="write-line" placeholder="">
+          </div>
+        </div>
+        <div style="background:#e6f7f5; border-radius:10px; padding:14px; font-size:13px; color:#1a5c54; margin-top:8px">
+          💬 <strong>Reflexión:</strong> ¿Hay jugadores de los que no sabés nada fuera del fútbol? Eso es una señal de oportunidad, no de falla.
+        </div>
+      </div>
+    </div>
+
+    <!-- FICHA 2.2 EAR -->
+    <div class="ficha">
+      <div class="ficha-header" style="background: var(--s2)">
+        <span class="ficha-icon">🛠️</span>
+        <div class="ficha-header-text">
+          <span>Ficha 2.2 · Herramienta Principal</span>
+          <h3>La Fórmula EAR — Comunicación Asertiva</h3>
+        </div>
+      </div>
+      <div class="ficha-body">
+        <div class="ear-grid">
+          <div class="ear-card" style="background:#fef5e7">
+            <div class="ear-letter" style="color:#e67e22">E</div>
+            <div class="ear-name" style="color:#e67e22">Emoción</div>
+            <div class="ear-desc">Reconocés lo que está sintiendo el jugador en ese momento antes de hablar</div>
+          </div>
+          <div class="ear-card" style="background:var(--s2-light)">
+            <div class="ear-letter" style="color:var(--s2)">A</div>
+            <div class="ear-name" style="color:var(--s2)">Acción</div>
+            <div class="ear-desc">Das la corrección técnica o táctica concreta que necesitás</div>
+          </div>
+          <div class="ear-card" style="background:#eafaf1">
+            <div class="ear-letter" style="color:#1e8449">R</div>
+            <div class="ear-name" style="color:#1e8449">Razón</div>
+            <div class="ear-desc">Explicás por qué eso lo va a ayudar a salir de la situación</div>
+          </div>
+        </div>
+
+        <div style="background:var(--ink); border-radius:14px; padding:20px 24px; margin-bottom:20px">
+          <div style="font-family:var(--font-mono); font-size:10px; font-weight:600; letter-spacing:2px; color:rgba(255,255,255,0.4); text-transform:uppercase; margin-bottom:10px">Ejemplo real</div>
+          <p style="font-family:var(--font-body); font-size:15px; font-style:italic; color:rgba(255,255,255,0.88); line-height:1.65">
+            <span style="color:#7dd8d0">"Sé que estás frustrado con el marcaje — es normal."</span> Lo que necesito que hagás es anticiparte un paso antes de que reciba. <span style="color:#88d4a0">"Eso te va a sacar de esa posición y vas a empezar a ganar los duelos."</span>
+          </p>
+        </div>
+
+        <p style="font-family:var(--font-head); font-size:12px; font-weight:700; letter-spacing:1px; text-transform:uppercase; color:var(--muted); margin-bottom:16px">Practicá con estas situaciones — escribí tu versión EAR:</p>
+        <div style="background:#fafbfc; border:1px solid var(--border); border-radius:12px; padding:18px; margin-bottom:12px">
+          <div style="font-size:13px; font-weight:600; margin-bottom:12px; color:var(--ink)">🎯 Situación: Un jugador lleva 3 malos pases seguidos y se nota desanimado</div>
+          <div class="field-label">E — ¿Qué emoción reconocés en él?</div>
+          <input type="text" class="write-line" placeholder="">
+          <div class="field-label">A — ¿Qué corrección técnica le pedís?</div>
+          <input type="text" class="write-line" placeholder="">
+          <div class="field-label">R — ¿Por qué eso lo va a ayudar?</div>
+          <input type="text" class="write-line" placeholder="">
+        </div>
+        <div style="background:#fafbfc; border:1px solid var(--border); border-radius:12px; padding:18px;">
+          <div style="font-size:13px; font-weight:600; margin-bottom:12px; color:var(--ink)">🎯 Situación: Un jugador repite el mismo error defensivo</div>
+          <div class="field-label">E — ¿Qué emoción reconocés en él?</div>
+          <input type="text" class="write-line" placeholder="">
+          <div class="field-label">A — ¿Qué corrección técnica le pedís?</div>
+          <input type="text" class="write-line" placeholder="">
+          <div class="field-label">R — ¿Por qué eso lo va a ayudar?</div>
+          <input type="text" class="write-line" placeholder="">
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="mat-section">
+    <div class="mat-section-title">📝 Tarea para Casa</div>
+    <div class="tarea-card">
+      <div class="tarea-header" style="background: var(--s2)">📅 Esta semana — Práctica de la Fórmula EAR</div>
+      <div class="tarea-body">
+        <ul>
+          <li><div class="tarea-check" onclick="this.style.background='var(--s2)'; this.style.borderColor='var(--s2)'"></div>Aplicar la fórmula EAR en al menos <strong>2 correcciones reales</strong> esta semana.</li>
+          <li><div class="tarea-check" onclick="this.style.background='var(--s2)'; this.style.borderColor='var(--s2)'"></div>Registrar cómo respondió el jugador: ¿abierto, cerrado, motivado, defensivo?</li>
+          <li><div class="tarea-check" onclick="this.style.background='var(--s2)'; this.style.borderColor='var(--s2)'"></div>Continuar práctica de pulsaciones en <strong>psmilechile.com</strong> — mañana y noche.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ════════════════════════════════════════ -->
+<!-- SESIÓN 3 -->
+<!-- ════════════════════════════════════════ -->
+<div class="session" id="s3" data-session="3">
+
+  <div class="sess-header">
+    <div class="sess-num">03</div>
+    <div class="sess-info">
+      <div class="sess-kicker">Ruta 4 — Control Emocional Profundo</div>
+      <div class="sess-title">Mindfulness Aplicado al Entrenador</div>
+      <div class="sess-subtitle">Control emocional profundo para el liderazgo de alto rendimiento</div>
+    </div>
+  </div>
+
+  <div class="mat-section">
+    <div class="mat-section-title">🎙 Guión del Facilitador</div>
+    <div class="guion-box">
+      <div class="guion-moment accent">Apertura</div>
+      <p>"Hoy entrenamos algo que ningún análisis de video puede darte: la capacidad de estar completamente presente en el momento que más importa. El entrenador que tiene la mente más clara es el que toma la mejor decisión. Eso se entrena. Y lo hacemos hoy."</p>
+    </div>
+    <div class="guion-box">
+      <div class="guion-moment accent">Durante práctica</div>
+      <p>"Cerrá los ojos. No hay nada que resolver ahora. Solo prestá atención a lo que está pasando en tu cuerpo. Si aparece un pensamiento, no lo peleés — simplemente notá que apareció y volvé a la respiración. Eso es todo. Eso es el entrenamiento."</p>
+    </div>
+    <div class="guion-box">
+      <div class="guion-moment accent">Cierre</div>
+      <p>"La autorregulación, la comunicación asertiva, las decisiones tácticas — todo parte de acá. De un entrenador que puede estar presente cuando su equipo más lo necesita."</p>
+    </div>
+  </div>
+
+  <div class="mat-section">
+    <div class="mat-section-title">⏱ Práctica Interactiva · Respiración 4-2-4</div>
+    <div class="breath-timer">
+      <div class="breath-instruction">Seguí el ritmo. Inhalá 4 · Pausa 2 · Exhalá 4</div>
+      <div class="breath-circle-wrap">
+        <div class="breath-circle-bg"></div>
+        <div class="breath-ring" id="breathRing"></div>
+        <div class="breath-center">
+          <div class="breath-count" id="breathCount">4</div>
+          <div class="breath-phase" id="breathPhase">INHALA</div>
+        </div>
+      </div>
+      <div class="breath-controls">
+        <button class="btn-breath btn-start" id="breathBtn" onclick="toggleBreath()">▶ Iniciar</button>
+        <button class="btn-breath btn-reset" onclick="resetBreath()">↺ Reiniciar</button>
+      </div>
+      <div class="breath-progress" id="breathProgress">0 / 5 ciclos completados</div>
+    </div>
+  </div>
+
+  <div class="mat-section">
+    <div class="mat-section-title">📋 Fichas de Trabajo</div>
+
+    <div class="ficha">
+      <div class="ficha-header" style="background: var(--s3)">
+        <span class="ficha-icon">🧠</span>
+        <div class="ficha-header-text">
+          <span>Ficha 3.1 · Escaneo Corporal</span>
+          <h3>Mapa de Tensión Corporal</h3>
+        </div>
+      </div>
+      <div class="ficha-body">
+        <p style="font-size:13px; color:var(--muted); margin-bottom:20px">Después del escaneo guiado, marcá las zonas de tensión que encontraste y el nivel (1=leve, 5=alta).</p>
+        <div class="cols-2">
+          <div>
+            <div class="field-label">Zonas de tensión detectadas</div>
+            <input type="text" class="write-line" placeholder="Ej: mandíbula, hombros, espalda...">
+            <div class="field-label">Nivel de tensión general (1-10)</div>
+            <div class="scale-row">
+              <span class="scale-label">1</span>
+              <div class="scale-dots" id="tension-scale">
+                <div class="scale-dot" onclick="selectDot('tension-scale', this, 'var(--s3)')">1</div>
+                <div class="scale-dot" onclick="selectDot('tension-scale', this, 'var(--s3)')">2</div>
+                <div class="scale-dot" onclick="selectDot('tension-scale', this, 'var(--s3)')">3</div>
+                <div class="scale-dot" onclick="selectDot('tension-scale', this, 'var(--s3)')">4</div>
+                <div class="scale-dot" onclick="selectDot('tension-scale', this, 'var(--s3)')">5</div>
+                <div class="scale-dot" onclick="selectDot('tension-scale', this, 'var(--s3)')">6</div>
+                <div class="scale-dot" onclick="selectDot('tension-scale', this, 'var(--s3)')">7</div>
+                <div class="scale-dot" onclick="selectDot('tension-scale', this, 'var(--s3)')">8</div>
+                <div class="scale-dot" onclick="selectDot('tension-scale', this, 'var(--s3)')">9</div>
+                <div class="scale-dot" onclick="selectDot('tension-scale', this, 'var(--s3)')">10</div>
+              </div>
+              <span class="scale-label">10</span>
+            </div>
+          </div>
+          <div>
+            <div class="field-label">¿Qué pensamiento apareció durante el escaneo?</div>
+            <textarea class="write-area" placeholder="Sin juzgar, solo describí lo que apareció..."></textarea>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="ficha">
+      <div class="ficha-header" style="background: var(--s3)">
+        <span class="ficha-icon">🏷️</span>
+        <div class="ficha-header-text">
+          <span>Ficha 3.2 · Defusión Cognitiva</span>
+          <h3>Etiquetado de Pensamientos</h3>
+        </div>
+      </div>
+      <div class="ficha-body">
+        <div class="block" style="border-left-color: var(--s3)">
+          <div class="block-label">¿Qué es la defusión cognitiva?</div>
+          <div class="block-body">
+            <p>Cuando tenés un pensamiento negativo (ej: <em>"este jugador no sirve"</em>), en lugar de creértelo automáticamente, te decís internamente: <strong>"Estoy teniendo el pensamiento de que este jugador no sirve."</strong></p>
+            <p>Ese pequeño cambio crea distancia entre el pensamiento y tu reacción. Ya no sos el pensamiento — sos el que lo observa.</p>
+          </div>
+        </div>
+        <div class="field-label" style="margin-top:20px">Pensamiento negativo frecuente #1</div>
+        <input type="text" class="write-line" placeholder="Ej: 'Este jugador nunca va a aprender'">
+        <div class="field-label">Etiquetado (reescribilo con la técnica)</div>
+        <input type="text" class="write-line" placeholder="'Estoy teniendo el pensamiento de que...'">
+        <div class="field-label" style="margin-top:16px">Pensamiento negativo frecuente #2</div>
+        <input type="text" class="write-line" placeholder="">
+        <div class="field-label">Etiquetado</div>
+        <input type="text" class="write-line" placeholder="'Estoy teniendo el pensamiento de que...'">
+      </div>
+    </div>
+
+    <div class="ficha">
+      <div class="ficha-header" style="background: var(--s3)">
+        <span class="ficha-icon">📅</span>
+        <div class="ficha-header-text">
+          <span>Ficha 3.3 · Mi Rutina Diaria</span>
+          <h3>Plan de Práctica — 7 Días</h3>
+        </div>
+      </div>
+      <div class="ficha-body">
+        <div class="field-label">Práctica elegida</div>
+        <div style="display:flex; gap:10px; margin-bottom:16px; flex-wrap:wrap">
+          <label style="display:flex; align-items:center; gap:6px; font-size:14px; cursor:pointer"><input type="radio" name="prac" value="scan"> Escaneo corporal</label>
+          <label style="display:flex; align-items:center; gap:6px; font-size:14px; cursor:pointer"><input type="radio" name="prac" value="resp"> Respiración 4-2-4</label>
+          <label style="display:flex; align-items:center; gap:6px; font-size:14px; cursor:pointer"><input type="radio" name="prac" value="ambas"> Ambas alternando</label>
+        </div>
+        <div class="field-label">Horario de práctica</div>
+        <input type="text" class="write-line" placeholder="Ej: 07:00 y 22:30">
+        <div class="field-label">Alarma en el celular con el nombre</div>
+        <input type="text" class="write-line" value="🧠 Entrenamiento Mental">
+        <div style="margin-top:20px; display:grid; grid-template-columns: repeat(7,1fr); gap:8px">
+          <div style="text-align:center; font-family:var(--font-mono); font-size:11px; color:var(--muted); margin-bottom:4px">L</div>
+          <div style="text-align:center; font-family:var(--font-mono); font-size:11px; color:var(--muted); margin-bottom:4px">M</div>
+          <div style="text-align:center; font-family:var(--font-mono); font-size:11px; color:var(--muted); margin-bottom:4px">M</div>
+          <div style="text-align:center; font-family:var(--font-mono); font-size:11px; color:var(--muted); margin-bottom:4px">J</div>
+          <div style="text-align:center; font-family:var(--font-mono); font-size:11px; color:var(--muted); margin-bottom:4px">V</div>
+          <div style="text-align:center; font-family:var(--font-mono); font-size:11px; color:var(--muted); margin-bottom:4px">S</div>
+          <div style="text-align:center; font-family:var(--font-mono); font-size:11px; color:var(--muted); margin-bottom:4px">D</div>
+          <div style="background:var(--paper); border:1.5px solid var(--border); border-radius:10px; padding:10px 4px; text-align:center; cursor:pointer; font-family:var(--font-mono); font-size:11px; color:var(--muted)" onclick="toggleDay(this)">—</div>
+          <div style="background:var(--paper); border:1.5px solid var(--border); border-radius:10px; padding:10px 4px; text-align:center; cursor:pointer; font-family:var(--font-mono); font-size:11px; color:var(--muted)" onclick="toggleDay(this)">—</div>
+          <div style="background:var(--paper); border:1.5px solid var(--border); border-radius:10px; padding:10px 4px; text-align:center; cursor:pointer; font-family:var(--font-mono); font-size:11px; color:var(--muted)" onclick="toggleDay(this)">—</div>
+          <div style="background:var(--paper); border:1.5px solid var(--border); border-radius:10px; padding:10px 4px; text-align:center; cursor:pointer; font-family:var(--font-mono); font-size:11px; color:var(--muted)" onclick="toggleDay(this)">—</div>
+          <div style="background:var(--paper); border:1.5px solid var(--border); border-radius:10px; padding:10px 4px; text-align:center; cursor:pointer; font-family:var(--font-mono); font-size:11px; color:var(--muted)" onclick="toggleDay(this)">—</div>
+          <div style="background:var(--paper); border:1.5px solid var(--border); border-radius:10px; padding:10px 4px; text-align:center; cursor:pointer; font-family:var(--font-mono); font-size:11px; color:var(--muted)" onclick="toggleDay(this)">—</div>
+          <div style="background:var(--paper); border:1.5px solid var(--border); border-radius:10px; padding:10px 4px; text-align:center; cursor:pointer; font-family:var(--font-mono); font-size:11px; color:var(--muted)" onclick="toggleDay(this)">—</div>
+        </div>
+        <p style="font-size:11px; color:var(--muted); margin-top:8px">Hacé clic en cada día para marcarlo como completado ✓</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="mat-section">
+    <div class="mat-section-title">📝 Tarea para Casa</div>
+    <div class="tarea-card">
+      <div class="tarea-header" style="background: var(--s3)">📅 Esta semana — 5 min diarios de práctica</div>
+      <div class="tarea-body">
+        <ul>
+          <li><div class="tarea-check" onclick="this.style.background='var(--s3)'; this.style.borderColor='var(--s3)'"></div>5 minutos diarios durante 7 días: escaneo corporal O respiración 4-2-4.</li>
+          <li><div class="tarea-check" onclick="this.style.background='var(--s3)'; this.style.borderColor='var(--s3)'"></div>Registrar: fecha, qué practicaste y una observación breve de cómo terminaste.</li>
+          <li><div class="tarea-check" onclick="this.style.background='var(--s3)'; this.style.borderColor='var(--s3)'"></div>Usar el etiquetado de pensamientos en al menos 1 situación de entrenamiento.</li>
+          <li><div class="tarea-check" onclick="this.style.background='var(--s3)'; this.style.borderColor='var(--s3)'"></div>Continuar psmilechile.com mañana y noche.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ════════════════════════════════════════ -->
+<!-- SESIÓN 4 -->
+<!-- ════════════════════════════════════════ -->
+<div class="session" id="s4" data-session="4">
+
+  <div class="sess-header">
+    <div class="sess-num">04</div>
+    <div class="sess-info">
+      <div class="sess-kicker">Ruta 1 — Máximo Rendimiento</div>
+      <div class="sess-title">Herramientas Cognitivas y ePsD Lite</div>
+      <div class="sess-subtitle">Trasladar el trabajo mental al entrenamiento real</div>
+    </div>
+  </div>
+
+  <div class="mat-section">
+    <div class="mat-section-title">🎙 Guión del Facilitador</div>
+    <div class="guion-box">
+      <div class="guion-moment accent">Apertura</div>
+      <p>"Hoy conectamos todo lo que trabajamos con la cancha. Las herramientas que desarrollaste — la regulación, el vínculo, la atención plena — las trasladamos a tu ojo como observador. Un entrenador que sabe leer lo mental en el campo tiene una ventaja que ningún análisis de video le puede dar."</p>
+    </div>
+    <div class="guion-box">
+      <div class="guion-moment accent">Cierre del proceso</div>
+      <p>"En estas 4 sesiones no hablamos de debilidades — hablamos de oportunidades. Lo que tiene este proyecto es sólido. Lo que construimos acá es el siguiente nivel. Y el que va a llevarlo a la práctica ahora... sos vos."</p>
+    </div>
+  </div>
+
+  <div class="mat-section">
+    <div class="mat-section-title">📋 Fichas de Trabajo</div>
+
+    <div class="ficha">
+      <div class="ficha-header" style="background: var(--s4)">
+        <span class="ficha-icon">👁️</span>
+        <div class="ficha-header-text">
+          <span>Ficha 4.1 · Observación de Campo</span>
+          <h3>Ficha de Observación Psicodeportológica</h3>
+        </div>
+      </div>
+      <div class="ficha-body">
+        <div class="cols-2" style="margin-bottom:16px">
+          <div>
+            <div class="field-label">Fecha del entrenamiento</div>
+            <input type="date" class="write-line">
+          </div>
+          <div>
+            <div class="field-label">Tipo de sesión</div>
+            <input type="text" class="write-line" placeholder="Ej: técnica, táctica, físico...">
+          </div>
+        </div>
+        <p style="font-size:12px; color:var(--muted); margin-bottom:16px">Indicadores: 🟢 = bueno / 🟡 = regular / 🔴 = requiere atención</p>
+        <div style="overflow-x:auto">
+          <table class="obs-table">
+            <thead>
+              <tr>
+                <th>Jugador</th>
+                <th>Scanning visual</th>
+                <th>Reacción al error</th>
+                <th>Toma de decisión</th>
+                <th>Autohabla</th>
+                <th>Observación</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><input type="text" placeholder="Nombre"></td>
+                <td><div class="obs-indicator"><div class="obs-dot g" onclick="cycleColor(this)"></div></div></td>
+                <td><div class="obs-indicator"><div class="obs-dot g" onclick="cycleColor(this)"></div></div></td>
+                <td><div class="obs-indicator"><div class="obs-dot g" onclick="cycleColor(this)"></div></div></td>
+                <td><div class="obs-indicator"><div class="obs-dot g" onclick="cycleColor(this)"></div></div></td>
+                <td><input type="text" placeholder=""></td>
+              </tr>
+              <tr>
+                <td><input type="text" placeholder="Nombre"></td>
+                <td><div class="obs-indicator"><div class="obs-dot g" onclick="cycleColor(this)"></div></div></td>
+                <td><div class="obs-indicator"><div class="obs-dot g" onclick="cycleColor(this)"></div></div></td>
+                <td><div class="obs-indicator"><div class="obs-dot g" onclick="cycleColor(this)"></div></div></td>
+                <td><div class="obs-indicator"><div class="obs-dot g" onclick="cycleColor(this)"></div></div></td>
+                <td><input type="text" placeholder=""></td>
+              </tr>
+              <tr>
+                <td><input type="text" placeholder="Nombre"></td>
+                <td><div class="obs-indicator"><div class="obs-dot g" onclick="cycleColor(this)"></div></div></td>
+                <td><div class="obs-indicator"><div class="obs-dot g" onclick="cycleColor(this)"></div></div></td>
+                <td><div class="obs-indicator"><div class="obs-dot g" onclick="cycleColor(this)"></div></div></td>
+                <td><div class="obs-indicator"><div class="obs-dot g" onclick="cycleColor(this)"></div></div></td>
+                <td><input type="text" placeholder=""></td>
+              </tr>
+              <tr>
+                <td><input type="text" placeholder="Nombre"></td>
+                <td><div class="obs-indicator"><div class="obs-dot g" onclick="cycleColor(this)"></div></div></td>
+                <td><div class="obs-indicator"><div class="obs-dot g" onclick="cycleColor(this)"></div></div></td>
+                <td><div class="obs-indicator"><div class="obs-dot g" onclick="cycleColor(this)"></div></div></td>
+                <td><div class="obs-indicator"><div class="obs-dot g" onclick="cycleColor(this)"></div></div></td>
+                <td><input type="text" placeholder=""></td>
+              </tr>
+              <tr>
+                <td><input type="text" placeholder="Nombre"></td>
+                <td><div class="obs-indicator"><div class="obs-dot g" onclick="cycleColor(this)"></div></div></td>
+                <td><div class="obs-indicator"><div class="obs-dot g" onclick="cycleColor(this)"></div></div></td>
+                <td><div class="obs-indicator"><div class="obs-dot g" onclick="cycleColor(this)"></div></div></td>
+                <td><div class="obs-indicator"><div class="obs-dot g" onclick="cycleColor(this)"></div></div></td>
+                <td><input type="text" placeholder=""></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="field-label" style="margin-top:20px">Jugadores prioritarios para seguimiento individual</div>
+        <textarea class="write-area" placeholder="Nombres y razón breve..."></textarea>
+      </div>
+    </div>
+
+    <div class="ficha">
+      <div class="ficha-header" style="background: var(--s4)">
+        <span class="ficha-icon">🎯</span>
+        <div class="ficha-header-text">
+          <span>Ficha 4.2 · Diseño Táctico-Mental</span>
+          <h3>Ejercicio Integrado: Técnica + Mental</h3>
+        </div>
+      </div>
+      <div class="ficha-body">
+        <div class="field-label">Nombre del ejercicio</div>
+        <input type="text" class="write-line" placeholder="Ej: Rondo con presión y scanning previo">
+        <div class="cols-2" style="margin-top:8px">
+          <div>
+            <div class="field-label">Objetivo técnico</div>
+            <textarea class="write-area" placeholder="¿Qué habilidad física entrenás?" style="min-height:60px"></textarea>
+          </div>
+          <div>
+            <div class="field-label">Objetivo mental</div>
+            <textarea class="write-area" placeholder="¿Qué variable psicológica observás?" style="min-height:60px"></textarea>
+          </div>
+        </div>
+        <div class="field-label">Descripción del ejercicio</div>
+        <textarea class="write-area" placeholder="Pasos, duración, número de jugadores..."></textarea>
+        <div class="field-label">¿Qué conductas mentales vas a observar?</div>
+        <input type="text" class="write-line" placeholder="Ej: Cantidad de scaneos antes de recibir, velocidad de decisión...">
+        <div class="field-label">¿Cómo vas a registrar lo que observás?</div>
+        <input type="text" class="write-line" placeholder="Ej: Ficha de observación, video, anotación en papel...">
+      </div>
+    </div>
+
+    <div class="ficha">
+      <div class="ficha-header" style="background: var(--s4)">
+        <span class="ficha-icon">📊</span>
+        <div class="ficha-header-text">
+          <span>Ficha 4.3 · Cierre del Proceso</span>
+          <h3>Plan de Acción — 30 Días</h3>
+        </div>
+      </div>
+      <div class="ficha-body">
+        <p style="font-size:13px; color:var(--muted); margin-bottom:20px">Una acción concreta por ruta de trabajo para el próximo mes.</p>
+        <div style="display:flex; flex-direction:column; gap:10px">
+          <div style="background:#fdf0f0; border-radius:12px; padding:16px; display:grid; grid-template-columns:120px 1fr; gap:12px; align-items:start">
+            <div style="font-family:var(--font-head); font-size:12px; font-weight:700; color:var(--s1); text-transform:uppercase; letter-spacing:0.5px; padding-top:4px">Ruta 1<br>Autorregulación</div>
+            <textarea class="write-area" style="min-height:50px" placeholder="Ej: Practicar la rutina RRR en cada partido como visitante..."></textarea>
+          </div>
+          <div style="background:#edf8f7; border-radius:12px; padding:16px; display:grid; grid-template-columns:120px 1fr; gap:12px; align-items:start">
+            <div style="font-family:var(--font-head); font-size:12px; font-weight:700; color:var(--s2); text-transform:uppercase; letter-spacing:0.5px; padding-top:4px">Ruta 2<br>Vínculo</div>
+            <textarea class="write-area" style="min-height:50px" placeholder="Ej: Tener 1 conversación individual por semana con un jugador diferente..."></textarea>
+          </div>
+          <div style="background:var(--s3-light); border-radius:12px; padding:16px; display:grid; grid-template-columns:120px 1fr; gap:12px; align-items:start">
+            <div style="font-family:var(--font-head); font-size:12px; font-weight:700; color:var(--s3); text-transform:uppercase; letter-spacing:0.5px; padding-top:4px">Ruta 3<br>Mindfulness</div>
+            <textarea class="write-area" style="min-height:50px" placeholder="Ej: 5 min de práctica diaria antes de cada entrenamiento..."></textarea>
+          </div>
+          <div style="background:var(--s4-light); border-radius:12px; padding:16px; display:grid; grid-template-columns:120px 1fr; gap:12px; align-items:start">
+            <div style="font-family:var(--font-head); font-size:12px; font-weight:700; color:var(--s4); text-transform:uppercase; letter-spacing:0.5px; padding-top:4px">Ruta 4<br>ePsD + Campo</div>
+            <textarea class="write-area" style="min-height:50px" placeholder="Ej: Completar ficha de observación en 2 entrenamientos por semana..."></textarea>
+          </div>
+        </div>
+        <div class="field-label" style="margin-top:20px">Mi compromiso principal de aquí a 30 días</div>
+        <textarea class="write-area" placeholder="En mis propias palabras..."></textarea>
+      </div>
+    </div>
+  </div>
+
+  <div class="mat-section">
+    <div class="mat-section-title">📝 Tarea — Cierre del Proceso</div>
+    <div class="tarea-card">
+      <div class="tarea-header" style="background: var(--s4)">📅 Primeros 30 días</div>
+      <div class="tarea-body">
+        <ul>
+          <li><div class="tarea-check" onclick="this.style.background='var(--s4)'; this.style.borderColor='var(--s4)'"></div>Aplicar la ficha de observación en el próximo entrenamiento. Registrar 3 jugadores con sus variables mentales.</li>
+          <li><div class="tarea-check" onclick="this.style.background='var(--s4)'; this.style.borderColor='var(--s4)'"></div>Presentar la narrativa del proyecto al plantel en el próximo entrenamiento.</li>
+          <li><div class="tarea-check" onclick="this.style.background='var(--s4)'; this.style.borderColor='var(--s4)'"></div>Revisar el plan de acción de 30 días con el Dpto. de Psicología en 2 semanas.</li>
+          <li><div class="tarea-check" onclick="this.style.background='var(--s4)'; this.style.borderColor='var(--s4)'"></div>Continuar práctica diaria de psmilechile.com.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+// Session tabs
+function showSession(n) {
+  document.querySelectorAll('.session').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+  document.getElementById('s' + n).classList.add('active');
+  document.querySelector('.nav-tab[data-s="' + n + '"]').classList.add('active');
+  window.scrollTo({ top: document.querySelector('.nav').offsetHeight, behavior: 'smooth' });
+}
+
+// Scale dots
+function selectDot(groupId, el, color) {
+  const group = document.getElementById(groupId);
+  group.querySelectorAll('.scale-dot').forEach(d => {
+    d.style.background = 'white';
+    d.style.borderColor = 'var(--border)';
+    d.style.color = 'var(--muted)';
+  });
+  el.style.background = color;
+  el.style.borderColor = color;
+  el.style.color = 'white';
+}
+
+function toggleDot(el) {
+  const active = el.style.borderWidth === '2px' && el.style.opacity === '1';
+  el.style.opacity = el.style.opacity === '1' ? '0.35' : '1';
+}
+
+// Toggle day tracker
+function toggleDay(el) {
+  const done = el.dataset.done === '1';
+  el.dataset.done = done ? '0' : '1';
+  el.textContent = done ? '—' : '✓';
+  el.style.background = done ? 'var(--paper)' : 'var(--s3)';
+  el.style.color = done ? 'var(--muted)' : 'white';
+  el.style.borderColor = done ? 'var(--border)' : 'var(--s3)';
+}
+
+// Cycle color for obs dots
+function cycleColor(el) {
+  const colors = ['#e0e0e0', '#38a169', '#d69e2e', '#e53e3e'];
+  const fills = ['#ffffff', '#f0fff4', '#fffff0', '#fff5f5'];
+  let idx = parseInt(el.dataset.idx || 0);
+  idx = (idx + 1) % colors.length;
+  el.dataset.idx = idx;
+  el.style.background = fills[idx];
+  el.style.borderColor = colors[idx];
+  el.style.width = '20px'; el.style.height = '20px';
+}
+
+// Breathing timer 4-2-4
+let breathRunning = false, breathInterval = null, breathCycle = 0, breathTotal = 5;
+let phase = 0, phaseCount = 0;
+const phases = [
+  { name: 'INHALA', dur: 4, color: '#a8d8ea' },
+  { name: 'PAUSA', dur: 2, color: '#f8d7a0' },
+  { name: 'EXHALA', dur: 4, color: '#b8e6c8' }
+];
+
+function updateBreathUI() {
+  const p = phases[phase];
+  document.getElementById('breathPhase').textContent = p.name;
+  document.getElementById('breathCount').textContent = p.dur - phaseCount;
+  const progress = ((phaseCount) / p.dur) * 100;
+  document.getElementById('breathRing').style.background =
+    `conic-gradient(${p.color} ${progress * 3.6}deg, rgba(255,255,255,0.08) 0deg)`;
+}
+
+function toggleBreath() {
+  if (breathRunning) {
+    clearInterval(breathInterval); breathRunning = false;
+    document.getElementById('breathBtn').textContent = '▶ Continuar';
+  } else {
+    breathRunning = true;
+    document.getElementById('breathBtn').textContent = '⏸ Pausar';
+    breathInterval = setInterval(() => {
+      phaseCount++;
+      if (phaseCount >= phases[phase].dur) {
+        phaseCount = 0; phase++;
+        if (phase >= 3) { phase = 0; breathCycle++;
+          document.getElementById('breathProgress').textContent = `${breathCycle} / ${breathTotal} ciclos completados`;
+          if (breathCycle >= breathTotal) { resetBreath(); return; }
+        }
+      }
+      updateBreathUI();
+    }, 1000);
+    updateBreathUI();
+  }
+}
+
+function resetBreath() {
+  clearInterval(breathInterval); breathRunning = false;
+  phase = 0; phaseCount = 0;
+  document.getElementById('breathBtn').textContent = '▶ Iniciar';
+  document.getElementById('breathCount').textContent = '4';
+  document.getElementById('breathPhase').textContent = 'INHALA';
+  document.getElementById('breathRing').style.background = 'conic-gradient(rgba(255,255,255,0.6) 0%, transparent 0%)';
+  if (breathCycle >= breathTotal) {
+    document.getElementById('breathProgress').textContent = '✓ ¡Completado! 5 ciclos';
+    breathCycle = 0;
+    document.getElementById('breathProgress').style.color = '#88d4a0';
+  }
+}
+</script>
+</body>
+</html>

@@ -2,39 +2,44 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { db } from '../firebase';
-import { collection, getDocs, orderBy, query, deleteDoc, doc } from 'firebase/firestore';
-import { Brain, LogOut, Plus, Users, Search, Trash2, X, ShieldCheck, Eye } from 'lucide-react';
+import { collection, getDocs, orderBy, query, deleteDoc, doc, where } from 'firebase/firestore';
+import { Brain, LogOut, Plus, Users, Search, Trash2, ShieldCheck, Eye, Building2 } from 'lucide-react';
 import PlayerCard from './PlayerCard';
 import AddPlayerModal from './AddPlayerModal';
-
-// ================================================================
-// CONFIGURACIÓN DE ROLES
-// Cambia este correo al email que usas como administrador.
-// Cualquier otro usuario que se loguee será tratado como DT (solo lectura).
-// ================================================================
-const ADMIN_EMAIL = 'psmile@psmile.cl';
+import { getUserConfig, ACADEMIAS } from './academyConfig';
 
 export default function Dashboard() {
     const { currentUser, logout } = useAuth();
     const navigate = useNavigate();
+    const userConfig = getUserConfig(currentUser?.email);
+    const isAdmin = userConfig.role === 'admin';
+
     const [players, setPlayers] = useState([]);
     const [loading, setLoading] = useState(true);
     const [showAddModal, setShowAddModal] = useState(false);
     const [searchTerm, setSearchTerm] = useState('');
     const [filterCategory, setFilterCategory] = useState('Todas');
-    const [reportModal, setReportModal] = useState(null);
-    const [deleteConfirm, setDeleteConfirm] = useState(null); // { id, nombre }
-
-    // Role check
-    const isAdmin = currentUser?.email === ADMIN_EMAIL;
+    const [filterAcademia, setFilterAcademia] = useState('Todas');
+    const [deleteConfirm, setDeleteConfirm] = useState(null);
 
     const categorias = ['Todas', 'Sub-13', 'Sub-15', 'Sub-17', 'Sub-20'];
 
-    // Fetch players from Firestore
+    // Fetch players from Firestore (filtered by academy for DTs)
     const fetchPlayers = async () => {
         setLoading(true);
         try {
-            const q = query(collection(db, 'jugadores'), orderBy('createdAt', 'desc'));
+            let q;
+            if (isAdmin) {
+                // Admin ve todos los jugadores
+                q = query(collection(db, 'jugadores'), orderBy('createdAt', 'desc'));
+            } else {
+                // DT solo ve los de su academia
+                q = query(
+                    collection(db, 'jugadores'),
+                    where('academiaId', '==', userConfig.academiaId),
+                    orderBy('createdAt', 'desc')
+                );
+            }
             const snapshot = await getDocs(q);
             const playerList = snapshot.docs.map(d => ({ id: d.id, ...d.data() }));
             setPlayers(playerList);
@@ -70,18 +75,20 @@ export default function Dashboard() {
         }
     };
 
-    const handleViewReport = (player) => {
-        if (player.reporteURL) {
-            setReportModal(player);
-        }
-    };
 
     // Filtered players
     const filteredPlayers = players.filter(p => {
         const matchesSearch = p.nombre?.toLowerCase().includes(searchTerm.toLowerCase());
         const matchesCategory = filterCategory === 'Todas' || p.categoria === filterCategory;
-        return matchesSearch && matchesCategory;
+        const matchesAcademia = filterAcademia === 'Todas' || p.academiaId === filterAcademia;
+        return matchesSearch && matchesCategory && matchesAcademia;
     });
+
+    // Get academia name for display
+    const getAcademiaName = (academiaId) => {
+        const ac = ACADEMIAS.find(a => a.id === academiaId);
+        return ac ? ac.nombre : academiaId || 'Sin academia';
+    };
 
     return (
         <div className="min-h-screen bg-[#0A0F1E]">
@@ -125,15 +132,20 @@ export default function Dashboard() {
 
             {/* Main Content */}
             <main className="container mx-auto px-6 lg:px-12 py-8">
-                {/* Stats Bar + Search */}
-                <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-6 mb-10">
+                {/* Title + Stats */}
+                <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-6 mb-8">
                     <div>
                         <h2 className="text-2xl md:text-3xl font-black text-white mb-1">
-                            Academia <span className="text-[#0070F3]">Bewe</span>
+                            {isAdmin ? (
+                                <>Portal <span className="text-[#0070F3]">Multi-Academia</span></>
+                            ) : (
+                                <>{getAcademiaName(userConfig.academiaId)}</>
+                            )}
                         </h2>
                         <p className="text-[#6B7280] text-sm flex items-center gap-2">
                             <Users size={14} />
                             {players.length} jugadores registrados
+                            {!isAdmin && <span className="text-[#0070F3]">• {getAcademiaName(userConfig.academiaId)}</span>}
                         </p>
                     </div>
 
@@ -146,7 +158,7 @@ export default function Dashboard() {
                                 value={searchTerm}
                                 onChange={(e) => setSearchTerm(e.target.value)}
                                 placeholder="Buscar jugador..."
-                                className="w-full sm:w-60 bg-[#111827] border border-white/5 rounded-xl pl-10 pr-4 py-2.5 text-white text-sm placeholder-[#4B5563] outline-none focus:border-[#0070F3] transition-colors"
+                                className="w-full sm:w-52 bg-[#111827] border border-white/5 rounded-xl pl-10 pr-4 py-2.5 text-white text-sm placeholder-[#4B5563] outline-none focus:border-[#0070F3] transition-colors"
                             />
                         </div>
 
@@ -156,10 +168,11 @@ export default function Dashboard() {
                                 <button
                                     key={cat}
                                     onClick={() => setFilterCategory(cat)}
-                                    className={`px-3 py-1.5 rounded-lg text-[10px] font-bold tracking-wider uppercase transition-all ${filterCategory === cat
-                                        ? 'bg-[#0070F3] text-white'
-                                        : 'text-[#6B7280] hover:text-white'
-                                        }`}
+                                    className={`px-2.5 py-1.5 rounded-lg text-[10px] font-bold tracking-wider uppercase transition-all ${
+                                        filterCategory === cat
+                                            ? 'bg-[#0070F3] text-white'
+                                            : 'text-[#6B7280] hover:text-white'
+                                    }`}
                                 >
                                     {cat}
                                 </button>
@@ -167,6 +180,34 @@ export default function Dashboard() {
                         </div>
                     </div>
                 </div>
+
+                {/* Academia Filter (solo admin) */}
+                {isAdmin && (
+                    <div className="flex items-center gap-2 mb-8">
+                        <Building2 size={14} className="text-[#6B7280]" />
+                        <div className="flex gap-1 bg-[#111827] border border-white/5 rounded-xl p-1">
+                            <button
+                                onClick={() => setFilterAcademia('Todas')}
+                                className={`px-3 py-1.5 rounded-lg text-[10px] font-bold tracking-wider uppercase transition-all ${
+                                    filterAcademia === 'Todas' ? 'bg-[#39FF14]/20 text-[#39FF14]' : 'text-[#6B7280] hover:text-white'
+                                }`}
+                            >
+                                Todas
+                            </button>
+                            {ACADEMIAS.map(ac => (
+                                <button
+                                    key={ac.id}
+                                    onClick={() => setFilterAcademia(ac.id)}
+                                    className={`px-3 py-1.5 rounded-lg text-[10px] font-bold tracking-wider uppercase transition-all ${
+                                        filterAcademia === ac.id ? 'bg-[#39FF14]/20 text-[#39FF14]' : 'text-[#6B7280] hover:text-white'
+                                    }`}
+                                >
+                                    {ac.nombre}
+                                </button>
+                            ))}
+                        </div>
+                    </div>
+                )}
 
                 {/* Players Grid */}
                 {loading ? (
@@ -185,7 +226,7 @@ export default function Dashboard() {
                             </h3>
                             <p className="text-[#6B7280] text-sm mb-6">
                                 {players.length === 0
-                                    ? (isAdmin ? 'Presiona el botón (+) para añadir tu primer jugador al sistema.' : 'El administrador aún no ha registrado jugadores.')
+                                    ? (isAdmin ? 'Presiona el botón (+) para añadir tu primer jugador.' : 'El administrador aún no ha registrado jugadores.')
                                     : 'Intenta con otro término de búsqueda o categoría.'}
                             </p>
                         </div>
@@ -194,7 +235,7 @@ export default function Dashboard() {
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
                         {filteredPlayers.map(player => (
                             <div key={player.id} className="relative group">
-                                <PlayerCard player={player} onViewReport={handleViewReport} />
+                                <PlayerCard player={player} showAcademia={isAdmin} getAcademiaName={getAcademiaName} />
                                 {/* Delete button (solo admin) */}
                                 {isAdmin && (
                                     <button
@@ -229,37 +270,6 @@ export default function Dashboard() {
                 onPlayerAdded={fetchPlayers}
             />
 
-            {/* Report Viewer Modal */}
-            {reportModal && (
-                <div className="fixed inset-0 z-50 bg-black/90 backdrop-blur-sm flex items-center justify-center p-4">
-                    <div className="bg-[#111827] border border-white/10 rounded-2xl w-full max-w-5xl h-[85vh] flex flex-col shadow-2xl">
-                        <div className="flex items-center justify-between p-4 border-b border-white/5">
-                            <div>
-                                <h3 className="text-white font-bold">{reportModal.nombre}</h3>
-                                <p className="text-[10px] text-[#0070F3] uppercase tracking-widest font-bold">{reportModal.categoria} — Análisis de Élite</p>
-                            </div>
-                            <div className="flex items-center gap-2">
-                                <a
-                                    href={reportModal.reporteURL}
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    className="text-xs text-[#6B7280] hover:text-white transition-colors px-3 py-1.5 border border-white/10 rounded-lg"
-                                >
-                                    Abrir en nueva pestaña
-                                </a>
-                                <button onClick={() => setReportModal(null)} className="text-[#6B7280] hover:text-white transition-colors p-1.5">
-                                    <X size={20} />
-                                </button>
-                            </div>
-                        </div>
-                        <iframe
-                            src={reportModal.reporteURL}
-                            className="flex-1 w-full rounded-b-2xl"
-                            title={`Reporte de ${reportModal.nombre}`}
-                        />
-                    </div>
-                </div>
-            )}
 
             {/* Delete Confirmation Modal */}
             {deleteConfirm && (

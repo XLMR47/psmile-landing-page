@@ -1,0 +1,955 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tu Mapa Estratégico — Bewe Fútbol</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,700;1,400&family=DM+Serif+Display:ital@0;1&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --navy: #0f2540;
+    --navy-mid: #1a3a5c;
+    --teal: #2e86ab;
+    --teal-light: #4fa8c9;
+    --green: #27ae60;
+    --red: #c0392b;
+    --orange: #e67e22;
+    --gold: #d4ac0d;
+    --purple: #7d3c98;
+    --white: #ffffff;
+    --off-white: #f7f9fc;
+    --light-blue: #e8f4fb;
+    --text: #1c2b3a;
+    --muted: #5d6d7e;
+    --border: #dce6ef;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--off-white);
+    color: var(--text);
+    min-height: 100vh;
+  }
+
+  /* ── HERO ──────────────────────────────────── */
+  .hero {
+    background: var(--navy);
+    position: relative;
+    overflow: hidden;
+    padding: 72px 48px 80px;
+    text-align: center;
+  }
+  .hero::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(ellipse 60% 80% at 20% 50%, rgba(46,134,171,0.18) 0%, transparent 70%),
+      radial-gradient(ellipse 50% 60% at 80% 30%, rgba(39,174,96,0.10) 0%, transparent 60%);
+  }
+  .hero-tag {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--teal-light);
+    margin-bottom: 20px;
+    position: relative;
+  }
+  .hero h1 {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(48px, 8vw, 88px);
+    color: var(--white);
+    line-height: 0.95;
+    letter-spacing: 2px;
+    position: relative;
+    margin-bottom: 16px;
+  }
+  .hero h1 em {
+    color: var(--teal-light);
+    font-style: normal;
+  }
+  .hero-sub {
+    font-family: 'DM Serif Display', serif;
+    font-size: 20px;
+    font-style: italic;
+    color: rgba(255,255,255,0.6);
+    position: relative;
+    margin-bottom: 32px;
+  }
+  .hero-meta {
+    display: flex;
+    gap: 24px;
+    justify-content: center;
+    flex-wrap: wrap;
+    position: relative;
+  }
+  .hero-pill {
+    background: rgba(255,255,255,0.08);
+    border: 1px solid rgba(255,255,255,0.15);
+    color: rgba(255,255,255,0.75);
+    padding: 6px 18px;
+    border-radius: 100px;
+    font-size: 13px;
+    font-weight: 500;
+  }
+
+  /* ── LAYOUT ─────────────────────────────────── */
+  .container {
+    max-width: 1080px;
+    margin: 0 auto;
+    padding: 0 32px;
+  }
+
+  .section {
+    padding: 64px 0;
+  }
+  .section-label {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--teal);
+    margin-bottom: 8px;
+  }
+  .section-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 42px;
+    color: var(--navy);
+    letter-spacing: 1px;
+    margin-bottom: 8px;
+    line-height: 1;
+  }
+  .section-desc {
+    font-size: 16px;
+    color: var(--muted);
+    margin-bottom: 40px;
+    max-width: 560px;
+    line-height: 1.6;
+  }
+
+  /* ── INTRO CARD ──────────────────────────────── */
+  .intro-card {
+    background: var(--navy-mid);
+    border-radius: 20px;
+    padding: 40px 48px;
+    margin: 48px 0 0;
+    position: relative;
+    overflow: hidden;
+  }
+  .intro-card::after {
+    content: '';
+    position: absolute;
+    right: -40px; top: -40px;
+    width: 200px; height: 200px;
+    border-radius: 50%;
+    background: rgba(46,134,171,0.15);
+  }
+  .intro-card p {
+    font-size: 17px;
+    color: rgba(255,255,255,0.85);
+    line-height: 1.75;
+    max-width: 680px;
+    position: relative;
+    z-index: 1;
+  }
+  .intro-card p strong {
+    color: var(--teal-light);
+  }
+
+  /* ── FODA GRID ───────────────────────────────── */
+  .foda-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+  }
+  .foda-card {
+    border-radius: 16px;
+    padding: 32px;
+    position: relative;
+    overflow: hidden;
+    transition: transform 0.25s ease, box-shadow 0.25s ease;
+  }
+  .foda-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 16px 40px rgba(0,0,0,0.10);
+  }
+  .foda-card.fortalezas { background: #eafaf1; border-top: 4px solid var(--green); }
+  .foda-card.oportunidades { background: var(--light-blue); border-top: 4px solid var(--teal); }
+  .foda-card.debilidades { background: #fef5e7; border-top: 4px solid var(--orange); }
+  .foda-card.amenazas { background: #fdedec; border-top: 4px solid var(--red); }
+
+  .foda-card-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 20px;
+  }
+  .foda-icon {
+    font-size: 28px;
+    line-height: 1;
+  }
+  .foda-card-header h3 {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 26px;
+    letter-spacing: 1px;
+    line-height: 1;
+  }
+  .foda-card.fortalezas h3 { color: var(--green); }
+  .foda-card.oportunidades h3 { color: var(--teal); }
+  .foda-card.debilidades h3 { color: var(--orange); }
+  .foda-card.amenazas h3 { color: var(--red); }
+
+  .foda-list {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  .foda-list li {
+    font-size: 15px;
+    color: var(--text);
+    line-height: 1.5;
+    padding-left: 20px;
+    position: relative;
+  }
+  .foda-list li::before {
+    content: '▸';
+    position: absolute;
+    left: 0;
+    font-size: 12px;
+    top: 2px;
+  }
+  .foda-card.fortalezas .foda-list li::before { color: var(--green); }
+  .foda-card.oportunidades .foda-list li::before { color: var(--teal); }
+  .foda-card.debilidades .foda-list li::before { color: var(--orange); }
+  .foda-card.amenazas .foda-list li::before { color: var(--red); }
+
+  /* ── DIAGNOSIS ROW ───────────────────────────── */
+  .diag-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+  }
+  .diag-box {
+    border-radius: 16px;
+    padding: 32px;
+  }
+  .diag-box.have {
+    background: #eafaf1;
+    border-left: 5px solid var(--green);
+  }
+  .diag-box.work {
+    background: #fef5e7;
+    border-left: 5px solid var(--orange);
+  }
+  .diag-box h4 {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 22px;
+    letter-spacing: 1px;
+    margin-bottom: 12px;
+  }
+  .diag-box.have h4 { color: var(--green); }
+  .diag-box.work h4 { color: var(--orange); }
+  .diag-box p { font-size: 15px; line-height: 1.65; color: var(--text); }
+
+  /* ── ROUTES ──────────────────────────────────── */
+  .routes-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+  .route-card {
+    display: grid;
+    grid-template-columns: 72px 1fr;
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+    transition: transform 0.22s ease, box-shadow 0.22s ease;
+  }
+  .route-card:hover {
+    transform: translateX(6px);
+    box-shadow: 0 6px 24px rgba(0,0,0,0.10);
+  }
+  .route-icon-col {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 28px;
+  }
+  .route-card.r1 .route-icon-col { background: var(--green); }
+  .route-card.r2 .route-icon-col { background: var(--teal); }
+  .route-card.r3 .route-icon-col { background: var(--red); }
+  .route-card.r4 .route-icon-col { background: var(--purple); }
+  .route-body {
+    background: white;
+    padding: 24px 28px;
+    border-top: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
+    border-right: 1px solid var(--border);
+    border-radius: 0 16px 16px 0;
+  }
+  .route-body h4 {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 22px;
+    letter-spacing: 0.5px;
+    margin-bottom: 6px;
+    line-height: 1;
+  }
+  .route-card.r1 .route-body h4 { color: var(--green); }
+  .route-card.r2 .route-body h4 { color: var(--teal); }
+  .route-card.r3 .route-body h4 { color: var(--red); }
+  .route-card.r4 .route-body h4 { color: var(--purple); }
+  .route-sub {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 10px;
+  }
+  .route-body p {
+    font-size: 15px;
+    line-height: 1.65;
+    color: var(--text);
+  }
+
+  /* ── PSICOEDU ─────────────────────────────────── */
+  .psicoedu-block {
+    border-radius: 20px;
+    overflow: hidden;
+    margin-bottom: 20px;
+    box-shadow: 0 2px 16px rgba(0,0,0,0.07);
+  }
+  .psicoedu-header {
+    padding: 20px 32px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+  }
+  .psicoedu-header .ps-icon { font-size: 26px; }
+  .psicoedu-header h4 {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 22px;
+    letter-spacing: 0.5px;
+    color: white;
+    line-height: 1;
+  }
+  .psicoedu-body {
+    padding: 28px 32px;
+    font-size: 15px;
+    line-height: 1.75;
+    color: var(--text);
+  }
+  .psicoedu-block.teal .psicoedu-header { background: var(--teal); }
+  .psicoedu-block.teal .psicoedu-body { background: var(--light-blue); }
+  .psicoedu-block.red .psicoedu-header { background: var(--red); }
+  .psicoedu-block.red .psicoedu-body { background: #fdedec; }
+
+  /* ── HERRAMIENTA ASERTIVA ────────────────────── */
+  .tool-box {
+    background: white;
+    border-radius: 20px;
+    border: 2px solid var(--navy-mid);
+    overflow: hidden;
+    margin-top: 24px;
+    box-shadow: 0 4px 20px rgba(15,37,64,0.08);
+  }
+  .tool-header {
+    background: var(--navy-mid);
+    padding: 20px 32px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+  }
+  .tool-header h4 {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 22px;
+    letter-spacing: 0.5px;
+    color: white;
+  }
+  .tool-header .ps-icon { font-size: 24px; }
+  .tool-body { padding: 32px; }
+  .tool-body > p {
+    font-size: 15px;
+    color: var(--muted);
+    line-height: 1.6;
+    margin-bottom: 28px;
+  }
+  .ear-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 12px;
+    margin-bottom: 28px;
+  }
+  .ear-step {
+    border-radius: 14px;
+    padding: 24px 20px;
+    text-align: center;
+  }
+  .ear-step.e { background: #fef5e7; border-top: 3px solid var(--orange); }
+  .ear-step.a { background: var(--light-blue); border-top: 3px solid var(--teal); }
+  .ear-step.r { background: #eafaf1; border-top: 3px solid var(--green); }
+  .ear-letter {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 52px;
+    line-height: 1;
+    margin-bottom: 6px;
+  }
+  .ear-step.e .ear-letter { color: var(--orange); }
+  .ear-step.a .ear-letter { color: var(--teal); }
+  .ear-step.r .ear-letter { color: var(--green); }
+  .ear-step h5 {
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    margin-bottom: 8px;
+  }
+  .ear-step.e h5 { color: var(--orange); }
+  .ear-step.a h5 { color: var(--teal); }
+  .ear-step.r h5 { color: var(--green); }
+  .ear-step p { font-size: 13px; color: var(--muted); line-height: 1.5; }
+
+  .ear-example {
+    background: var(--navy);
+    border-radius: 14px;
+    padding: 24px 28px;
+    margin-bottom: 20px;
+  }
+  .ear-example-label {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--teal-light);
+    margin-bottom: 10px;
+  }
+  .ear-example p {
+    font-family: 'DM Serif Display', serif;
+    font-size: 17px;
+    font-style: italic;
+    color: rgba(255,255,255,0.90);
+    line-height: 1.6;
+  }
+  .ear-example span { color: var(--teal-light); font-style: normal; font-weight: 700; }
+
+  .ear-practice h5 {
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    color: var(--navy-mid);
+    margin-bottom: 12px;
+  }
+  .practice-steps {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .practice-step {
+    display: grid;
+    grid-template-columns: 28px 1fr;
+    gap: 12px;
+    align-items: start;
+  }
+  .practice-num {
+    background: var(--navy-mid);
+    color: white;
+    width: 28px; height: 28px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    font-weight: 700;
+    flex-shrink: 0;
+    margin-top: 2px;
+  }
+  .practice-step p { font-size: 14px; line-height: 1.6; color: var(--text); }
+
+  /* ── RESPIRACIÓN / PSMILECHILE ────────────────── */
+  .breathing-card {
+    background: var(--navy);
+    border-radius: 20px;
+    padding: 40px;
+    margin-top: 20px;
+    position: relative;
+    overflow: hidden;
+  }
+  .breathing-card::before {
+    content: '';
+    position: absolute;
+    right: -60px; bottom: -60px;
+    width: 240px; height: 240px;
+    border-radius: 50%;
+    border: 40px solid rgba(46,134,171,0.15);
+  }
+  .breathing-card::after {
+    content: '';
+    position: absolute;
+    right: 20px; bottom: 20px;
+    width: 130px; height: 130px;
+    border-radius: 50%;
+    border: 30px solid rgba(46,134,171,0.10);
+  }
+  .bc-tag {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--teal-light);
+    margin-bottom: 12px;
+  }
+  .breathing-card h4 {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 32px;
+    color: white;
+    letter-spacing: 1px;
+    margin-bottom: 12px;
+    position: relative;
+    z-index: 1;
+  }
+  .breathing-card > p {
+    font-size: 15px;
+    color: rgba(255,255,255,0.75);
+    line-height: 1.7;
+    max-width: 560px;
+    margin-bottom: 28px;
+    position: relative;
+    z-index: 1;
+  }
+  .breath-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    position: relative;
+    z-index: 1;
+  }
+  .breath-item {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    background: rgba(255,255,255,0.07);
+    border: 1px solid rgba(255,255,255,0.12);
+    border-radius: 14px;
+    padding: 16px 20px;
+  }
+  .breath-item-icon { font-size: 24px; }
+  .breath-item-text strong {
+    display: block;
+    font-size: 14px;
+    font-weight: 700;
+    color: white;
+    margin-bottom: 2px;
+  }
+  .breath-item-text span { font-size: 13px; color: rgba(255,255,255,0.6); }
+  .breath-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: var(--teal);
+    color: white;
+    text-decoration: none;
+    font-size: 14px;
+    font-weight: 700;
+    padding: 10px 20px;
+    border-radius: 100px;
+    margin-top: 8px;
+    transition: background 0.2s;
+  }
+  .breath-link:hover { background: var(--teal-light); }
+
+  /* ── PRÓXIMOS PASOS ──────────────────────────── */
+  .steps-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+  .step-row {
+    display: grid;
+    grid-template-columns: 56px 1fr;
+    align-items: center;
+    gap: 0;
+    border-radius: 14px;
+    overflow: hidden;
+    background: white;
+    border: 1px solid var(--border);
+    transition: box-shadow 0.2s;
+  }
+  .step-row:hover { box-shadow: 0 4px 20px rgba(0,0,0,0.07); }
+  .step-num {
+    background: var(--navy-mid);
+    color: white;
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 28px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    min-height: 56px;
+  }
+  .step-text {
+    padding: 16px 20px;
+    font-size: 15px;
+    color: var(--text);
+    line-height: 1.5;
+  }
+
+  /* ── FOOTER QUOTE ────────────────────────────── */
+  .footer-quote {
+    background: var(--navy);
+    text-align: center;
+    padding: 64px 32px;
+    margin-top: 0;
+  }
+  .footer-quote blockquote {
+    font-family: 'DM Serif Display', serif;
+    font-size: clamp(20px, 3vw, 28px);
+    font-style: italic;
+    color: rgba(255,255,255,0.80);
+    max-width: 640px;
+    margin: 0 auto 20px;
+    line-height: 1.5;
+  }
+  .footer-quote cite {
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--teal-light);
+    font-style: normal;
+  }
+
+  /* ── DIVIDER ─────────────────────────────────── */
+  .divider {
+    height: 1px;
+    background: var(--border);
+    margin: 0;
+  }
+
+  /* ── ANIMATIONS ──────────────────────────────── */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(24px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  .hero > * { animation: fadeUp 0.6s ease both; }
+  .hero-tag { animation-delay: 0.05s; }
+  .hero h1 { animation-delay: 0.15s; }
+  .hero-sub { animation-delay: 0.25s; }
+  .hero-meta { animation-delay: 0.35s; }
+
+  @media (max-width: 700px) {
+    .foda-grid, .diag-row, .ear-grid { grid-template-columns: 1fr; }
+    .hero { padding: 48px 24px 56px; }
+    .container { padding: 0 20px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-tag">Bewe Fútbol • Departamento de Psicología Deportiva • 2026</div>
+  <h1>Tu Mapa<br><em>Estratégico</em></h1>
+  <p class="hero-sub">como Entrenador de Alto Rendimiento</p>
+  <div class="hero-meta">
+    <span class="hero-pill">📊 Análisis FODA</span>
+    <span class="hero-pill">🗺️ 4 Rutas de Acción</span>
+    <span class="hero-pill">🧠 Psicoeducación</span>
+    <span class="hero-pill">🛠️ Herramientas</span>
+  </div>
+</div>
+
+<div class="container">
+
+  <!-- INTRO -->
+  <div class="intro-card">
+    <p>
+      <strong>Coach, este informe es para vos.</strong><br>
+      No es un reporte clínico — es tu brújula de trabajo. Analizamos lo que tenés, lo que podés potenciar y los dos puntos concretos que, si los ajustás, van a elevar tanto tu liderazgo como el rendimiento de tu plantel. Sin tecnicismos, sin rodeos.
+    </p>
+  </div>
+
+  <!-- SECCIÓN: FODA -->
+  <div class="section">
+    <div class="section-label">Paso 1</div>
+    <div class="section-title">Análisis FODA</div>
+    <p class="section-desc">Un diagnóstico honesto de tu punto de partida. Lo bueno, lo que podemos explotar, lo que vamos a corregir y lo que tenemos que blindar.</p>
+
+    <div class="foda-grid">
+      <div class="foda-card fortalezas">
+        <div class="foda-card-header">
+          <span class="foda-icon">💪</span>
+          <h3>Fortalezas</h3>
+        </div>
+        <ul class="foda-list">
+          <li>Equipo fuerte mentalmente y físicamente</li>
+          <li>Gran capacidad de comunicar — los jugadores te creen</li>
+          <li>Cultura de equipo aguerrida y comprometida</li>
+        </ul>
+      </div>
+      <div class="foda-card oportunidades">
+        <div class="foda-card-header">
+          <span class="foda-icon">🚀</span>
+          <h3>Oportunidades</h3>
+        </div>
+        <ul class="foda-list">
+          <li>Jugadores con potencial para llegar a la ANFP</li>
+          <li>Mejorar toma de decisiones y timing táctico</li>
+          <li>Posicionarte como referente formador de élite</li>
+        </ul>
+      </div>
+      <div class="foda-card debilidades">
+        <div class="foda-card-header">
+          <span class="foda-icon">⚙️</span>
+          <h3>Debilidades</h3>
+        </div>
+        <ul class="foda-list">
+          <li>Vínculo afectivo con el jugador: área a fortalecer</li>
+          <li>Preparación específica de arqueros</li>
+        </ul>
+      </div>
+      <div class="foda-card amenazas">
+        <div class="foda-card-header">
+          <span class="foda-icon">🛡️</span>
+          <h3>Amenazas</h3>
+        </div>
+        <ul class="foda-list">
+          <li>Alta exigencia verbal sin medir el impacto emocional en el jugador</li>
+          <li>Distancia logística de algunos jugadores a la sede</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <div class="divider"></div>
+
+  <!-- SECCIÓN: DIAGNÓSTICO -->
+  <div class="section">
+    <div class="section-label">Paso 2</div>
+    <div class="section-title">¿Dónde estamos?</div>
+    <p class="section-desc">Lo concreto, sin vueltas.</p>
+
+    <div class="diag-row">
+      <div class="diag-box have">
+        <h4>✅ Lo que tenés</h4>
+        <p>Un equipo que confía en vos. Eso no se improvisa. Tu comunicación clara y tu carácter construyeron un grupo mental y físicamente preparado para competir. Esa es tu mayor ventaja.</p>
+      </div>
+      <div class="diag-box work">
+        <h4>🎯 Lo que vamos a trabajar</h4>
+        <p>Dos puntos concretos: el vínculo emocional con el jugador y cómo canalizás la exigencia en los momentos de mayor presión. Ahí está el margen para el siguiente nivel.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="divider"></div>
+
+  <!-- SECCIÓN: RUTAS -->
+  <div class="section">
+    <div class="section-label">Paso 3</div>
+    <div class="section-title">Tus 4 Rutas de Trabajo</div>
+    <p class="section-desc">Estrategias concretas para llevar el proyecto al siguiente nivel.</p>
+
+    <div class="routes-grid">
+      <div class="route-card r1">
+        <div class="route-icon-col">💎</div>
+        <div class="route-body">
+          <div class="route-sub">Ruta 1 — Máximo Rendimiento</div>
+          <h4>Potenciar lo bueno</h4>
+          <p>Tu credibilidad con el plantel es oro. La vamos a usar para introducir herramientas de toma de decisiones y protocolos cognitivos. Si el jugador confía en vos, va a adoptar estas herramientas más rápido — y eso los acerca al fútbol profesional.</p>
+        </div>
+      </div>
+      <div class="route-card r2">
+        <div class="route-icon-col">🤝</div>
+        <div class="route-body">
+          <div class="route-sub">Ruta 2 — Evolución del Liderazgo</div>
+          <h4>Liderar desde el vínculo</h4>
+          <p>Tu conocimiento técnico ya es sólido. El siguiente paso es conectar ese conocimiento con un trato más cercano. Cuando el jugador se siente valorado, escucha mejor, aprende más rápido y rinde más. No es psicología blanda — es estrategia.</p>
+        </div>
+      </div>
+      <div class="route-card r3">
+        <div class="route-icon-col">🏗️</div>
+        <div class="route-body">
+          <div class="route-sub">Ruta 3 — Blindaje Grupal</div>
+          <h4>Fortalecer la cohesión</h4>
+          <p>Tu liderazgo es el ancla del proyecto. Vamos a trabajar en herramientas concretas para que vos como DT puedas fomentar la convivencia, el sentido de pertenencia y la confianza mutua dentro del grupo.</p>
+        </div>
+      </div>
+      <div class="route-card r4">
+        <div class="route-icon-col">🎚️</div>
+        <div class="route-body">
+          <div class="route-sub">Ruta 4 — Gestión de la Exigencia</div>
+          <h4>Controlar el clima</h4>
+          <p>La alta exigencia es una fortaleza. El trabajo es canalizarla. En los momentos de presión, las palabras importan tanto como las tácticas. Vamos a construir herramientas para que tu mensaje mantenga la autoridad sin afectar la confianza del jugador.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="divider"></div>
+
+  <!-- SECCIÓN: PSICOEDUCACIÓN -->
+  <div class="section">
+    <div class="section-label">Paso 4</div>
+    <div class="section-title">Lo que la ciencia nos dice</div>
+    <p class="section-desc">Dos puntos para entender por qué trabajamos lo que trabajamos — en lenguaje simple, sin tecnicismos.</p>
+
+    <!-- PSICOEDU 1: VÍNCULO -->
+    <div class="psicoedu-block teal">
+      <div class="psicoedu-header">
+        <span class="ps-icon">🔗</span>
+        <h4>El vínculo afectivo no es opcional — es rendimiento</h4>
+      </div>
+      <div class="psicoedu-body">
+        Cuando un jugador se siente valorado por su entrenador, su cerebro libera menos cortisol (la hormona del estrés) durante la competencia. Eso se traduce directamente en <strong>mejores decisiones bajo presión, mayor receptividad al aprendizaje técnico y menor miedo al error.</strong> Los mejores entrenadores del mundo no son solo los más exigentes — son los más consistentes emocionalmente. La exigencia funciona cuando está sostenida por un vínculo real.
+      </div>
+    </div>
+
+    <!-- PSICOEDU 2: EXIGENCIA VERBAL -->
+    <div class="psicoedu-block red">
+      <div class="psicoedu-header">
+        <span class="ps-icon">⚡</span>
+        <h4>La exigencia verbal en momentos de presión — cómo funciona el cerebro</h4>
+      </div>
+      <div class="psicoedu-body">
+        Cuando un jugador recibe una crítica fuerte en un momento de estrés alto, su cerebro entra en modo de amenaza. En ese estado, la parte racional se desconecta y solo queda la reacción emocional: defensividad, parálisis o bronca. <strong>La autoridad no se gana gritando más — se gana siendo predecible, claro y justo.</strong> Un mensaje firme + emocionalmente regulado tiene el doble de impacto que uno descontrolado.
+      </div>
+    </div>
+
+    <!-- HERRAMIENTA EAR -->
+    <div class="tool-box">
+      <div class="tool-header">
+        <span class="ps-icon">🛠️</span>
+        <h4>Herramienta práctica: La Fórmula EAR</h4>
+      </div>
+      <div class="tool-body">
+        <p>Esta es tu herramienta de comunicación asertiva para el día a día. Tres pasos simples que cambian cómo recibe el jugador tu mensaje — sin perder ni un gramo de autoridad.</p>
+
+        <div class="ear-grid">
+          <div class="ear-step e">
+            <div class="ear-letter">E</div>
+            <h5>Emoción</h5>
+            <p>Reconocés lo que está sintiendo el jugador en ese momento</p>
+          </div>
+          <div class="ear-step a">
+            <div class="ear-letter">A</div>
+            <h5>Acción</h5>
+            <p>Das la corrección técnica o táctica que necesitás</p>
+          </div>
+          <div class="ear-step r">
+            <div class="ear-letter">R</div>
+            <h5>Razón</h5>
+            <p>Le explicás por qué eso lo va a ayudar a salir de la situación</p>
+          </div>
+        </div>
+
+        <div class="ear-example">
+          <div class="ear-example-label">Ejemplo en la cancha</div>
+          <p>
+            <span>"Sé que estás frustrado con el marcaje — es normal."</span> Lo que necesito que hagás ahora es anticiparte un paso antes de que reciba.
+            <span>Eso te va a sacar de esa posición y vas a empezar a ganar los duelos."</span>
+          </p>
+        </div>
+
+        <div class="ear-practice">
+          <h5>🔁 Cómo practicarlo esta semana</h5>
+          <div class="practice-steps">
+            <div class="practice-step">
+              <div class="practice-num">1</div>
+              <p><strong>Elegí 2 correcciones por entrenamiento</strong> donde antes habrías reaccionado fuerte. Esas son tus oportunidades para practicar la fórmula EAR.</p>
+            </div>
+            <div class="practice-step">
+              <div class="practice-num">2</div>
+              <p><strong>Antes de hablar, pausa 2 segundos.</strong> Ese momento es para activar la fórmula: E (¿qué está sintiendo?) → A (¿qué le pido?) → R (¿por qué le sirve?).</p>
+            </div>
+            <div class="practice-step">
+              <div class="practice-num">3</div>
+              <p><strong>Observá la respuesta del jugador.</strong> ¿Cerró los brazos o asintió? Ese feedback inmediato te dice si la fórmula llegó. Con la práctica, se vuelve automático.</p>
+            </div>
+            <div class="practice-step">
+              <div class="practice-num">4</div>
+              <p><strong>Al final del entrenamiento, anotá:</strong> ¿En qué situación la usé? ¿Cómo respondió el jugador? Tres líneas, sin más. Eso construye el hábito.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- RESPIRACIÓN / PSMILECHILE -->
+    <div class="breathing-card">
+      <div class="bc-tag">🫁 Herramienta de regulación — psmlichechile.com</div>
+      <h4>Entrenador de Pulsaciones en Vivo</h4>
+      <p>
+        Antes de cualquier corrección importante, o en los momentos donde sentís que la presión sube, tu sistema nervioso necesita una señal de calma. Esta herramienta te ayuda a entrenar eso — y lo podés hacer desde el celular, en cualquier lugar.
+      </p>
+      <div class="breath-actions">
+        <div class="breath-item">
+          <span class="breath-item-icon">🌙</span>
+          <div class="breath-item-text">
+            <strong>Antes de dormir</strong>
+            <span>5 minutos de entrenamiento de pulsaciones. Prepará el sistema nervioso para el descanso y la recuperación.</span>
+          </div>
+        </div>
+        <div class="breath-item">
+          <span class="breath-item-icon">🌅</span>
+          <div class="breath-item-text">
+            <strong>Al despertarte</strong>
+            <span>5 minutos antes de arrancar el día. Activá el modo calma antes de que empiece la exigencia.</span>
+          </div>
+        </div>
+        <div class="breath-item">
+          <span class="breath-item-icon">⏰</span>
+          <div class="breath-item-text">
+            <strong>Poné una alarma ahora</strong>
+            <span>Una para la noche, una para la mañana. Con el nombre "Entrenamiento mental". El hábito empieza con ese recordatorio.</span>
+          </div>
+        </div>
+      </div>
+      <a href="https://psmilechile.com" target="_blank" class="breath-link">→ Abrir psmilechile.com</a>
+    </div>
+
+  </div>
+
+  <div class="divider"></div>
+
+  <!-- PRÓXIMOS PASOS -->
+  <div class="section">
+    <div class="section-label">Paso 5</div>
+    <div class="section-title">Próximas Sesiones</div>
+    <p class="section-desc">El camino que vamos a recorrer juntos.</p>
+
+    <div class="steps-list">
+      <div class="step-row">
+        <div class="step-num">1</div>
+        <div class="step-text">Autorregulación emocional del entrenador en contextos de alta presión</div>
+      </div>
+      <div class="step-row">
+        <div class="step-num">2</div>
+        <div class="step-text">Vínculo afectivo y comunicación asertiva con el jugador</div>
+      </div>
+      <div class="step-row">
+        <div class="step-num">3</div>
+        <div class="step-text">Mindfulness aplicado al entrenador — control emocional profundo</div>
+      </div>
+      <div class="step-row">
+        <div class="step-num">4</div>
+        <div class="step-text">Herramientas cognitivas y observación con ePsD Lite</div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- FOOTER -->
+<div class="footer-quote">
+  <blockquote>"El mejor entrenador no es el que más sabe — es el que logra que sus jugadores sean mejores de lo que creían poder ser."</blockquote>
+  <cite>Departamento de Psicología Deportiva · Bewe Fútbol</cite>
+</div>
+
+</body>
+</html>
