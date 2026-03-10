@@ -30,18 +30,20 @@ export default function Dashboard() {
         try {
             let q;
             if (isAdmin) {
-                // Admin ve todos los jugadores
                 q = query(collection(db, 'jugadores'), orderBy('createdAt', 'desc'));
             } else {
-                // DT solo ve los de su academia
+                // DT: filtrar por academia sin orderBy (evita necesitar índice compuesto)
                 q = query(
                     collection(db, 'jugadores'),
-                    where('academiaId', '==', userConfig.academiaId),
-                    orderBy('createdAt', 'desc')
+                    where('academiaId', '==', userConfig.academiaId)
                 );
             }
             const snapshot = await getDocs(q);
-            const playerList = snapshot.docs.map(d => ({ id: d.id, ...d.data() }));
+            let playerList = snapshot.docs.map(d => ({ id: d.id, ...d.data() }));
+            // Sort client-side para DTs
+            if (!isAdmin) {
+                playerList.sort((a, b) => (b.createdAt || '').localeCompare(a.createdAt || ''));
+            }
             setPlayers(playerList);
         } catch (err) {
             console.error('Error fetching players:', err);
