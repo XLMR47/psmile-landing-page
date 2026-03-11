@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { db } from '../firebase';
 import { collection, getDocs, orderBy, query, deleteDoc, doc, where } from 'firebase/firestore';
-import { Brain, LogOut, Plus, Users, Search, Trash2, ShieldCheck, Eye, Building2 } from 'lucide-react';
+import { Brain, LogOut, Plus, Users, Search, Trash2, ShieldCheck, Eye, Building2, Activity } from 'lucide-react';
 import PlayerCard from './PlayerCard';
 import AddPlayerModal from './AddPlayerModal';
 import { getUserConfig, ACADEMIAS } from './academyConfig';
@@ -108,6 +108,14 @@ export default function Dashboard() {
                     </div>
 
                     <div className="flex items-center gap-4">
+                        <button
+                            onClick={() => navigate('/portal/epsd-lite')}
+                            className="hidden md:flex items-center gap-2 bg-[#111827] hover:bg-[#39FF14]/10 border border-white/5 hover:border-[#39FF14]/30 text-[#6B7280] hover:text-[#39FF14] px-4 py-2 rounded-xl transition-all font-bold text-xs uppercase tracking-widest"
+                            title="Herramienta de Evaluación ePsD en Vivo"
+                        >
+                            <Activity size={14} />
+                            ePsD Lite
+                        </button>
                         <div className="hidden md:flex items-center gap-2 bg-[#111827] border border-white/5 rounded-full px-4 py-2">
                             {isAdmin ? (
                                 <ShieldCheck size={12} className="text-[#39FF14]" />

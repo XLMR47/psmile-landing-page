@@ -18,6 +18,7 @@ import LoginPage from './portal/LoginPage';
 import Dashboard from './portal/Dashboard';
 import PlayerDetail from './portal/PlayerDetail';
 import ProtectedRoute from './portal/ProtectedRoute';
+import EpsdLite from './portal/EpsdLite';
 
 // Landing Page (página pública)
 function LandingPage() {
@@ -64,6 +65,14 @@ function App() {
         element={
           <ProtectedRoute>
             <PlayerDetail />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/portal/epsd-lite"
+        element={
+          <ProtectedRoute>
+            <EpsdLite />
           </ProtectedRoute>
         }
       />
