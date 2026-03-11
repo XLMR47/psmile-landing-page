@@ -5,7 +5,20 @@ export default function PlayerCard({ player, showAcademia, getAcademiaName }) {
     const navigate = useNavigate();
     const isStaff = player.tipo === 'staff';
 
-    const goToDetail = () => navigate(`/portal/jugador/${player.id}`);
+    const goToDetail = () => {
+        if (player.pin && !showAcademia) {
+            const savedPin = sessionStorage.getItem(`pin_${player.id}`);
+            if (savedPin !== player.pin) {
+                const enteredPin = prompt('🔒 Perfil protegido. Introduce la contraseña para acceder:');
+                if (enteredPin !== player.pin) {
+                    if (enteredPin !== null) alert('Contraseña incorrecta.');
+                    return;
+                }
+                sessionStorage.setItem(`pin_${player.id}`, enteredPin);
+            }
+        }
+        navigate(`/portal/jugador/${player.id}`);
+    };
 
     return (
         <div

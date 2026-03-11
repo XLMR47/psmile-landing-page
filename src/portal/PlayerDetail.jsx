@@ -22,6 +22,7 @@ export default function PlayerDetail() {
     const [editing, setEditing] = useState(false);
     const [editData, setEditData] = useState({});
     const [saving, setSaving] = useState(false);
+    const [pinAuthenticated, setPinAuthenticated] = useState(false);
 
     // Reports
     const [reportes, setReportes] = useState([]);
@@ -53,8 +54,29 @@ export default function PlayerDetail() {
         try {
             const snap = await getDoc(doc(db, 'jugadores', id));
             if (snap.exists()) {
-                setPlayer({ id: snap.id, ...snap.data() });
-                setEditData(snap.data());
+                const pData = snap.data();
+                
+                if (pData.pin && !isAdmin) {
+                    const savedPin = sessionStorage.getItem(`pin_${id}`);
+                    if (savedPin === pData.pin) {
+                        setPinAuthenticated(true);
+                    } else {
+                        const enteredPin = prompt('🔒 Perfil protegido. Introduce la contraseña para acceder:');
+                        if (enteredPin === pData.pin) {
+                            sessionStorage.setItem(`pin_${id}`, enteredPin);
+                            setPinAuthenticated(true);
+                        } else {
+                            if (enteredPin !== null) alert('Contraseña incorrecta.');
+                            navigate('/portal/dashboard');
+                            return;
+                        }
+                    }
+                } else {
+                    setPinAuthenticated(true);
+                }
+
+                setPlayer({ id: snap.id, ...pData });
+                setEditData(pData);
             }
         } catch (err) {
             console.error('Error:', err);
@@ -110,6 +132,7 @@ export default function PlayerDetail() {
             };
             if (isStaff) {
                 updateData.cargo = editData.cargo;
+                updateData.pin = editData.pin || '';
             } else {
                 updateData.categoria = editData.categoria;
             }
@@ -223,10 +246,10 @@ export default function PlayerDetail() {
         );
     }
 
-    if (!player) {
+    if (!player || !pinAuthenticated) {
         return (
             <div className="min-h-screen bg-[#0A0F1E] flex items-center justify-center">
-                <p className="text-[#6B7280]">Jugador no encontrado.</p>
+                <p className="text-[#6B7280]">Jugador no encontrado o acceso denegado.</p>
             </div>
         );
     }
@@ -317,6 +340,18 @@ export default function PlayerDetail() {
                                                 {cat}
                                             </button>
                                         ))}
+                                        {isStaff && (
+                                            <div className="mt-4">
+                                                <label className="block text-[10px] font-bold text-[#6B7280] tracking-[0.2em] uppercase mb-2">PIN de Acceso</label>
+                                                <input
+                                                    type="text"
+                                                    value={editData.pin || ''}
+                                                    onChange={(e) => setEditData({ ...editData, pin: e.target.value })}
+                                                    className="w-full bg-[#0A0F1E] border border-white/10 rounded-xl px-4 py-3 text-white text-sm outline-none focus:border-[#F59E0B]"
+                                                    placeholder="Sin contraseña"
+                                                />
+                                            </div>
+                                        )}
                                     </div>
                                     <div className="flex gap-2 pt-2">
                                         <button onClick={handleSave} disabled={saving} className="flex items-center gap-2 bg-[#0070F3] text-white text-xs font-bold uppercase tracking-widest px-4 py-2.5 rounded-xl hover:bg-[#0060D0] transition-colors disabled:opacity-50">
