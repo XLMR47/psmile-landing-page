@@ -2,13 +2,15 @@ import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { db, storage } from '../firebase';
-import { doc, getDoc, updateDoc, collection, addDoc, getDocs, deleteDoc, orderBy, query } from 'firebase/firestore';
+import { doc, getDoc, updateDoc, collection, addDoc, getDocs, deleteDoc, orderBy, query, where } from 'firebase/firestore';
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { getUserConfig } from './academyConfig';
-import {
-    Brain, ArrowLeft, Edit3, Save, X, Upload, FileText, Plus,
-    Calendar, Clock, CheckCircle, Circle, User, Loader, Trash2, Shield
+import { 
+    ArrowLeft, ChevronRight, Activity, Calendar, Download, FileText, User, Plus, Edit2, 
+    Check, X, Printer, Brain, BarChart, Zap, Heart, Shield, Upload, Clock, CheckCircle, 
+    Circle, Loader, Trash2, Edit3, Save 
 } from 'lucide-react';
+import EpsdEliteReport from './EpsdEliteReport';
 
 export default function PlayerDetail() {
     const { id } = useParams();
@@ -22,6 +24,7 @@ export default function PlayerDetail() {
     const [editing, setEditing] = useState(false);
     const [editData, setEditData] = useState({});
     const [saving, setSaving] = useState(false);
+    const [selectedEpsd, setSelectedEpsd] = useState(null);
     const [pinAuthenticated, setPinAuthenticated] = useState(false);
 
     // Reports
@@ -44,7 +47,10 @@ export default function PlayerDetail() {
     const [newPhotoFile, setNewPhotoFile] = useState(null);
     const [newPhotoPreview, setNewPhotoPreview] = useState(null);
 
-    const tiposSesion = ['Evaluación', 'Intervención', 'Seguimiento', 'Sesión grupal'];
+    // ePsD Evaluations for this player
+    const [evalsEpsd, setEvalsEpsd] = useState([]);
+
+    const tiposSesion = ['Evaluación', 'Intervención', 'Psicología 1:1', 'Seguimiento', 'Sesión grupal'];
     const cargos = ['Director Técnico', 'Asistente Técnico', 'Preparador Físico', 'Kinesiólogo', 'Coordinador'];
     const isStaff = player?.tipo === 'staff';
     const accentColor = isStaff ? '#F59E0B' : '#0070F3';
@@ -107,13 +113,34 @@ export default function PlayerDetail() {
         }
     };
 
+    const fetchEvalsEpsd = async () => {
+        try {
+            const q = query(
+                collection(db, 'evaluaciones_epsd'), 
+                where('jugadorId', '==', id)
+            );
+            const snap = await getDocs(q);
+            let list = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+            
+            list.sort((a, b) => {
+                const dateA = a.timestamp?.toDate ? a.timestamp.toDate() : (a.createdAt?.toDate ? a.createdAt.toDate() : new Date(0));
+                const dateB = b.timestamp?.toDate ? b.timestamp.toDate() : (b.createdAt?.toDate ? b.createdAt.toDate() : new Date(0));
+                return dateB - dateA;
+            });
+            
+            setEvalsEpsd(list);
+        } catch (err) {
+            console.error('Error fetching ePsD evals:', err);
+        }
+    };
+
     useEffect(() => {
         fetchPlayer();
         fetchReportes();
         fetchSesiones();
+        fetchEvalsEpsd();
     }, [id]);
 
-    // Save edited player data
     const handleSave = async () => {
         setSaving(true);
         try {
@@ -150,7 +177,6 @@ export default function PlayerDetail() {
         }
     };
 
-    // Add new report
     const handleAddReport = async () => {
         if (!newReportFile || !newReportTitle) return;
         setUploadingReport(true);
@@ -167,7 +193,6 @@ export default function PlayerDetail() {
                 createdAt: new Date().toISOString()
             });
 
-            // Also update the main player reporteURL to the latest
             await updateDoc(doc(db, 'jugadores', id), { reporteURL: url });
 
             setNewReportFile(null);
@@ -183,7 +208,6 @@ export default function PlayerDetail() {
         }
     };
 
-    // Add session
     const handleAddSession = async () => {
         if (!newSession.fecha || !newSession.hora) return;
         setSavingSession(true);
@@ -204,7 +228,6 @@ export default function PlayerDetail() {
         }
     };
 
-    // Toggle session completed
     const toggleSession = async (sesion) => {
         if (!isAdmin) return;
         try {
@@ -217,7 +240,6 @@ export default function PlayerDetail() {
         }
     };
 
-    // Delete session
     const deleteSession = async (sesionId) => {
         if (!isAdmin) return;
         try {
@@ -238,6 +260,18 @@ export default function PlayerDetail() {
         }
     };
 
+    const handleDeleteEpsd = async (e, evalId) => {
+        e.stopPropagation();
+        if (!window.confirm('¿Estás seguro de que deseas eliminar este reporte?')) return;
+        try {
+            await deleteDoc(doc(db, 'evaluaciones_epsd', evalId));
+            setEvalsEpsd(prev => prev.filter(ev => ev.id !== evalId));
+        } catch (err) {
+            console.error("Error deleting evaluation:", err);
+            alert("Error al eliminar el reporte");
+        }
+    };
+
     if (loading) {
         return (
             <div className="min-h-screen bg-[#0A0F1E] flex items-center justify-center">
@@ -254,14 +288,13 @@ export default function PlayerDetail() {
         );
     }
 
-    // Separate upcoming vs past sessions
     const today = new Date().toISOString().split('T')[0];
     const upcoming = sesiones.filter(s => !s.completada && s.fecha >= today);
     const completed = sesiones.filter(s => s.completada);
+    const lastSession = sesiones.filter(s => s.tipo === 'Psicología 1:1' && s.completada).pop() || sesiones.filter(s => s.completada).pop();
 
     return (
         <div className="min-h-screen bg-[#0A0F1E]">
-            {/* Header */}
             <header className="sticky top-0 z-40 bg-[#0A0F1E]/90 backdrop-blur-xl border-b border-white/5">
                 <div className="container mx-auto px-6 lg:px-12 py-4 flex items-center justify-between">
                     <button onClick={() => navigate('/portal/dashboard')} className="flex items-center gap-2 text-[#6B7280] hover:text-white transition-colors text-sm">
@@ -276,10 +309,8 @@ export default function PlayerDetail() {
             </header>
 
             <main className="container mx-auto px-6 lg:px-12 py-8 max-w-5xl">
-                {/* Player Header */}
                 <div className="bg-[#111827] border border-white/5 rounded-2xl overflow-hidden mb-8">
                     <div className="flex flex-col md:flex-row">
-                        {/* Photo */}
                         <div className="relative w-full md:w-56 h-56 bg-[#0A0F1E] shrink-0">
                             {editing ? (
                                 <label className="w-full h-full flex flex-col items-center justify-center cursor-pointer hover:bg-white/5 transition-colors">
@@ -302,7 +333,6 @@ export default function PlayerDetail() {
                             )}
                         </div>
 
-                        {/* Info */}
                         <div className="flex-1 p-6">
                             {editing ? (
                                 <div className="space-y-4">
@@ -385,25 +415,198 @@ export default function PlayerDetail() {
                                             </button>
                                         )}
                                     </div>
-                                    <div className="flex items-center gap-2 mt-4 text-[#6B7280] text-xs">
-                                        {isStaff ? <Shield size={12} className="text-[#F59E0B]" /> : <Brain size={12} className="text-[#0070F3]" />}
-                                        <span>{reportes.length} {isStaff ? 'documentos' : 'reportes'}</span>
-                                        <span className="text-white/10">•</span>
-                                        <Calendar size={12} className="text-[#0070F3]" />
-                                        <span>{upcoming.length} sesiones programadas</span>
+                                    <div className="flex flex-wrap items-center gap-y-2 gap-x-4 mt-4 text-[#6B7280] text-xs">
+                                        <div className="flex items-center gap-1.5">
+                                            {isStaff ? <Shield size={12} className="text-[#F59E0B]" /> : <Brain size={12} className="text-[#0070F3]" />}
+                                            <span>{reportes.length} {isStaff ? 'documentos' : 'reportes'}</span>
+                                        </div>
+                                        <span className="text-white/10 hidden sm:inline">•</span>
+                                        <div className="flex items-center gap-1.5">
+                                            <Calendar size={12} className="text-[#0070F3]" />
+                                            <span>{upcoming.length} sesiones programadas</span>
+                                        </div>
+                                        {lastSession && (
+                                            <>
+                                                <span className="text-white/10 hidden sm:inline">•</span>
+                                                <div className="flex items-center gap-1.5 px-2 py-0.5 bg-[#0070F3]/5 border border-[#0070F3]/10 rounded-md">
+                                                    <span className="text-[10px] font-bold text-[#0070F3]">Psicología 1:1:</span>
+                                                    <span className="text-white font-medium">{lastSession.fecha}</span>
+                                                </div>
+                                            </>
+                                        )}
                                     </div>
                                 </>
                             )}
                         </div>
                     </div>
                 </div>
+                
+                {/* ePsD Elite Analysis Section - MOVED TO TOP */}
+                {!isStaff && (
+                    <div className="mt-6 mb-12">
+                        <div className="flex flex-col md:flex-row md:items-center justify-between mb-8">
+                            <div className="flex items-center gap-4 mb-6 md:mb-0">
+                                <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-[#39FF14]/20 to-[#0070F3]/20 flex items-center justify-center border border-[#39FF14]/30 shadow-[0_0_30px_rgba(57,255,20,0.15)] shrink-0">
+                                    <Zap size={28} className="text-[#39FF14]" />
+                                </div>
+                                <div>
+                                    <h3 className="text-2xl font-black text-white tracking-widest uppercase tracking-tighter">Inteligencia ePsD Elite</h3>
+                                    <p className="text-[10px] text-[#39FF14] uppercase tracking-[0.3em] font-black mt-1">Análisis de rendimiento en tiempo real</p>
+                                </div>
+                            </div>
+                            <button 
+                                onClick={() => navigate(`/portal/epsd-historial?jugadorId=${id}`)}
+                                className="flex items-center gap-3 text-xs font-black tracking-widest uppercase bg-[#0070F3] hover:bg-[#39FF14] hover:text-[#0A0F1E] text-white px-8 py-4 rounded-2xl transition-all shadow-[0_0_20px_rgba(0,112,243,0.3)] group"
+                            >
+                                VER PANEL ANALÍTICO COMPLETO <ChevronRight size={16} className="group-hover:translate-x-1 transition-transform" />
+                            </button>
+                        </div>
+
+                        {evalsEpsd.length === 0 ? (
+                            <div className="bg-[#111827] border border-dashed border-white/10 rounded-[2rem] p-16 text-center">
+                                <Activity size={60} className="text-white/5 mx-auto mb-6" />
+                                <p className="text-[#6B7280] text-sm max-w-sm mx-auto">Este jugador aún no cuenta con evaluaciones registradas mediante el sistema ePsD Elite.</p>
+                            </div>
+                        ) : (
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                                {evalsEpsd.slice(0, 2).map((ev) => (
+                                    <div key={ev.id} className="relative overflow-hidden bg-gradient-to-br from-[#111827] to-[#0A0F1E] border border-white/10 rounded-[2.5rem] p-8 hover:border-[#39FF14]/40 transition-all cursor-pointer group shadow-2xl" onClick={() => setSelectedEpsd(ev)}>
+                                        <div className="flex items-center justify-between mb-6">
+                                            <div className="flex items-center gap-4">
+                                                <div className="px-4 py-2 bg-[#39FF14]/10 text-[#39FF14] text-[10px] font-black tracking-widest uppercase rounded-xl border border-[#39FF14]/20">
+                                                    📅 {ev.contexto?.fecha}
+                                                </div>
+                                                {ev.aiAnalysis ? (
+                                                    <div className="px-3 py-1 bg-[#39FF14]/20 text-[#39FF14] text-[9px] font-black uppercase tracking-widest rounded-full border border-[#39FF14]/40 flex items-center gap-1.5 shadow-[0_0_15px_rgba(57,255,20,0.3)]">
+                                                        <Brain size={10} /> IA LISTA
+                                                    </div>
+                                                ) : (
+                                                    <div className="w-2.5 h-2.5 rounded-full bg-[#39FF14] shadow-[0_0_15px_#39FF14] animate-pulse"></div>
+                                                )}
+                                            </div>
+                                            {isAdmin && (
+                                                <button 
+                                                    onClick={(e) => handleDeleteEpsd(e, ev.id)}
+                                                    className="p-2 text-[#6B7280] hover:text-red-500 hover:bg-red-500/10 rounded-lg transition-all"
+                                                >
+                                                    <Trash2 size={16} />
+                                                </button>
+                                            )}
+                                        </div>
+                                        
+                                        <div className="mb-8">
+                                            <h4 className="text-white text-2xl font-black mb-2 group-hover:text-[#39FF14] transition-colors">{ev.contexto?.torneo}</h4>
+                                            <p className="text-[#6B7280] text-xs font-bold flex items-center gap-2 uppercase tracking-widest">
+                                                <span className="w-2 h-2 rounded-full bg-red-500"></span>
+                                                vs {ev.contexto?.rival}
+                                            </p>
+                                        </div>
+                                        
+                                        {(() => {
+                                            const weights = ev.configWeights || {
+                                                "Percepción del entorno": 15, "Toma de decisiones": 20, "Control atencional": 12,
+                                                "Gestión emocional": 8, "Autodiálogo y enfoque mental": 10, "Autoconfianza y resiliencia": 10,
+                                                "Comunicación emocional": 12, "Vínculo y cohesión": 7, "Liderazgo emocional": 6
+                                            };
+                                            const structure = {
+                                                "COGNITIVO": ["Percepción del entorno", "Toma de decisiones", "Control atencional"],
+                                                "EMOCIONAL": ["Gestión emocional", "Autodiálogo y enfoque mental", "Autoconfianza y resiliencia"],
+                                                "SOCIAL": ["Comunicación emocional", "Vínculo y cohesión", "Liderazgo emocional"]
+                                            };
+                                            
+                                            let scores = { c: 0, e: 0, s: 0 };
+                                            Object.entries(structure).forEach(([dominio, subs]) => {
+                                                let totalDominio = 0;
+                                                let weightSum = 0;
+                                                subs.forEach(sub => {
+                                                    const w = (weights[sub] || 0);
+                                                    weightSum += w;
+                                                    
+                                                    const keys = Object.keys(ev.respuestas || {}).filter(k => 
+                                                        k.toLowerCase().includes(sub.toLowerCase()) || 
+                                                        (sub === "Percepción del entorno" && (k.includes("COGNITIVO-0") || k.includes("Percepción"))) ||
+                                                        (sub === "Toma de decisiones" && (k.includes("COGNITIVO-1") || k.includes("Toma"))) ||
+                                                        (sub === "Control atencional" && (k.includes("COGNITIVO-2") || k.includes("Atención"))) ||
+                                                        (sub === "Gestión emocional" && (k.includes("EMOCIONAL-0") || k.includes("Gestión"))) ||
+                                                        (sub === "Autodiálogo y enfoque mental" && (k.includes("EMOCIONAL-1") || k.includes("Autodiálogo"))) ||
+                                                        (sub === "Autoconfianza y resiliencia" && (k.includes("EMOCIONAL-2") || k.includes("Autoconfianza"))) ||
+                                                        (sub === "Comunicación emocional" && (k.includes("SOCIAL-0") || k.includes("Comunicación") || k.includes("Externa"))) ||
+                                                        (sub === "Vínculo y cohesión" && (k.includes("SOCIAL-1") || k.includes("Vínculo") || k.includes("Socio-Afectivos"))) ||
+                                                        (sub === "Liderazgo emocional" && (k.includes("SOCIAL-2") || k.includes("Liderazgo")))
+                                                    );
+                                                    
+                                                    let sumaAvg = 0, cont = 0;
+                                                    keys.forEach(k => {
+                                                        const data = ev.respuestas[k];
+                                                        if (!data) return;
+                                                        let sN = 0, cN = 0;
+                                                        ["0-25", "26-45", "45-70", "71-90"].forEach(int => {
+                                                            const intData = data[int];
+                                                            if (intData && typeof intData === 'object' && intData.nivel) { sN += intData.nivel; cN++; }
+                                                        });
+                                                        if (cN > 0) { sumaAvg += (sN / cN); cont++; }
+                                                    });
+                                                    
+                                                    const promSub = cont > 0 ? (sumaAvg / cont) : 0;
+                                                    const indiceSub = promSub * 20;
+                                                    const ponderado = (indiceSub * w) / 100;
+                                                    totalDominio += ponderado;
+                                                });
+                                                const res = weightSum > 0 ? Math.min(100, (totalDominio / weightSum) * 100).toFixed(0) : '0';
+                                                if (dominio === "COGNITIVO") scores.c = res;
+                                                if (dominio === "EMOCIONAL") scores.e = res;
+                                                if (dominio === "SOCIAL") scores.s = res;
+                                            });
+
+                                            return (
+                                                <div className="grid grid-cols-3 gap-3 md:gap-4">
+                                                    <div className="bg-black/40 rounded-3xl p-4 md:p-5 border border-white/5 backdrop-blur-sm group-hover:border-[#0070F3]/30 transition-all text-center">
+                                                        <span className="block text-[8px] font-black text-[#6B7280] tracking-widest uppercase mb-1">COGNITIVO</span>
+                                                        <div className="flex items-baseline justify-center gap-1">
+                                                            <span className="text-2xl md:text-3xl font-black text-white leading-none">{scores.c}</span>
+                                                            <span className="text-[10px] font-bold text-[#6B7280]">/ 100%</span>
+                                                        </div>
+                                                    </div>
+                                                    <div className="bg-black/40 rounded-3xl p-4 md:p-5 border border-white/5 backdrop-blur-sm group-hover:border-[#39FF14]/30 transition-all text-center">
+                                                        <span className="block text-[8px] font-black text-[#6B7280] tracking-widest uppercase mb-1">EMOCIONAL</span>
+                                                        <div className="flex items-baseline justify-center gap-1">
+                                                            <span className="text-2xl md:text-3xl font-black text-white leading-none">{scores.e}</span>
+                                                            <span className="text-[10px] font-bold text-[#6B7280]">/ 100%</span>
+                                                        </div>
+                                                    </div>
+                                                    <div className="bg-black/40 rounded-3xl p-4 md:p-5 border border-white/5 backdrop-blur-sm group-hover:border-amber-500/30 transition-all text-center">
+                                                        <span className="block text-[8px] font-black text-[#6B7280] tracking-widest uppercase mb-1">CONDUCTUAL</span>
+                                                        <div className="flex items-baseline justify-center gap-1">
+                                                            <span className="text-2xl md:text-3xl font-black text-white leading-none">{scores.s}</span>
+                                                            <span className="text-[10px] font-bold text-[#6B7280]">/ 100%</span>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            );
+                                        })()}
+
+                                        <div className="mt-8 pt-6 border-t border-white/5 flex items-center justify-between">
+                                            <div className="flex items-center gap-2">
+                                                <div className="w-1.5 h-1.5 rounded-full bg-[#39FF14]"></div>
+                                                <span className="text-[9px] font-black text-[#39FF14] tracking-widest uppercase"> {ev.aiAnalysis ? 'Análisis + IA OK' : 'Análisis Core OK'}</span>
+                                            </div>
+                                            <div className="flex items-center gap-1 text-[#6B7280] text-[9px] font-black tracking-widest uppercase">
+                                                Visualizar Panel <ChevronRight size={12} />
+                                            </div>
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                        )}
+                    </div>
+                )}
 
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
                     {/* LEFT: Report History */}
                     <div className="lg:col-span-2">
                         <div className="flex items-center justify-between mb-4">
                             <h3 className="text-lg font-black text-white flex items-center gap-2">
-                                <FileText size={18} className={`text-[${accentColor}]`} />
+                                <FileText size={18} className={`text-[#0070F3]`} />
                                 {isStaff ? 'Documentos del Staff' : 'Historial de Reportes'}
                             </h3>
                             {isAdmin && (
@@ -413,7 +616,6 @@ export default function PlayerDetail() {
                             )}
                         </div>
 
-                        {/* Add Report Form */}
                         {showAddReport && (
                             <div className="bg-[#111827] border border-[#0070F3]/20 rounded-xl p-5 mb-4 space-y-4">
                                 <input
@@ -441,7 +643,6 @@ export default function PlayerDetail() {
                             </div>
                         )}
 
-                        {/* Report Timeline */}
                         {reportes.length === 0 ? (
                             <div className="bg-[#111827] border border-white/5 rounded-xl p-8 text-center">
                                 <FileText size={32} className="text-white/5 mx-auto mb-3" />
@@ -489,7 +690,6 @@ export default function PlayerDetail() {
                             )}
                         </div>
 
-                        {/* Add Session Form */}
                         {showAddSession && (
                             <div className="bg-[#111827] border border-[#0070F3]/20 rounded-xl p-4 mb-4 space-y-3">
                                 <input type="date" value={newSession.fecha} onChange={(e) => setNewSession({ ...newSession, fecha: e.target.value })} className="w-full bg-[#0A0F1E] border border-white/10 rounded-xl px-4 py-2.5 text-white text-sm outline-none focus:border-[#0070F3] [color-scheme:dark]" />
@@ -509,65 +709,65 @@ export default function PlayerDetail() {
                             </div>
                         )}
 
-                        {/* Upcoming Sessions */}
-                        {upcoming.length > 0 && (
-                            <div className="mb-4">
-                                <p className="text-[10px] text-[#6B7280] font-bold tracking-widest uppercase mb-2">Próximas</p>
-                                <div className="space-y-2">
-                                    {upcoming.map(s => (
-                                        <div key={s.id} className="bg-[#111827] border border-white/5 rounded-xl p-3 flex items-center gap-3 group">
-                                            {isAdmin && (
-                                                <button onClick={() => toggleSession(s)} className="shrink-0">
-                                                    <Circle size={18} className="text-[#0070F3]" />
-                                                </button>
-                                            )}
-                                            <div className="flex-1 min-w-0">
-                                                <p className="text-white text-xs font-bold">{s.tipo}</p>
-                                                <p className="text-[#6B7280] text-[10px] flex items-center gap-1.5">
-                                                    <Calendar size={10} /> {s.fecha}
-                                                    <Clock size={10} className="ml-1" /> {s.hora}
-                                                </p>
-                                                {s.notas && <p className="text-[#4B5563] text-[10px] mt-1 truncate">{s.notas}</p>}
+                        <div className="space-y-4">
+                            {upcoming.length > 0 && (
+                                <div>
+                                    <p className="text-[10px] text-[#6B7280] font-bold tracking-widest uppercase mb-2">Próximas</p>
+                                    <div className="space-y-2">
+                                        {upcoming.map(s => (
+                                            <div key={s.id} className="bg-[#111827] border border-white/5 rounded-xl p-3 flex items-center gap-3 group">
+                                                {isAdmin && (
+                                                    <button onClick={() => toggleSession(s)} className="shrink-0">
+                                                        <Circle size={18} className="text-[#0070F3]" />
+                                                    </button>
+                                                )}
+                                                <div className="flex-1 min-w-0">
+                                                    <p className="text-white text-xs font-bold">{s.tipo}</p>
+                                                    <p className="text-[#6B7280] text-[10px] flex items-center gap-1.5">
+                                                        <Calendar size={10} /> {s.fecha}
+                                                        <Clock size={10} className="ml-1" /> {s.hora}
+                                                    </p>
+                                                    {s.notas && <p className="text-[#4B5563] text-[10px] mt-1 truncate">{s.notas}</p>}
+                                                </div>
+                                                {isAdmin && (
+                                                    <button onClick={() => deleteSession(s.id)} className="text-[#4B5563] hover:text-red-400 opacity-0 group-hover:opacity-100 transition-all">
+                                                        <Trash2 size={12} />
+                                                    </button>
+                                                )}
                                             </div>
-                                            {isAdmin && (
-                                                <button onClick={() => deleteSession(s.id)} className="text-[#4B5563] hover:text-red-400 opacity-0 group-hover:opacity-100 transition-all">
-                                                    <Trash2 size={12} />
-                                                </button>
-                                            )}
-                                        </div>
-                                    ))}
+                                        ))}
+                                    </div>
                                 </div>
-                            </div>
-                        )}
+                            )}
 
-                        {/* Completed Sessions */}
-                        {completed.length > 0 && (
-                            <div>
-                                <p className="text-[10px] text-[#6B7280] font-bold tracking-widest uppercase mb-2">Completadas</p>
-                                <div className="space-y-2">
-                                    {completed.map(s => (
-                                        <div key={s.id} className="bg-[#111827]/50 border border-white/5 rounded-xl p-3 flex items-center gap-3 opacity-60">
-                                            {isAdmin && (
-                                                <button onClick={() => toggleSession(s)} className="shrink-0">
-                                                    <CheckCircle size={18} className="text-[#39FF14]" />
-                                                </button>
-                                            )}
-                                            <div className="flex-1 min-w-0">
-                                                <p className="text-white text-xs font-bold line-through">{s.tipo}</p>
-                                                <p className="text-[#6B7280] text-[10px]">{s.fecha} • {s.hora}</p>
+                            {completed.length > 0 && (
+                                <div>
+                                    <p className="text-[10px] text-[#6B7280] font-bold tracking-widest uppercase mb-2">Completadas</p>
+                                    <div className="space-y-2">
+                                        {completed.map(s => (
+                                            <div key={s.id} className="bg-[#111827]/50 border border-white/5 rounded-xl p-3 flex items-center gap-3 opacity-60">
+                                                {isAdmin && (
+                                                    <button onClick={() => toggleSession(s)} className="shrink-0">
+                                                        <CheckCircle size={18} className="text-[#39FF14]" />
+                                                    </button>
+                                                )}
+                                                <div className="flex-1 min-w-0">
+                                                    <p className="text-white text-xs font-bold line-through">{s.tipo}</p>
+                                                    <p className="text-[#6B7280] text-[10px]">{s.fecha} • {s.hora}</p>
+                                                </div>
                                             </div>
-                                        </div>
-                                    ))}
+                                        ))}
+                                    </div>
                                 </div>
-                            </div>
-                        )}
+                            )}
 
-                        {sesiones.length === 0 && !showAddSession && (
-                            <div className="bg-[#111827] border border-white/5 rounded-xl p-6 text-center">
-                                <Calendar size={28} className="text-white/5 mx-auto mb-2" />
-                                <p className="text-[#6B7280] text-xs">Sin sesiones programadas</p>
-                            </div>
-                        )}
+                            {sesiones.length === 0 && !showAddSession && (
+                                <div className="bg-[#111827] border border-white/5 rounded-xl p-6 text-center">
+                                    <Calendar size={28} className="text-white/5 mx-auto mb-2" />
+                                    <p className="text-[#6B7280] text-xs">Sin sesiones programadas</p>
+                                </div>
+                            )}
+                        </div>
                     </div>
                 </div>
             </main>
@@ -593,6 +793,21 @@ export default function PlayerDetail() {
                         <iframe src={viewingReport.reporteURL} className="flex-1 w-full rounded-b-2xl" title={viewingReport.titulo} />
                     </div>
                 </div>
+            )}
+
+            {/* Elite Report Modal */}
+            {selectedEpsd && (
+                <EpsdEliteReport 
+                    playerData={{
+                        nombre: player?.nombre,
+                        posicion: player?.posicion,
+                        categoria: player?.categoria
+                    }}
+                    evalData={selectedEpsd}
+                    aiData={selectedEpsd.aiAnalysis}
+                    historicalAvg={null}
+                    onClose={() => setSelectedEpsd(null)}
+                />
             )}
         </div>
     );

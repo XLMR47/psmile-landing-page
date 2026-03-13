@@ -1,0 +1,474 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="es"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&amp;family=Inter:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "tertiary-fixed-dim": "#b9c8de",
+              "secondary-fixed-dim": "#4edea3",
+              "surface-container": "#191f2f",
+              "primary": "#8aebff",
+              "inverse-on-surface": "#2a3040",
+              "primary-container": "#22d3ee",
+              "surface-bright": "#33394a",
+              "on-tertiary-fixed": "#0d1c2d",
+              "background": "#0d1322",
+              "on-secondary-container": "#00311f",
+              "on-tertiary-container": "#415062",
+              "on-secondary-fixed": "#002113",
+              "on-primary": "#00363e",
+              "on-primary-container": "#005763",
+              "surface-variant": "#2f3445",
+              "surface-tint": "#2fd9f4",
+              "surface-container-lowest": "#080e1d",
+              "tertiary-fixed": "#d4e4fa",
+              "surface-container-high": "#242a3a",
+              "on-secondary": "#003824",
+              "on-surface-variant": "#bbc9cd",
+              "on-primary-fixed": "#001f25",
+              "on-error-container": "#ffdad6",
+              "on-primary-fixed-variant": "#004e5a",
+              "tertiary": "#cfdef4",
+              "secondary-fixed": "#6ffbbe",
+              "on-tertiary": "#233143",
+              "error-container": "#93000a",
+              "surface-dim": "#0d1322",
+              "primary-fixed-dim": "#2fd9f4",
+              "secondary": "#4edea3",
+              "on-surface": "#dde2f8",
+              "surface": "#0d1322",
+              "primary-fixed": "#a2eeff",
+              "outline-variant": "#3c494c",
+              "tertiary-container": "#b3c2d8",
+              "inverse-surface": "#dde2f8",
+              "error": "#ffb4ab",
+              "secondary-container": "#00a572",
+              "surface-container-highest": "#2f3445",
+              "on-tertiary-fixed-variant": "#39485a",
+              "on-secondary-fixed-variant": "#005236",
+              "inverse-primary": "#006877",
+              "outline": "#859397",
+              "surface-container-low": "#151b2b",
+              "on-background": "#dde2f8",
+              "on-error": "#690005"
+            },
+            fontFamily: {
+              "headline": ["Space Grotesk"],
+              "body": ["Inter"],
+              "label": ["Inter"]
+            },
+            borderRadius: {"DEFAULT": "0.125rem", "lg": "0.25rem", "xl": "0.5rem", "full": "0.75rem"},
+          },
+        },
+      }
+    </script>
+<style>
+      .material-symbols-outlined {
+        font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+      }
+      .glass-panel {
+        background: rgba(21, 27, 43, 0.6);
+        backdrop-filter: blur(12px);
+      }
+      .custom-scrollbar::-webkit-scrollbar {
+        width: 4px;
+      }
+      .custom-scrollbar::-webkit-scrollbar-track {
+        background: transparent;
+      }
+      .custom-scrollbar::-webkit-scrollbar-thumb {
+        background: #2f3445;
+        border-radius: 10px;
+      }
+    </style>
+</head>
+<body class="bg-background text-on-surface font-body selection:bg-primary/30 min-h-screen flex overflow-hidden">
+<!-- SideNavBar (Shared Component) -->
+<aside class="w-72 bg-surface-container-low flex flex-col border-r border-outline-variant/15 z-50">
+<div class="p-6">
+<div class="flex items-center gap-3 mb-8">
+<div class="w-10 h-10 rounded-lg bg-gradient-to-br from-primary to-primary-container flex items-center justify-center text-on-primary shadow-[0_0_15px_rgba(138,235,255,0.3)]">
+<span class="material-symbols-outlined">psychology</span>
+</div>
+<div>
+<h1 class="font-headline font-bold text-sm tracking-tight leading-tight">Laboratorio Psicodeportivo</h1>
+<p class="text-[10px] text-on-surface-variant font-label uppercase tracking-widest">High Performance Unit</p>
+</div>
+</div>
+<nav class="space-y-1">
+<div class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container rounded-md transition-colors cursor-pointer group">
+<span class="material-symbols-outlined text-xl group-hover:text-primary">dashboard</span>
+<span class="font-medium text-sm">Dashboard</span>
+</div>
+<div class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container rounded-md transition-colors cursor-pointer group">
+<span class="material-symbols-outlined text-xl group-hover:text-primary">groups</span>
+<span class="font-medium text-sm">Players</span>
+</div>
+<div class="flex items-center gap-3 px-4 py-3 bg-surface-container-highest text-primary rounded-md transition-colors cursor-pointer border-l-2 border-primary">
+<span class="material-symbols-outlined text-xl">inventory_2</span>
+<span class="font-medium text-sm">Test Repository</span>
+</div>
+<div class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container rounded-md transition-colors cursor-pointer group">
+<span class="material-symbols-outlined text-xl group-hover:text-primary">description</span>
+<span class="font-medium text-sm">Clinical Reports</span>
+</div>
+</nav>
+</div>
+<!-- Player Search & List (User Request) -->
+<div class="mt-4 px-6 flex-1 flex flex-col overflow-hidden">
+<h3 class="text-[10px] font-label font-bold text-on-surface-variant uppercase tracking-widest mb-4">Player Directory</h3>
+<div class="relative mb-4">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant text-lg">search</span>
+<input class="w-full bg-surface-container-highest border-none rounded-md py-2 pl-10 pr-4 text-xs focus:ring-1 focus:ring-primary focus:bg-surface-container-high transition-all" placeholder="Search athletes..." type="text"/>
+</div>
+<div class="flex-1 overflow-y-auto custom-scrollbar space-y-2 pb-4">
+<!-- Player Profile Items -->
+<div class="p-2 flex items-center gap-3 rounded-md bg-surface-container-lowest/50 border border-transparent hover:border-primary/20 hover:bg-surface-container transition-all cursor-pointer">
+<img class="w-10 h-10 rounded-sm object-cover bg-surface-variant" data-alt="Young athlete portrait smiling" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBoy82JjcF_9bLm6tIMn06h-3_ExQlub-K1wemWAeLmpMQOHDdKzMdGpB6RApVblnMgJkIOT7xzaP9zxzJCKDvETK2Y-sDvpLkW9NYmFfPXkh9039Wc1f0kEWCXv9dzkQg1fu7Oo1_6Fk7a_mbCrxkklrq4KY4JwkZn0L2rK-z66idNSS0caMScA7BwqDVW5l3LbRCAkiEKxZGDYtgdXDwxzOtlDQK0X1AQc6zINJdGcj-vrVn1bg3ZrcBO4PxRlSLaNdjYZzrvJQ"/>
+<div class="overflow-hidden">
+<p class="text-xs font-semibold truncate">Mateo Valencia</p>
+<p class="text-[10px] text-secondary font-label">Sub-15</p>
+</div>
+</div>
+<div class="p-2 flex items-center gap-3 rounded-md bg-surface-container-lowest/50 border border-transparent hover:border-primary/20 hover:bg-surface-container transition-all cursor-pointer">
+<img class="w-10 h-10 rounded-sm object-cover bg-surface-variant" data-alt="Soccer player headshot" src="https://lh3.googleusercontent.com/aida-public/AB6AXuB7IqoY-Ry3FFqW7anmwTXOEQG6vnzteH1HxPL6i8MZHSVyRtXUuFlUTFtr5o9G4M4BJR9yVrA6Xq5gUCQmEJHzHhrCPWfOa_DwtvCNcmKB6NZ13MxZb5Z1gjJfeHomnIXWYlKVj4rhcXq3apVienIKUTX6JmtmVLArXQDRp5AApNXjJuR5-wb7fZ9JY6U1rPgJlFRh-QKn_eJLZNWYDF-pZibfPZjRi8XdrsAu7k6GLDjRAOhbjqXBoRlhyozLQ-htLdxf9Yr3gQ"/>
+<div class="overflow-hidden">
+<p class="text-xs font-semibold truncate">Lucas Ferraro</p>
+<p class="text-[10px] text-secondary font-label">Sub-17</p>
+</div>
+</div>
+<div class="p-2 flex items-center gap-3 rounded-md bg-surface-container-lowest/50 border border-transparent hover:border-primary/20 hover:bg-surface-container transition-all cursor-pointer">
+<img class="w-10 h-10 rounded-sm object-cover bg-surface-variant" data-alt="Athlete profile photo" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDAN_Wec-kYdtFXAje2apSdK08YRy4KXSzhEPTAdcHy6BOpzDg57taND_mnAiE1zkX1Ta-AqxD0nZKjOjR56Wi1QhWMsQFGefU6OhigjUtTWrpNn_mwnCC9mNQJEpDhQehDwtLrMBaHVkL11-F_YVZfHj2HPq7cuENsSorfGxn1rmduxdxjq9by2lm4PBykG2oSP_-4Pwow1eMNnLF3TenUAq-D2Ig-fz3W9p2Hny4qaIem6t-g_w3itpIGXvOm8L4Tud1i3d4AyA"/>
+<div class="overflow-hidden">
+<p class="text-xs font-semibold truncate">Santi Domínguez</p>
+<p class="text-[10px] text-secondary font-label">Sub-15</p>
+</div>
+</div>
+</div>
+</div>
+<div class="p-6 border-t border-outline-variant/15">
+<div class="flex items-center gap-3">
+<img class="w-10 h-10 rounded-md border border-outline-variant/30" data-alt="User profile avatar scientist" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDxzjt_vjFa_RMJ3-qy_cIEmrY_xTeoOMgE5gxSpzl_Ej_1KWEaQkffnOhuKQUcco10XTQAgvLkDOKO9VUE5h05c8TOC315sNlGwT1aav3RPuYt5qgypNuauuwvFJyfPiPdQctUwv6Pe2rqE3JQyp5OVxnp4pS6S-upZcpaAk1K6X14mVJaPvT1wkPhulWPeGne6XaZYv1CPhyxsgbq8Lr0_Gxik2vvgMLWV5ags1nqsWYOz4NRhMXjwpfC8NdAtdW8HmDFoTuTyA"/>
+<div class="overflow-hidden">
+<p class="text-xs font-bold truncate">Dr. Aris Vazquez</p>
+<p class="text-[10px] text-on-surface-variant">Senior Analyst</p>
+</div>
+</div>
+</div>
+</aside>
+<!-- Main Workspace -->
+<main class="flex-1 flex flex-col min-w-0 bg-background overflow-hidden">
+<!-- TopNavBar -->
+<header class="h-16 flex items-center justify-between px-8 bg-background/80 backdrop-blur-md border-b border-outline-variant/10 z-40">
+<div class="flex items-center gap-4">
+<h2 class="font-headline font-medium text-lg text-on-surface">Test Repository</h2>
+<div class="h-4 w-[1px] bg-outline-variant/30"></div>
+<p class="text-xs text-on-surface-variant font-label">Showing results for <span class="text-secondary font-bold">Mateo Valencia</span></p>
+</div>
+<div class="flex items-center gap-6">
+<div class="relative w-64">
+<span class="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 text-on-surface-variant text-lg">search</span>
+<input class="w-full bg-surface-container-low border-none rounded-md py-1.5 px-4 text-xs focus:ring-1 focus:ring-primary" placeholder="Filter clinical history..." type="text"/>
+</div>
+<div class="flex items-center gap-4">
+<span class="material-symbols-outlined text-on-surface-variant cursor-pointer hover:text-primary transition-colors">notifications</span>
+<span class="material-symbols-outlined text-on-surface-variant cursor-pointer hover:text-primary transition-colors">settings</span>
+<span class="material-symbols-outlined text-on-surface-variant cursor-pointer hover:text-primary transition-colors">help</span>
+</div>
+</div>
+</header>
+<!-- ToolBar / Filter Chips -->
+<section class="p-6 flex items-center justify-between">
+<div class="flex gap-2">
+<button class="px-4 py-1.5 bg-primary text-on-primary font-label text-[10px] font-bold uppercase rounded-sm shadow-[0_0_10px_rgba(138,235,255,0.2)]">All Reports</button>
+<button class="px-4 py-1.5 bg-surface-container text-on-surface-variant font-label text-[10px] font-bold uppercase rounded-sm hover:bg-surface-container-high transition-colors">Psicométrica</button>
+<button class="px-4 py-1.5 bg-surface-container text-on-surface-variant font-label text-[10px] font-bold uppercase rounded-sm hover:bg-surface-container-high transition-colors">Observacional</button>
+<button class="px-4 py-1.5 bg-surface-container text-on-surface-variant font-label text-[10px] font-bold uppercase rounded-sm hover:bg-surface-container-high transition-colors">ePsD</button>
+</div>
+<div class="flex gap-2">
+<div class="bg-surface-container flex p-1 rounded-sm">
+<button class="p-1.5 bg-surface-container-highest rounded-sm"><span class="material-symbols-outlined text-sm">grid_view</span></button>
+<button class="p-1.5 text-on-surface-variant hover:text-on-surface"><span class="material-symbols-outlined text-sm">filter_list</span></button>
+<button class="p-1.5 text-on-surface-variant hover:text-on-surface"><span class="material-symbols-outlined text-sm">sort</span></button>
+</div>
+</div>
+</section>
+<!-- Repository Grid & Results Workspace -->
+<div class="flex-1 overflow-y-auto custom-scrollbar p-6 space-y-12">
+<!-- Grid of Report Cards -->
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+<!-- Card 1 -->
+<div class="group relative bg-surface-container-low p-5 rounded-md border border-transparent hover:border-primary/30 transition-all hover:bg-surface-container-high">
+<div class="flex justify-between items-start mb-4">
+<div class="w-5 h-5 border border-outline-variant/30 rounded-sm flex items-center justify-center group-hover:border-primary/50 transition-colors">
+<span class="material-symbols-outlined text-primary text-xs hidden group-[.selected]:block" style="font-variation-settings: 'FILL' 1;">check</span>
+</div>
+<span class="text-[10px] font-label font-bold text-on-surface-variant uppercase">12 OCT 2023</span>
+</div>
+<div class="mb-4">
+<h4 class="font-headline font-bold text-primary mb-1">Evaluación ePsD</h4>
+<p class="text-xs text-on-surface-variant">Protocolo de Fatiga Cognitiva</p>
+</div>
+<div class="space-y-2 pt-4 border-t border-outline-variant/10">
+<div class="flex justify-between text-[10px] font-label uppercase">
+<span class="text-on-surface-variant">Varianza de error</span>
+<span class="text-secondary font-bold">0.024</span>
+</div>
+<div class="flex justify-between text-[10px] font-label uppercase">
+<span class="text-on-surface-variant">Atención Sostenida</span>
+<span class="text-primary font-bold">92%</span>
+</div>
+</div>
+</div>
+<!-- Card 2 -->
+<div class="group relative bg-surface-container-low p-5 rounded-md border border-transparent hover:border-primary/30 transition-all hover:bg-surface-container-high">
+<div class="flex justify-between items-start mb-4">
+<div class="w-5 h-5 border-2 border-primary rounded-sm flex items-center justify-center bg-primary/10">
+<span class="material-symbols-outlined text-primary text-xs" style="font-variation-settings: 'FILL' 1;">check</span>
+</div>
+<span class="text-[10px] font-label font-bold text-on-surface-variant uppercase">08 OCT 2023</span>
+</div>
+<div class="mb-4">
+<h4 class="font-headline font-bold text-primary mb-1">Test de Ansiedad</h4>
+<p class="text-xs text-on-surface-variant">Inventario STAI-C Adaptado</p>
+</div>
+<div class="space-y-2 pt-4 border-t border-outline-variant/10">
+<div class="flex justify-between text-[10px] font-label uppercase">
+<span class="text-on-surface-variant">Estado Rasgo</span>
+<span class="text-secondary font-bold">12 / 50</span>
+</div>
+<div class="flex justify-between text-[10px] font-label uppercase">
+<span class="text-on-surface-variant">Control Somático</span>
+<span class="text-primary font-bold">88%</span>
+</div>
+</div>
+</div>
+<!-- Card 3 -->
+<div class="group relative bg-surface-container-low p-5 rounded-md border border-transparent hover:border-primary/30 transition-all hover:bg-surface-container-high">
+<div class="flex justify-between items-start mb-4">
+<div class="w-5 h-5 border-2 border-primary rounded-sm flex items-center justify-center bg-primary/10">
+<span class="material-symbols-outlined text-primary text-xs" style="font-variation-settings: 'FILL' 1;">check</span>
+</div>
+<span class="text-[10px] font-label font-bold text-on-surface-variant uppercase">05 OCT 2023</span>
+</div>
+<div class="mb-4">
+<h4 class="font-headline font-bold text-primary mb-1">Foco Atencional</h4>
+<p class="text-xs text-on-surface-variant">Grid Test - Fase de Calentamiento</p>
+</div>
+<div class="space-y-2 pt-4 border-t border-outline-variant/10">
+<div class="flex justify-between text-[10px] font-label uppercase">
+<span class="text-on-surface-variant">Varianza de error</span>
+<span class="text-secondary font-bold">0.012</span>
+</div>
+<div class="flex justify-between text-[10px] font-label uppercase">
+<span class="text-on-surface-variant">Tiempo Reacción</span>
+<span class="text-primary font-bold">342ms</span>
+</div>
+</div>
+</div>
+<!-- Card 4 -->
+<div class="group relative bg-surface-container-low p-5 rounded-md border border-transparent hover:border-primary/30 transition-all hover:bg-surface-container-high">
+<div class="flex justify-between items-start mb-4">
+<div class="w-5 h-5 border border-outline-variant/30 rounded-sm flex items-center justify-center group-hover:border-primary/50 transition-colors">
+<span class="material-symbols-outlined text-primary text-xs hidden" style="font-variation-settings: 'FILL' 1;">check</span>
+</div>
+<span class="text-[10px] font-label font-bold text-on-surface-variant uppercase">30 SEP 2023</span>
+</div>
+<div class="mb-4">
+<h4 class="font-headline font-bold text-primary mb-1">Autoconcepto</h4>
+<p class="text-xs text-on-surface-variant">Escala Multidimensional AF-5</p>
+</div>
+<div class="space-y-2 pt-4 border-t border-outline-variant/10">
+<div class="flex justify-between text-[10px] font-label uppercase">
+<span class="text-on-surface-variant">Confianza Social</span>
+<span class="text-secondary font-bold">4.2 / 5.0</span>
+</div>
+<div class="flex justify-between text-[10px] font-label uppercase">
+<span class="text-on-surface-variant">Aceptación</span>
+<span class="text-primary font-bold">High</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Results Workspace / Clinical Report Simulation -->
+<section class="space-y-6">
+<div class="flex items-center justify-between border-b border-outline-variant/10 pb-4">
+<h3 class="font-headline font-bold text-xl tracking-tight">Simulación de Informe Clínico Maestro</h3>
+<div class="flex gap-2">
+<button class="flex items-center gap-2 px-3 py-1.5 border border-outline-variant/30 text-on-surface-variant rounded-md hover:bg-surface-container-highest transition-all text-xs">
+<span class="material-symbols-outlined text-sm">picture_as_pdf</span>
+                            Exportar a PDF
+                        </button>
+<button class="flex items-center gap-2 px-3 py-1.5 border border-outline-variant/30 text-on-surface-variant rounded-md hover:bg-surface-container-highest transition-all text-xs">
+<span class="material-symbols-outlined text-sm">publish</span>
+                            Publicar en Dashboard de Academia
+                        </button>
+</div>
+</div>
+<div class="bg-surface-container-low/40 rounded-xl p-8 border border-outline-variant/10 backdrop-blur-sm relative overflow-hidden">
+<!-- Subtle Lab Background Watermark -->
+<div class="absolute top-0 right-0 p-8 opacity-5">
+<span class="material-symbols-outlined text-[200px]" style="font-variation-settings: 'FILL' 1;">science</span>
+</div>
+<div class="max-w-4xl mx-auto space-y-10 relative z-10">
+<div class="flex justify-between items-start">
+<div>
+<span class="px-2 py-1 bg-secondary/10 text-secondary font-label text-[10px] font-bold uppercase border border-secondary/20 rounded-sm">Confidencial - Nivel 4</span>
+<h2 class="font-headline text-3xl font-bold mt-4 tracking-tight">Análisis Predictivo de Rendimiento</h2>
+<p class="text-on-surface-variant mt-2 text-sm leading-relaxed">Sujeto: Mateo Valencia | Fecha de Análisis: 24 Octubre 2023 | Modelo: <span class="text-primary font-mono">Gemini 1.5 Pro</span></p>
+</div>
+<div class="text-right">
+<p class="font-headline text-5xl font-bold text-primary">8.4</p>
+<p class="text-[10px] font-label font-bold text-on-surface-variant uppercase tracking-widest mt-1">Ready Score</p>
+</div>
+</div>
+<div class="grid grid-cols-3 gap-8">
+<div class="space-y-4">
+<h4 class="text-xs font-bold font-label uppercase tracking-widest text-on-surface-variant">Foco Cognitivo</h4>
+<div class="h-2 bg-surface-container-highest rounded-full overflow-hidden">
+<div class="h-full bg-primary shadow-[0_0_10px_rgba(138,235,255,0.4)]" style="width: 92%"></div>
+</div>
+<p class="text-[10px] text-on-surface-variant">Estabilidad atencional superior al promedio de categoría Sub-15.</p>
+</div>
+<div class="space-y-4">
+<h4 class="text-xs font-bold font-label uppercase tracking-widest text-on-surface-variant">Resiliencia</h4>
+<div class="h-2 bg-surface-container-highest rounded-full overflow-hidden">
+<div class="h-full bg-secondary shadow-[0_0_10px_rgba(78,222,163,0.4)]" style="width: 78%"></div>
+</div>
+<p class="text-[10px] text-on-surface-variant">Recuperación post-error mantenida bajo parámetros nominales.</p>
+</div>
+<div class="space-y-4">
+<h4 class="text-xs font-bold font-label uppercase tracking-widest text-on-surface-variant">Carga Mental</h4>
+<div class="h-2 bg-surface-container-highest rounded-full overflow-hidden">
+<div class="h-full bg-error shadow-[0_0_10px_rgba(255,180,171,0.4)]" style="width: 45%"></div>
+</div>
+<p class="text-[10px] text-on-surface-variant">Niveles de saturación bajos, permitiendo incremento de intensidad.</p>
+</div>
+</div>
+<div class="grid grid-cols-2 gap-12 pt-8 border-t border-outline-variant/10">
+<div class="space-y-4">
+<h4 class="font-headline font-bold text-lg flex items-center gap-2">
+<span class="material-symbols-outlined text-secondary">insights</span>
+                                    Observaciones de IA
+                                </h4>
+<p class="text-sm text-on-surface-variant leading-relaxed">
+                                    El cruce de datos entre el test <span class="text-on-surface italic">ePsD</span> y los registros observacionales sugiere una correlación positiva entre la <span class="text-secondary font-medium">calidad del sueño</span> y la reducción de la varianza de error en el Grid Test. Se recomienda mantener el volumen de carga actual por 2 microciclos más.
+                                </p>
+</div>
+<div class="space-y-4">
+<h4 class="font-headline font-bold text-lg flex items-center gap-2">
+<span class="material-symbols-outlined text-primary">psychology</span>
+                                    Sugerencia Técnica
+                                </h4>
+<ul class="space-y-3">
+<li class="flex items-start gap-3 text-sm text-on-surface-variant">
+<span class="w-1.5 h-1.5 rounded-full bg-primary mt-1.5 shrink-0"></span>
+                                        Implementar rutinas de anclaje visual previas a la competición.
+                                    </li>
+<li class="flex items-start gap-3 text-sm text-on-surface-variant">
+<span class="w-1.5 h-1.5 rounded-full bg-primary mt-1.5 shrink-0"></span>
+                                        Monitorizar respuesta galvánica durante sesiones de videoanálisis.
+                                    </li>
+</ul>
+</div>
+</div>
+</div>
+</div>
+</section>
+</div>
+<!-- Bottom NavBar / Floating Status (Shared/Custom Hybrid) -->
+<footer class="h-20 px-8 flex items-center justify-between border-t border-outline-variant/15 glass-panel z-50">
+<div class="flex items-center gap-4">
+<div class="bg-primary/10 border border-primary/20 px-4 py-2 rounded-md">
+<p class="text-xs font-label font-bold text-primary tracking-wide">
+<span class="text-lg mr-2 italic">2</span> Informes seleccionados para análisis maestro
+                    </p>
+</div>
+<div class="flex gap-4 ml-8">
+<div class="flex items-center gap-2 opacity-60">
+<span class="material-symbols-outlined text-lg">history</span>
+<span class="text-xs font-label uppercase font-bold tracking-widest">History</span>
+</div>
+<div class="flex items-center gap-2 text-primary">
+<span class="material-symbols-outlined text-lg" style="font-variation-settings: 'FILL' 1;">psychology</span>
+<span class="text-xs font-label uppercase font-bold tracking-widest">Cross-Analysis</span>
+</div>
+</div>
+</div>
+<div class="flex items-center gap-4">
+<button class="flex items-center gap-2 bg-gradient-to-r from-primary to-primary-container text-on-primary px-8 py-3 rounded-md font-bold text-sm shadow-[0_0_20px_rgba(138,235,255,0.4)] hover:scale-[1.02] transition-all">
+<span class="material-symbols-outlined">bolt</span>
+                    Ejecutar Análisis Maestro
+                </button>
+</div>
+</footer>
+</main>
+<!-- Right Panel (AI Config) -->
+<aside class="w-80 bg-surface-container-low border-l border-outline-variant/15 p-6 flex flex-col gap-8">
+<div>
+<h3 class="font-headline font-bold text-base mb-6 flex items-center gap-2">
+<span class="material-symbols-outlined text-primary">settings_suggest</span>
+                Configuración IA
+            </h3>
+<div class="space-y-6">
+<!-- Select Model -->
+<div class="space-y-3">
+<label class="text-[10px] font-label font-bold uppercase tracking-widest text-on-surface-variant">Modelo de Análisis</label>
+<div class="relative">
+<select class="w-full bg-surface-container-highest border border-outline-variant/20 rounded-md py-3 px-4 text-xs appearance-none focus:ring-1 focus:ring-primary focus:border-primary">
+<option>Gemini 1.5 Pro (Precision)</option>
+<option>Claude 3.5 Sonnet (Nuance)</option>
+<option>GPT-4o (Reasoning)</option>
+</select>
+<span class="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-on-surface-variant">expand_more</span>
+</div>
+</div>
+<!-- Theory Toggle -->
+<div class="p-4 bg-surface-container rounded-md border border-outline-variant/10">
+<div class="flex justify-between items-center mb-2">
+<span class="text-xs font-semibold">Marco Teórico Psmile</span>
+<div class="w-8 h-4 bg-secondary rounded-full relative cursor-pointer">
+<div class="w-3 h-3 bg-on-secondary rounded-full absolute right-0.5 top-0.5"></div>
+</div>
+</div>
+<p class="text-[10px] text-on-surface-variant leading-normal">Aplica el protocolo de validación estructural basado en la neurociencia del deporte élite.</p>
+</div>
+<!-- Parameters -->
+<div class="space-y-4">
+<h4 class="text-[10px] font-label font-bold uppercase tracking-widest text-on-surface-variant">Dimensiones de Cruce</h4>
+<div class="space-y-2">
+<label class="flex items-center gap-3 p-2 hover:bg-surface-container rounded-md cursor-pointer transition-colors">
+<input checked="" class="rounded-sm bg-surface-container-highest border-outline-variant text-primary focus:ring-primary focus:ring-offset-0" type="checkbox"/>
+<span class="text-xs">Estabilidad Cognitiva</span>
+</label>
+<label class="flex items-center gap-3 p-2 hover:bg-surface-container rounded-md cursor-pointer transition-colors">
+<input checked="" class="rounded-sm bg-surface-container-highest border-outline-variant text-primary focus:ring-primary focus:ring-offset-0" type="checkbox"/>
+<span class="text-xs">Fatiga Neuromuscular</span>
+</label>
+<label class="flex items-center gap-3 p-2 hover:bg-surface-container rounded-md cursor-pointer transition-colors">
+<input class="rounded-sm bg-surface-container-highest border-outline-variant text-primary focus:ring-primary focus:ring-offset-0" type="checkbox"/>
+<span class="text-xs">Variables Contextuales</span>
+</label>
+</div>
+</div>
+</div>
+</div>
+<!-- Execution Area -->
+<div class="mt-auto pt-6 border-t border-outline-variant/15 space-y-4">
+<button class="w-full flex items-center justify-center gap-3 bg-gradient-to-br from-primary to-primary-container text-on-primary py-4 rounded-md font-bold shadow-[0_0_30px_rgba(138,235,255,0.25)] hover:shadow-[0_0_40px_rgba(138,235,255,0.4)] transition-all">
+<span class="material-symbols-outlined">bolt</span>
+                Ejecutar Análisis Maestro Cruzado
+            </button>
+<p class="text-[9px] text-center text-on-surface-variant font-label uppercase">Consumo estimado: 14.5k tokens</p>
+</div>
+</aside>
+</body></html>

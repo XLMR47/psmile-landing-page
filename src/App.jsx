@@ -19,6 +19,11 @@ import Dashboard from './portal/Dashboard';
 import PlayerDetail from './portal/PlayerDetail';
 import ProtectedRoute from './portal/ProtectedRoute';
 import EpsdLite from './portal/EpsdLite';
+import EpsdHistory from './portal/EpsdHistory';
+import PsmileLab from './portal/PsmileLab';
+import CharlaAutorregulacion from './portal/CharlaAutorregulacion';
+import PlayerSesiones from './components/PlayerSesiones';
+import SesionViewer from './components/SesionViewer';
 
 // Landing Page (página pública)
 function LandingPage() {
@@ -73,6 +78,46 @@ function App() {
         element={
           <ProtectedRoute>
             <EpsdLite />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/portal/epsd-historial"
+        element={
+          <ProtectedRoute>
+            <EpsdHistory />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/portal/laboratorio"
+        element={
+          <ProtectedRoute>
+            <PsmileLab />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/portal/jugador/:id/sesiones"
+        element={
+          <ProtectedRoute>
+            <PlayerSesiones />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/portal/jugador/:id/sesion/:sesionId"
+        element={
+          <ProtectedRoute>
+            <SesionViewer />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/portal/charla-autorregulacion"
+        element={
+          <ProtectedRoute>
+            <CharlaAutorregulacion />
           </ProtectedRoute>
         }
       />

@@ -1,0 +1,445 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Las Emociones también Juegan · Diapositivas</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=Lora:ital,wght@0,400;0,500;1,400;1,500&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --ink:#0c1720;--ink2:#162030;--card:#111c27;--card2:#162231;
+  --red:#c0392b;--red2:#e05244;
+  --gold:#e8a020;
+  --teal:#2eb8a0;
+  --white:#fff;--muted:#6b8099;--light:#a8becc;--border:#1e2d3d;
+}
+html,body{width:100%;height:100%;overflow:hidden;background:#000;}
+.deck{width:100vw;height:100vh;display:flex;align-items:center;justify-content:center;}
+.slide{display:none;width:1280px;height:720px;background:var(--ink);position:relative;overflow:hidden;flex-shrink:0;}
+.slide.active{display:flex;flex-direction:column;animation:fadeIn 0.3s ease;}
+@keyframes fadeIn{from{opacity:0;transform:scale(0.99)}to{opacity:1;transform:scale(1)}}
+#scaler{transform-origin:top left;position:absolute;top:0;left:0;}
+
+/* CONTROLS */
+.controls{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);display:flex;align-items:center;gap:14px;background:rgba(12,23,32,0.92);border:1px solid var(--border);border-radius:100px;padding:8px 20px;z-index:200;backdrop-filter:blur(8px);}
+.ctrl-btn{background:none;border:none;color:var(--muted);font-size:18px;cursor:pointer;padding:2px 6px;transition:color 0.2s;line-height:1;}
+.ctrl-btn:hover{color:var(--white)}
+.slide-counter{font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--muted);min-width:50px;text-align:center;}
+.progress-dots{display:flex;gap:5px;align-items:center;}
+.dot{width:6px;height:6px;border-radius:50%;background:var(--border);transition:all 0.2s;cursor:pointer;}
+.dot.active{background:var(--red);transform:scale(1.4);}
+.dot.done{background:var(--gold);}
+.key-hint{position:fixed;top:16px;right:16px;font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--muted);background:rgba(12,23,32,0.85);border:1px solid var(--border);border-radius:6px;padding:6px 12px;z-index:200;opacity:1;transition:opacity 1s;}
+.key-hint.hidden{opacity:0;pointer-events:none;}
+
+/* COMUNES */
+.accent-bar{position:absolute;left:0;top:0;bottom:0;width:5px;background:var(--red);}
+.kicker{font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:600;letter-spacing:3px;text-transform:uppercase;color:var(--red2);}
+.slide-title{font-family:'Syne',sans-serif;font-size:38px;font-weight:800;color:var(--white);line-height:1.1;margin-top:6px;}
+.brand{position:absolute;bottom:18px;left:42px;font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--muted);letter-spacing:2px;}
+.slide-num{position:absolute;bottom:18px;right:32px;font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--muted);}
+.card{background:var(--card2);border:1px solid var(--border);border-radius:12px;}
+.gold-bar{width:5px;background:var(--gold);border-radius:3px 0 0 3px;flex-shrink:0;}
+.red-bar{width:5px;background:var(--red);border-radius:3px 0 0 3px;flex-shrink:0;}
+.teal-bar{width:5px;background:var(--teal);border-radius:3px 0 0 3px;flex-shrink:0;}
+
+/* ══ SLIDE 1 — PORTADA ══ */
+#s1{background:var(--ink);}
+.s1-left-bar{position:absolute;left:0;top:0;bottom:0;width:6px;background:var(--red);}
+.s1-bg-num{position:absolute;right:-20px;top:50%;transform:translateY(-50%);font-family:'Syne',sans-serif;font-size:400px;font-weight:800;color:#141f29;line-height:1;pointer-events:none;user-select:none;}
+.s1-header{display:flex;align-items:center;gap:18px;padding:40px 52px 0;}
+.s1-badge{width:72px;height:72px;background:var(--red);border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:36px;flex-shrink:0;}
+.s1-kicker{font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:600;letter-spacing:3px;text-transform:uppercase;color:var(--red2);}
+.s1-main{padding:24px 52px 0;flex:1;}
+.s1-big{font-family:'Syne',sans-serif;font-size:74px;font-weight:800;color:var(--white);line-height:0.95;letter-spacing:-2px;}
+.s1-sub{font-family:'Lora',serif;font-size:20px;font-style:italic;color:var(--light);margin-top:16px;}
+.s1-sep{width:420px;height:2px;background:var(--gold);margin-top:24px;}
+.s1-meta{display:flex;gap:8px;align-items:center;margin-top:12px;font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--muted);}
+.s1-meta .dsep{color:var(--gold);}
+
+/* ══ CONTENIDO ══ */
+.content{padding:36px 52px;flex:1;display:flex;flex-direction:column;}
+
+/* SLIDE 2 — Por qué importan */
+.why-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:22px;flex:1;}
+.why-card{background:var(--card2);border:1px solid var(--border);border-radius:12px;padding:22px;display:flex;flex-direction:column;}
+.why-icon{font-size:32px;margin-bottom:12px;}
+.why-title{font-family:'Syne',sans-serif;font-size:16px;font-weight:700;color:var(--white);margin-bottom:8px;}
+.why-text{font-family:'Lora',serif;font-size:14px;color:var(--light);line-height:1.55;font-style:italic;flex:1;}
+.why-tag{display:inline-block;margin-top:12px;font-family:'JetBrains Mono',monospace;font-size:10px;font-weight:600;letter-spacing:1px;padding:3px 10px;border-radius:100px;}
+
+/* SLIDE 3 — El ciclo */
+.flow{display:flex;align-items:center;gap:0;margin-top:24px;}
+.flow-box{flex:1;border-radius:10px;overflow:hidden;border:1px solid var(--border);}
+.flow-box-head{padding:11px 16px 9px;font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:600;letter-spacing:2px;text-transform:uppercase;text-align:center;}
+.flow-box-body{padding:14px 12px;font-family:'Lora',serif;font-size:14px;font-style:italic;color:var(--white);text-align:center;background:var(--card);min-height:70px;display:flex;align-items:center;justify-content:center;}
+.flow-arrow{font-size:20px;color:var(--gold);padding:0 10px;flex-shrink:0;}
+.insight-card{display:flex;margin-top:20px;background:#1a0a09;border:1px solid #3a1a1a;border-radius:10px;overflow:hidden;}
+.insight-body{padding:18px 22px;}
+.insight-title{font-family:'Syne',sans-serif;font-size:16px;font-weight:800;color:var(--white);margin-bottom:7px;}
+.insight-text{font-family:'Lora',serif;font-size:13px;font-style:italic;color:var(--light);line-height:1.6;}
+
+/* SLIDE 4 — Disparadores */
+.triggers-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:20px;flex:1;}
+.trigger-item{display:flex;gap:0;background:var(--card2);border:1px solid var(--border);border-radius:10px;overflow:hidden;align-items:center;}
+.trigger-icon{width:60px;flex-shrink:0;font-size:24px;text-align:center;background:var(--card);align-self:stretch;display:flex;align-items:center;justify-content:center;}
+.trigger-text{padding:13px 14px;font-family:'Trebuchet MS',sans-serif;font-size:14px;color:var(--white);line-height:1.4;}
+.trigger-bottom{display:flex;gap:0;background:#1a0a09;border:1px solid #3a1a1a;border-radius:8px;overflow:hidden;margin-top:10px;}
+.trigger-bottom-text{padding:11px 16px;font-family:'Lora',serif;font-size:13px;font-style:italic;color:var(--light);display:flex;align-items:center;}
+
+/* SLIDE 5 — RRR */
+.rrr-cards{display:flex;gap:14px;margin-top:20px;flex:1;}
+.rrr-card{flex:1;border-radius:12px;overflow:hidden;border:1px solid var(--border);display:flex;flex-direction:column;}
+.rrr-head{padding:20px 18px 16px;display:flex;flex-direction:column;align-items:center;}
+.rrr-letter{font-family:'Syne',sans-serif;font-size:52px;font-weight:800;color:var(--white);line-height:1;margin-bottom:4px;}
+.rrr-name{font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,0.7);}
+.rrr-body{flex:1;background:var(--card2);border-top:1px solid rgba(255,255,255,0.08);padding:16px 18px;display:flex;flex-direction:column;gap:8px;}
+.rrr-desc{font-family:'Lora',serif;font-size:14px;font-style:italic;color:var(--white);line-height:1.5;}
+.rrr-ex{font-family:'Trebuchet MS',sans-serif;font-size:12px;color:var(--muted);line-height:1.4;}
+.rrr-footer{padding:14px 52px;font-family:'Lora',serif;font-size:13px;font-style:italic;color:var(--muted);border-top:1px solid var(--border);text-align:center;}
+
+/* SLIDE 6 — Respiración */
+.breath-cards{display:flex;gap:14px;margin-top:20px;}
+.breath-card{flex:1;background:var(--card2);border:1px solid var(--border);border-radius:12px;overflow:hidden;display:flex;flex-direction:column;align-items:center;}
+.breath-top-bar{height:4px;width:100%;}
+.breath-num{font-family:'Syne',sans-serif;font-size:78px;font-weight:800;line-height:1;padding:16px 0 4px;}
+.breath-label{font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:600;letter-spacing:2px;text-transform:uppercase;padding-bottom:12px;}
+.breath-sep{height:1px;background:var(--border);width:calc(100% - 36px);}
+.breath-desc{font-family:'Lora',serif;font-size:13px;font-style:italic;color:var(--light);text-align:center;padding:12px 18px;line-height:1.5;flex:1;}
+.psmile-row{display:flex;background:#0a1f1c;border:1px solid #1a3a34;border-radius:10px;overflow:hidden;margin-top:16px;}
+.psmile-content{padding:13px 18px;flex:1;}
+.psmile-title{font-family:'Trebuchet MS',sans-serif;font-size:13px;color:var(--light);margin-bottom:4px;}
+.psmile-url{font-family:'Syne',sans-serif;font-size:16px;font-weight:700;color:var(--teal);}
+.psmile-sub{font-family:'Lora',serif;font-size:12px;font-style:italic;color:var(--muted);margin-top:3px;}
+
+/* SLIDE 7 — Tarea */
+.tasks-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:20px;flex:1;}
+.task-item{display:flex;background:var(--card2);border:1px solid var(--border);border-radius:10px;overflow:hidden;}
+.task-num{width:50px;flex-shrink:0;background:var(--card);display:flex;align-items:flex-start;justify-content:center;padding-top:13px;font-family:'Syne',sans-serif;font-size:17px;font-weight:800;color:var(--gold);}
+.task-body{padding:13px 14px;flex:1;}
+.task-icon{font-size:20px;margin-bottom:5px;}
+.task-text{font-family:'Trebuchet MS',sans-serif;font-size:13px;color:var(--light);line-height:1.5;}
+.quote-row{display:flex;background:#0a0a0a;border:1px solid var(--border);border-radius:8px;overflow:hidden;margin-top:10px;}
+.quote-body{padding:13px 18px;font-family:'Lora',serif;font-size:14px;font-style:italic;color:var(--light);display:flex;align-items:center;}
+</style>
+</head>
+<body>
+
+<div class="key-hint" id="keyHint">← → o clic para navegar · F para pantalla completa</div>
+<div class="deck">
+<div id="scaler">
+
+<!-- ══ SLIDE 1 — PORTADA ══ -->
+<div class="slide active" id="s1">
+  <div class="s1-left-bar"></div>
+  <div class="s1-bg-num">⚽</div>
+  <div class="s1-header">
+    <div class="s1-badge">⚽</div>
+    <div><div class="s1-kicker">Psicología Deportiva · PSMILE</div></div>
+  </div>
+  <div class="s1-main">
+    <div class="s1-big">Las Emociones<br>también Juegan</div>
+    <div class="s1-sub">Cómo usar tus emociones a favor en la cancha</div>
+    <div class="s1-sep"></div>
+    <div class="s1-meta">
+      <span>Categoría Sub-15</span>
+      <span class="dsep">·</span>
+      <span>60 min</span>
+      <span class="dsep">·</span>
+      <span>Charla grupal</span>
+    </div>
+  </div>
+  <div class="brand">PSMILE · Psicología Deportiva</div>
+  <div class="slide-num">1 / 7</div>
+</div>
+
+<!-- ══ SLIDE 2 — ¿POR QUÉ IMPORTAN LAS EMOCIONES? ══ -->
+<div class="slide" id="s2">
+  <div class="accent-bar"></div>
+  <div class="content">
+    <div class="kicker">La base</div>
+    <div class="slide-title">¿Por qué tus emociones importan en el fútbol?</div>
+    <div class="why-grid">
+      <div class="why-card">
+        <div class="why-icon">🧠</div>
+        <div class="why-title">Las emociones no desaparecen solas</div>
+        <div class="why-text">Cuando sientes rabia o frustración en la cancha, esa energía va a algún lado — o la usas a tu favor o te juega en contra.</div>
+        <div class="why-tag" style="background:rgba(192,57,43,0.15);color:var(--red2);border:1px solid rgba(192,57,43,0.3);">No es malo sentir</div>
+      </div>
+      <div class="why-card">
+        <div class="why-icon">⚡</div>
+        <div class="why-title">Tu cerebro no distingue real de imaginado</div>
+        <div class="why-text">Un error pequeño en la cancha puede activar la misma alarma que un peligro real. Por eso a veces "explotamos" por cosas que en frío no tienen tanto peso.</div>
+        <div class="why-tag" style="background:rgba(232,160,32,0.15);color:var(--gold);border:1px solid rgba(232,160,32,0.3);">La emoción es automática</div>
+      </div>
+      <div class="why-card">
+        <div class="why-icon">🎯</div>
+        <div class="why-title">Los mejores también se desregulan</div>
+        <div class="why-text">La diferencia entre un jugador regular y uno de élite no es que no sienten — es que saben qué hacer con lo que sienten.</div>
+        <div class="why-tag" style="background:rgba(46,184,160,0.1);color:var(--teal);border:1px solid rgba(46,184,160,0.3);">Se puede entrenar</div>
+      </div>
+      <div class="why-card">
+        <div class="why-icon">📊</div>
+        <div class="why-title">Los números lo confirman</div>
+        <div class="why-text">Jugadores que aprenden a regularse cometen hasta un 30% menos de errores técnicos en los momentos de mayor presión del partido.</div>
+        <div class="why-tag" style="background:rgba(192,57,43,0.15);color:var(--red2);border:1px solid rgba(192,57,43,0.3);">30% menos errores</div>
+      </div>
+    </div>
+  </div>
+  <div class="brand">PSMILE · Psicología Deportiva</div>
+  <div class="slide-num">2 / 7</div>
+</div>
+
+<!-- ══ SLIDE 3 — EL CICLO ══ -->
+<div class="slide" id="s3">
+  <div class="accent-bar"></div>
+  <div class="content">
+    <div class="kicker">Lo que pasa dentro de ti</div>
+    <div class="slide-title">El ciclo que controla tu juego</div>
+    <div class="flow">
+      <div class="flow-box">
+        <div class="flow-box-head" style="background:#1e2d3d;color:var(--muted)">QUÉ PASÓ</div>
+        <div class="flow-box-body">El rival te provoca</div>
+      </div>
+      <div class="flow-arrow">▶</div>
+      <div class="flow-box">
+        <div class="flow-box-head" style="background:#2a1a1a;color:var(--red2)">QUÉ SENTISTE</div>
+        <div class="flow-box-body">Rabia, vergüenza</div>
+      </div>
+      <div class="flow-arrow">▶</div>
+      <div class="flow-box">
+        <div class="flow-box-head" style="background:#2a2a0a;color:#e0c020">QUÉ PENSASTE</div>
+        <div class="flow-box-body">«Este se la lleva»</div>
+      </div>
+      <div class="flow-arrow">▶</div>
+      <div class="flow-box">
+        <div class="flow-box-head" style="background:#0a2a0a;color:var(--teal)">QUÉ HICISTE</div>
+        <div class="flow-box-body">Falta, discusión, error</div>
+      </div>
+    </div>
+    <div class="insight-card">
+      <div class="red-bar"></div>
+      <div class="insight-body">
+        <div class="insight-title">No podemos controlar lo que nos pasa. Sí podemos controlar lo que hacemos con eso.</div>
+        <div class="insight-text">Entre la emoción y la acción hay una fracción de segundo. En ese espacio está la regulación emocional — y se puede entrenar.</div>
+      </div>
+    </div>
+  </div>
+  <div class="brand">PSMILE · Psicología Deportiva</div>
+  <div class="slide-num">3 / 7</div>
+</div>
+
+<!-- ══ SLIDE 4 — DISPARADORES ══ -->
+<div class="slide" id="s4">
+  <div class="accent-bar"></div>
+  <div class="content">
+    <div class="kicker">Lo que nos saca</div>
+    <div class="slide-title">¿Qué situaciones te desregulan más?</div>
+    <div class="triggers-grid">
+      <div class="trigger-item">
+        <div class="trigger-icon">😤</div>
+        <div class="trigger-text">Te retan por un error frente a todos</div>
+      </div>
+      <div class="trigger-item">
+        <div class="trigger-icon">🟨</div>
+        <div class="trigger-text">El árbitro te cobra algo injusto</div>
+      </div>
+      <div class="trigger-item">
+        <div class="trigger-icon">🗣️</div>
+        <div class="trigger-text">Un rival te provoca o te tira mala onda</div>
+      </div>
+      <div class="trigger-item">
+        <div class="trigger-icon">🥅</div>
+        <div class="trigger-text">Fallas una oportunidad clara de gol</div>
+      </div>
+      <div class="trigger-item" style="grid-column:1/-1">
+        <div class="trigger-icon">📋</div>
+        <div class="trigger-text">El profe te saca del partido o no te pone a jugar</div>
+      </div>
+    </div>
+    <div class="trigger-bottom">
+      <div class="gold-bar"></div>
+      <div class="trigger-bottom-text">Para cada uno vas a mapear qué sentiste, qué pensaste y qué hiciste después</div>
+    </div>
+  </div>
+  <div class="brand">PSMILE · Psicología Deportiva</div>
+  <div class="slide-num">4 / 7</div>
+</div>
+
+<!-- ══ SLIDE 5 — RUTINA RRR ══ -->
+<div class="slide" id="s5">
+  <div class="accent-bar"></div>
+  <div class="content">
+    <div class="kicker">Tu herramienta personal</div>
+    <div class="slide-title">La Rutina RRR — tu botón de reset</div>
+    <div class="rrr-cards">
+      <div class="rrr-card">
+        <div class="rrr-head" style="background:var(--red)">
+          <div class="rrr-letter">R</div>
+          <div class="rrr-name">Reconozco</div>
+        </div>
+        <div class="rrr-body">
+          <div class="rrr-desc">Noto la señal en mi cuerpo antes de explotar</div>
+          <div class="rrr-ex">Me aprieta el pecho · me tiemblan las manos · siento calor en la cara</div>
+        </div>
+      </div>
+      <div class="rrr-card">
+        <div class="rrr-head" style="background:var(--gold)">
+          <div class="rrr-letter">R</div>
+          <div class="rrr-name">Reseteo</div>
+        </div>
+        <div class="rrr-body">
+          <div class="rrr-desc">Un gesto físico tuyo que dice "para, vuelve"</div>
+          <div class="rrr-ex">Me ajusto la camiseta · doy un paso atrás · sacudo las manos</div>
+        </div>
+      </div>
+      <div class="rrr-card">
+        <div class="rrr-head" style="background:var(--teal)">
+          <div class="rrr-letter">R</div>
+          <div class="rrr-name">Reenfoco</div>
+        </div>
+        <div class="rrr-body">
+          <div class="rrr-desc">Respiración 4-2-4 + tu palabra de vuelta al juego</div>
+          <div class="rrr-ex">«Ya» · «Siguiente» · «Enfócate» · «Tú puedes»</div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="rrr-footer">3 segundos en la cancha — con práctica se vuelve automático</div>
+  <div class="brand">PSMILE · Psicología Deportiva</div>
+  <div class="slide-num">5 / 7</div>
+</div>
+
+<!-- ══ SLIDE 6 — RESPIRACIÓN ══ -->
+<div class="slide" id="s6">
+  <div class="accent-bar"></div>
+  <div class="content">
+    <div class="kicker">La herramienta del reenfoque</div>
+    <div class="slide-title">Respiración 4 · 2 · 4</div>
+    <div class="breath-cards">
+      <div class="breath-card">
+        <div class="breath-top-bar" style="background:#4fa8c9"></div>
+        <div class="breath-num" style="color:#4fa8c9">4</div>
+        <div class="breath-label" style="color:#4fa8c9">INHALA</div>
+        <div class="breath-sep"></div>
+        <div class="breath-desc">Llenás de aire los pulmones, el cuerpo recibe la señal de que todo está bien</div>
+      </div>
+      <div class="breath-card">
+        <div class="breath-top-bar" style="background:var(--gold)"></div>
+        <div class="breath-num" style="color:var(--gold)">2</div>
+        <div class="breath-label" style="color:var(--gold)">PAUSA</div>
+        <div class="breath-sep"></div>
+        <div class="breath-desc">El cerebro recibe la señal de pausa — interrumpe el modo "alarma"</div>
+      </div>
+      <div class="breath-card">
+        <div class="breath-top-bar" style="background:var(--teal)"></div>
+        <div class="breath-num" style="color:var(--teal)">4</div>
+        <div class="breath-label" style="color:var(--teal)">EXHALA</div>
+        <div class="breath-sep"></div>
+        <div class="breath-desc">Sueltas la tensión acumulada, el cuerpo baja la activación de emergencia</div>
+      </div>
+    </div>
+    <div class="psmile-row">
+      <div class="teal-bar"></div>
+      <div class="psmile-content">
+        <div class="psmile-title">🫁 Entrenador de pulsaciones en vivo</div>
+        <div class="psmile-url">psmilechile.com</div>
+        <div class="psmile-sub">5 min antes del entrenamiento — entrena tu calma igual que entrenas la técnica</div>
+      </div>
+    </div>
+  </div>
+  <div class="brand">PSMILE · Psicología Deportiva</div>
+  <div class="slide-num">6 / 7</div>
+</div>
+
+<!-- ══ SLIDE 7 — TAREA ══ -->
+<div class="slide" id="s7">
+  <div class="accent-bar"></div>
+  <div class="content">
+    <div class="kicker">Para esta semana</div>
+    <div class="slide-title">Tu tarea</div>
+    <div class="tasks-grid">
+      <div class="task-item">
+        <div class="task-num">01</div>
+        <div class="task-body">
+          <div class="task-icon">📓</div>
+          <div class="task-text">Anota 3 momentos en los que sentiste que ibas a explotar — qué pasó, qué hiciste y cómo te fue.</div>
+        </div>
+      </div>
+      <div class="task-item">
+        <div class="task-num">02</div>
+        <div class="task-body">
+          <div class="task-icon">🫁</div>
+          <div class="task-text">Practica la respiración en psmilechile.com — 5 min antes del entrenamiento.</div>
+        </div>
+      </div>
+      <div class="task-item">
+        <div class="task-num">03</div>
+        <div class="task-body">
+          <div class="task-icon">⚡</div>
+          <div class="task-text">En el próximo partido, ejecuta tu Rutina RRR la primera vez que algo te moleste.</div>
+        </div>
+      </div>
+      <div class="task-item">
+        <div class="task-num">04</div>
+        <div class="task-body">
+          <div class="task-icon">🗣️</div>
+          <div class="task-text">Cuéntale a un compañero de qué trata la Rutina RRR.</div>
+        </div>
+      </div>
+    </div>
+    <div class="quote-row">
+      <div class="gold-bar"></div>
+      <div class="quote-body">«No puedes controlar lo que te pasa en la cancha. Sí puedes controlar lo que haces con eso.»</div>
+    </div>
+  </div>
+  <div class="brand">PSMILE · Psicología Deportiva</div>
+  <div class="slide-num">7 / 7</div>
+</div>
+
+</div>
+</div>
+
+<div class="controls">
+  <button class="ctrl-btn" onclick="prev()">←</button>
+  <div class="progress-dots" id="dots"></div>
+  <span class="slide-counter" id="counter">1 / 7</span>
+  <button class="ctrl-btn" onclick="next()">→</button>
+  <button class="ctrl-btn" onclick="toggleFS()" title="Pantalla completa">⛶</button>
+</div>
+
+<script>
+const TOTAL=7;let cur=1;
+const dotsEl=document.getElementById('dots');
+for(let i=1;i<=TOTAL;i++){const d=document.createElement('div');d.className='dot'+(i===1?' active':'');d.onclick=()=>goTo(i);dotsEl.appendChild(d);}
+function goTo(n){
+  document.getElementById('s'+cur).classList.remove('active');
+  cur=Math.max(1,Math.min(TOTAL,n));
+  document.getElementById('s'+cur).classList.add('active');
+  document.querySelectorAll('.dot').forEach((d,i)=>{d.classList.remove('active','done');if(i<cur-1)d.classList.add('done');if(i===cur-1)d.classList.add('active');});
+  document.getElementById('counter').textContent=cur+' / '+TOTAL;
+}
+function next(){if(cur<TOTAL)goTo(cur+1);}
+function prev(){if(cur>1)goTo(cur-1);}
+document.addEventListener('keydown',e=>{
+  if(e.key==='ArrowRight'||e.key===' ')next();
+  if(e.key==='ArrowLeft')prev();
+  if(e.key==='f'||e.key==='F')toggleFS();
+});
+document.querySelector('.deck').addEventListener('click',e=>{if(!e.target.closest('.controls'))next();});
+function toggleFS(){if(!document.fullscreenElement)document.documentElement.requestFullscreen();else document.exitFullscreen();}
+function scaleSlides(){
+  const vw=window.innerWidth,vh=window.innerHeight;
+  const scale=Math.min(vw/1280,vh/720);
+  const sl=document.getElementById('scaler');
+  sl.style.width='1280px';sl.style.height='720px';
+  sl.style.transform='scale('+scale+')';
+  sl.style.left=((vw-1280*scale)/2)+'px';
+  sl.style.top=((vh-720*scale)/2)+'px';
+}
+window.addEventListener('resize',scaleSlides);scaleSlides();
+setTimeout(()=>document.getElementById('keyHint').classList.add('hidden'),3500);
+</script>
+</body>
+</html>

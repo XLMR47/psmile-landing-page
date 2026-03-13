@@ -16,6 +16,16 @@
   --font-sans: 'Space Grotesk', system-ui, sans-serif;
   --font-drama: 'DM Serif Display', serif;
   --font-mono: 'Space Mono', monospace;
+  --font-orbitron: 'Orbitron', monospace;
+  --font-rajdhani: 'Rajdhani', sans-serif;
+
+  --color-cyber-blue: #0ea5e9;
+  --color-cyber-cyan: #06b6d4;
+  --color-cyber-dark: #0a0e1a;
+  --color-cyber-card: #141824;
+  --color-cyber-border: #1e293b;
+  --color-cyber-green: #10b981;
+  --color-cyber-red: #ef4444;
 }
 
 body {
@@ -74,4 +84,167 @@ html {
 .animate-marquee {
   display: flex !important;
   width: max-content;
+}
+
+/* Cyber-Sports Theme Utilities */
+.orbitron {
+  font-family: var(--font-orbitron);
+}
+
+.rajdhani {
+  font-family: var(--font-rajdhani);
+}
+
+.cyber-glass-card {
+  background: rgba(20, 24, 36, 0.8);
+  backdrop-filter: blur(20px);
+  border: 1px solid var(--color-cyber-border);
+  border-radius: 20px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+}
+
+.cyber-metric-card {
+  transition: all 0.3s ease;
+}
+
+.cyber-metric-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 40px rgba(14, 165, 233, 0.3);
+}
+
+.cyber-score-display {
+  font-size: 3.5rem;
+  font-weight: 900;
+  background: linear-gradient(135deg, var(--color-cyber-blue), var(--color-cyber-cyan));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.cyber-progress-bar {
+  height: 8px;
+  background: var(--color-cyber-border);
+  border-radius: 10px;
+  overflow: hidden;
+  position: relative;
+}
+
+.cyber-progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--color-cyber-blue), var(--color-cyber-cyan));
+  border-radius: 10px;
+  transition: width 0.8s ease;
+  box-shadow: 0 0 20px rgba(14, 165, 233, 0.5);
+}
+
+.cyber-top-item {
+  background: linear-gradient(135deg, rgba(16, 185, 129, 0.1), rgba(16, 185, 129, 0.05));
+  border-left: 4px solid var(--color-cyber-green);
+}
+
+.cyber-improve-item {
+  background: linear-gradient(135deg, rgba(239, 68, 68, 0.1), rgba(239, 68, 68, 0.05));
+  border-left: 4px solid var(--color-cyber-red);
+}
+
+.cyber-btn-primary {
+  background: linear-gradient(135deg, var(--color-cyber-blue), var(--color-cyber-cyan));
+  color: white;
+  border: none;
+  border-radius: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 20px rgba(14, 165, 233, 0.3);
+}
+
+.cyber-btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 30px rgba(14, 165, 233, 0.5);
+}
+
+.cyber-icon-cognitive {
+  background: linear-gradient(135deg, rgba(147, 51, 234, 0.2), rgba(147, 51, 234, 0.1));
+  color: #a78bfa;
+}
+
+.cyber-icon-emotional {
+  background: linear-gradient(135deg, rgba(236, 72, 153, 0.2), rgba(236, 72, 153, 0.1));
+  color: #f472b6;
+}
+
+.cyber-icon-conductual {
+  background: linear-gradient(135deg, rgba(59, 130, 246, 0.2), rgba(59, 130, 246, 0.1));
+  color: #60a5fa;
+}
+
+.cyber-time-bar {
+  position: relative;
+  overflow: hidden;
+}
+
+.cyber-time-bar::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(90deg, transparent, rgba(14, 165, 233, 0.3), transparent);
+  animation: shimmer 2s infinite;
+}
+
+@keyframes shimmer {
+  0%, 100% { transform: translateX(-100%); }
+  50% { transform: translateX(100%); }
+}
+
+.cyber-section-title {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.cyber-section-title::before {
+  content: '';
+  width: 4px;
+  height: 28px;
+  background: linear-gradient(180deg, var(--color-cyber-blue), var(--color-cyber-cyan));
+  border-radius: 4px;
+}
+
+.cyber-ai-section {
+  background: linear-gradient(135deg, rgba(14, 165, 233, 0.1), rgba(6, 182, 212, 0.05));
+  border: 2px solid var(--color-cyber-blue);
+  position: relative;
+  overflow: hidden;
+}
+
+.cyber-ai-section::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 200px;
+  height: 200px;
+  background: radial-gradient(circle, rgba(14, 165, 233, 0.2), transparent);
+  border-radius: 50%;
+}
+
+.custom-scrollbar::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: #1e293b;
+  border-radius: 10px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: #334155;
 }

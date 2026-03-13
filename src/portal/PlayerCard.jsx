@@ -1,4 +1,4 @@
-import { Brain, User, Shield } from 'lucide-react';
+import { Brain, User, Shield, FolderOpen } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
 export default function PlayerCard({ player, showAcademia, getAcademiaName }) {
@@ -91,6 +91,24 @@ export default function PlayerCard({ player, showAcademia, getAcademiaName }) {
                 >
                     {isStaff ? 'Ver Documentos' : 'Ver Análisis de Élite'}
                 </button>
+
+                {!isStaff && (
+                    <button
+                        onClick={(e) => {
+                            e.stopPropagation();
+                            navigate(`/portal/jugador/${player.id}/sesiones`);
+                        }}
+                        className="mt-3 w-full flex items-center justify-center gap-2
+                                 bg-[#0070F3]/10 hover:bg-[#0070F3]/20
+                                 border border-[#0070F3]/20 hover:border-[#0070F3]/40
+                                 text-[#0070F3] hover:text-white
+                                 text-[10px] font-bold uppercase tracking-widest
+                                 py-2 rounded-xl transition-all"
+                    >
+                        <FolderOpen size={12} />
+                        Ver carpeta
+                    </button>
+                )}
             </div>
         </div>
     );

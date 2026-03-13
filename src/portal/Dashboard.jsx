@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { db } from '../firebase';
 import { collection, getDocs, orderBy, query, deleteDoc, doc, where } from 'firebase/firestore';
-import { Brain, LogOut, Plus, Users, Search, Trash2, ShieldCheck, Eye, Building2, Activity } from 'lucide-react';
+import { Brain, LogOut, Plus, Users, Search, Trash2, ShieldCheck, Eye, Building2, Activity, BarChart, FlaskConical } from 'lucide-react';
 import PlayerCard from './PlayerCard';
 import AddPlayerModal from './AddPlayerModal';
 import { getUserConfig, ACADEMIAS } from './academyConfig';
@@ -108,14 +108,34 @@ export default function Dashboard() {
                     </div>
 
                     <div className="flex items-center gap-4">
-                        <button
-                            onClick={() => navigate('/portal/epsd-lite')}
-                            className="hidden md:flex items-center gap-2 bg-[#111827] hover:bg-[#39FF14]/10 border border-white/5 hover:border-[#39FF14]/30 text-[#6B7280] hover:text-[#39FF14] px-4 py-2 rounded-xl transition-all font-bold text-xs uppercase tracking-widest"
-                            title="Herramienta de Evaluación ePsD en Vivo"
-                        >
-                            <Activity size={14} />
-                            ePsD Lite
-                        </button>
+                        {isAdmin && (
+                            <>
+                                <button
+                                    onClick={() => navigate('/portal/laboratorio')}
+                                    className="hidden md:flex items-center gap-2 bg-[#111827] hover:bg-[#8aebff]/10 border border-white/5 hover:border-[#8aebff]/30 text-[#6B7280] hover:text-[#8aebff] px-4 py-2 rounded-xl transition-all font-bold text-xs uppercase tracking-widest"
+                                    title="Laboratorio Psicodeportivo de Alto Rendimiento"
+                                >
+                                    <FlaskConical size={14} />
+                                    Laboratorio
+                                </button>
+                                <button
+                                    onClick={() => navigate('/portal/epsd-lite')}
+                                    className="hidden md:flex items-center gap-2 bg-[#111827] hover:bg-[#39FF14]/10 border border-white/5 hover:border-[#39FF14]/30 text-[#6B7280] hover:text-[#39FF14] px-4 py-2 rounded-xl transition-all font-bold text-xs uppercase tracking-widest"
+                                    title="Herramienta de Evaluación ePsD en Vivo"
+                                >
+                                    <Activity size={14} />
+                                    ePsD Lite
+                                </button>
+                                <button
+                                    onClick={() => navigate('/portal/epsd-historial')}
+                                    className="hidden md:flex items-center gap-2 bg-[#111827] hover:bg-[#0070F3]/10 border border-white/5 hover:border-[#0070F3]/30 text-[#6B7280] hover:text-[#0070F3] px-4 py-2 rounded-xl transition-all font-bold text-xs uppercase tracking-widest"
+                                    title="Ver Historial de Resultados ePsD"
+                                >
+                                    <BarChart size={14} />
+                                    Resultados ePsD
+                                </button>
+                            </>
+                        )}
                         <div className="hidden md:flex items-center gap-2 bg-[#111827] border border-white/5 rounded-full px-4 py-2">
                             {isAdmin ? (
                                 <ShieldCheck size={12} className="text-[#39FF14]" />
@@ -262,8 +282,8 @@ export default function Dashboard() {
                 )}
             </main>
 
-            {/* Floating Add Button (solo admin) */}
-            {isAdmin && (
+            {/* Floating Add Button (Admin o DT) */}
+            {(isAdmin || userConfig.role === 'dt') && (
                 <button
                     onClick={() => setShowAddModal(true)}
                     className="fixed bottom-8 right-8 w-16 h-16 bg-[#0070F3] hover:bg-[#0060D0] text-white rounded-2xl shadow-2xl shadow-[#0070F3]/30 flex items-center justify-center transition-all hover:scale-110 active:scale-95 z-30"
