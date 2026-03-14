@@ -83,10 +83,10 @@ export default function Comparison() {
                 </div>
 
                 {/* Mobile View (Stacked Cards) */}
-                <div className="block lg:hidden space-y-12">
+                <div className="block lg:hidden space-y-8">
                     {comparisonPoints.map((point, i) => (
-                        <div key={i} className="space-y-4">
-                            <h4 className="text-center text-sm font-bold text-white/50 uppercase tracking-widest border-b border-white/5 pb-2">
+                        <div key={i} className="space-y-3">
+                            <h4 className="text-center text-xs font-bold text-white/50 uppercase tracking-widest border-b border-white/5 pb-2">
                                 {point.topic}
                             </h4>
 

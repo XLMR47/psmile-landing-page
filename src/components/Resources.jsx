@@ -129,26 +129,25 @@ export default function Resources() {
 
                     {/* Free Resources Column */}
                     <div>
-                        <div className="flex items-center justify-between mb-8">
-                            <div className="flex items-center gap-4">
-                                <h2 className="text-2xl font-black text-white">Recursos Gratuitos</h2>
-                                <div className="w-12 h-1 bg-[#0070F3] rounded-full"></div>
-                            </div>
-                            {!allUnlocked && (
-                                <button
-                                    onClick={handleOpenUnlockModal}
-                                    className="flex items-center gap-2 px-4 py-2 bg-[#0070F3]/10 border border-[#0070F3]/30 rounded-lg text-[#0070F3] hover:bg-[#0070F3] hover:text-white transition-all text-[10px] font-black uppercase tracking-widest"
-                                >
-                                    <Unlock size={14} /> Desbloquear Todo
-                                </button>
-                            )}
-                            {allUnlocked && (
-                                <div className="flex items-center gap-2 px-3 py-1.5 bg-[#FFFFFF]/10 border border-[#FFFFFF]/30 rounded-lg">
-                                    <CheckCircle2 size={14} className="text-[#FFFFFF]" />
-                                    <span className="text-[10px] font-black uppercase tracking-widest text-[#FFFFFF]">Todo Desbloqueado</span>
-                                </div>
-                            )}
+                <div className="flex flex-col sm:flex-row items-center justify-between mb-8 gap-6">
+                    <div className="flex items-center gap-4 w-full sm:w-auto">
+                        <h2 className="text-xl sm:text-2xl font-black text-white">Recursos Profesionales</h2>
+                        <div className="hidden sm:block w-12 h-1 bg-[#0070F3] rounded-full"></div>
+                    </div>
+                    {!allUnlocked ? (
+                        <button
+                            onClick={handleOpenUnlockModal}
+                            className="w-full sm:w-auto flex items-center justify-center gap-2 px-6 py-3 bg-[#0070F3]/10 border border-[#0070F3]/30 rounded-lg text-[#0070F3] hover:bg-[#0070F3] hover:text-white transition-all text-[11px] font-black uppercase tracking-widest"
+                        >
+                            <Unlock size={14} /> Desbloquear Todo
+                        </button>
+                    ) : (
+                        <div className="flex items-center gap-2 px-4 py-2 bg-[#FFFFFF]/10 border border-[#FFFFFF]/30 rounded-lg">
+                            <CheckCircle2 size={14} className="text-[#FFFFFF]" />
+                            <span className="text-[10px] font-black uppercase tracking-widest text-[#FFFFFF]">Acceso Completo Activo</span>
                         </div>
+                    )}
+                </div>
 
                         <div className="space-y-4">
                             <EbookCard

@@ -126,54 +126,53 @@ export default function PlayerSesiones() {
                   {/* Color bar */}
                   <div className="w-1.5 flex-shrink-0" style={{ background: sesion.color }} />
 
-                  <div className="flex-1 p-5 flex items-center gap-4">
-                    {/* Número */}
-                    <div
-                      className="w-12 h-12 rounded-xl flex items-center justify-center font-black text-lg flex-shrink-0"
-                      style={{ background: `${sesion.color}20`, color: sesion.color }}
-                    >
-                      {sesion.numero}
-                    </div>
-
-                    {/* Info */}
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-center gap-2 mb-0.5">
-                        <h4 className="text-sm font-bold text-white truncate">{sesion.titulo}</h4>
-                        {completada && (
-                          <CheckCircle2 size={14} className="text-[#39FF14] flex-shrink-0" />
-                        )}
+                    <div className="flex-1 p-4 sm:p-5 flex flex-col sm:flex-row items-start sm:items-center gap-4">
+                      <div className="flex items-center gap-4 w-full sm:w-auto">
+                        {/* Número */}
+                        <div
+                          className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl flex items-center justify-center font-black text-base sm:text-lg flex-shrink-0"
+                          style={{ background: `${sesion.color}20`, color: sesion.color }}
+                        >
+                          {sesion.numero}
+                        </div>
+                        {/* Info (dentro de un bloque para movil) */}
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-center gap-2 mb-0.5">
+                            <h4 className="text-sm font-bold text-white truncate">{sesion.titulo}</h4>
+                            {completada && (
+                              <CheckCircle2 size={14} className="text-[#39FF14] flex-shrink-0" />
+                            )}
+                          </div>
+                          <p className="text-xs text-[#6B7280] truncate">{sesion.descripcion}</p>
+                        </div>
                       </div>
-                      <p className="text-xs text-[#6B7280] truncate">{sesion.descripcion}</p>
-                      <div className="flex items-center gap-3 mt-1.5">
-                        <span className="text-[10px] text-[#4B5563] flex items-center gap-1">
-                          <Clock size={10} /> {sesion.duracion}
-                        </span>
-                        <span className="text-[10px] text-[#4B5563] uppercase tracking-wider">
-                          {sesion.ruta.replace(/-/g, ' ')}
-                        </span>
-                        {completada && fechaCompletada && (
-                          <span className="text-[10px] text-[#39FF14]/70">
-                            Completada el {fechaCompletada}
+
+                      {/* Metadatos y Acción */}
+                      <div className="flex items-center justify-between w-full sm:w-auto sm:flex-1 gap-4">
+                        <div className="flex flex-wrap items-center gap-3">
+                          <span className="text-[10px] text-[#4B5563] flex items-center gap-1">
+                            <Clock size={10} /> {sesion.duracion}
                           </span>
-                        )}
+                          <span className="text-[10px] text-[#4B5563] uppercase tracking-wider hidden xs:inline">
+                            {sesion.ruta.replace(/-/g, ' ')}
+                          </span>
+                        </div>
+
+                        <button
+                          onClick={() => navigate(`/portal/jugador/${id}/sesion/${sesion.id}`)}
+                          className="flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold uppercase tracking-wider transition-all flex-shrink-0"
+                          style={
+                            completada
+                              ? { background: 'rgba(57,255,20,0.08)', color: '#39FF14', border: '1px solid rgba(57,255,20,0.2)' }
+                              : { background: `${sesion.color}20`, color: sesion.color, border: `1px solid ${sesion.color}40` }
+                          }
+                        >
+                          {completada ? 'Ver' : 'Iniciar'}
+                          <ChevronRight size={14} />
+                        </button>
                       </div>
                     </div>
-
-                    {/* Acción */}
-                    <button
-                      onClick={() => navigate(`/portal/jugador/${id}/sesion/${sesion.id}`)}
-                      className="flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold uppercase tracking-wider transition-all flex-shrink-0"
-                      style={
-                        completada
-                          ? { background: 'rgba(57,255,20,0.08)', color: '#39FF14', border: '1px solid rgba(57,255,20,0.2)' }
-                          : { background: `${sesion.color}20`, color: sesion.color, border: `1px solid ${sesion.color}40` }
-                      }
-                    >
-                      {completada ? 'Ver' : 'Iniciar'}
-                      <ChevronRight size={14} />
-                    </button>
                   </div>
-                </div>
 
                 {/* Respuestas guardadas (si completada) */}
                 {completada && (
@@ -181,7 +180,7 @@ export default function PlayerSesiones() {
                     <p className="text-[10px] text-[#6B7280] uppercase tracking-wider font-bold mb-2">
                       Resumen de respuestas guardadas
                     </p>
-                    <div className="grid grid-cols-2 gap-2">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                       {completada.checkin && (
                         <div className="bg-[#111827] rounded-lg p-2">
                           <p className="text-[9px] text-[#4B5563] uppercase tracking-wider">Check-in</p>

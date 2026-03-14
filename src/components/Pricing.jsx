@@ -33,11 +33,11 @@ export default function Pricing() {
         <section ref={sectionRef} id="planes" className="py-24 bg-[#0C0C0C]">
             <div className="container mx-auto px-6 lg:px-12 max-w-7xl">
 
-                <div className="price-header text-center mb-16">
-                    <h2 className="text-4xl md:text-5xl font-black text-white mb-4">
+                <div className="price-header text-center mb-10 md:mb-16">
+                    <h2 className="text-3xl md:text-5xl font-black text-white mb-4 leading-tight">
                         Planes de <span className="italic text-[#00D1FF]">Entrenamiento Mental</span>
                     </h2>
-                    <p className="text-[#9CA3AF] text-base font-medium max-w-2xl mx-auto">
+                    <p className="text-[#9CA3AF] text-sm md:text-base font-medium max-w-2xl mx-auto px-4 md:px-0">
                         Elige la mejor opción en Chile para deportistas en formación y familias que buscan resultados reales.
                     </p>
                 </div>

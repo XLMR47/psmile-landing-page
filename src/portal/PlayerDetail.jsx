@@ -559,25 +559,25 @@ export default function PlayerDetail() {
                                             });
 
                                             return (
-                                                <div className="grid grid-cols-3 gap-3 md:gap-4">
-                                                    <div className="bg-black/40 rounded-3xl p-4 md:p-5 border border-white/5 backdrop-blur-sm group-hover:border-[#0070F3]/30 transition-all text-center">
+                                                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 md:gap-4">
+                                                    <div className="bg-black/40 rounded-2xl sm:rounded-3xl p-3 sm:p-5 border border-white/5 backdrop-blur-sm group-hover:border-[#0070F3]/30 transition-all text-center">
                                                         <span className="block text-[8px] font-black text-[#6B7280] tracking-widest uppercase mb-1">COGNITIVO</span>
                                                         <div className="flex items-baseline justify-center gap-1">
-                                                            <span className="text-2xl md:text-3xl font-black text-white leading-none">{scores.c}</span>
+                                                            <span className="text-xl sm:text-3xl font-black text-white leading-none">{scores.c}</span>
                                                             <span className="text-[10px] font-bold text-[#6B7280]">/ 100%</span>
                                                         </div>
                                                     </div>
-                                                    <div className="bg-black/40 rounded-3xl p-4 md:p-5 border border-white/5 backdrop-blur-sm group-hover:border-[#39FF14]/30 transition-all text-center">
+                                                    <div className="bg-black/40 rounded-2xl sm:rounded-3xl p-3 sm:p-5 border border-white/5 backdrop-blur-sm group-hover:border-[#39FF14]/30 transition-all text-center">
                                                         <span className="block text-[8px] font-black text-[#6B7280] tracking-widest uppercase mb-1">EMOCIONAL</span>
                                                         <div className="flex items-baseline justify-center gap-1">
-                                                            <span className="text-2xl md:text-3xl font-black text-white leading-none">{scores.e}</span>
+                                                            <span className="text-xl sm:text-3xl font-black text-white leading-none">{scores.e}</span>
                                                             <span className="text-[10px] font-bold text-[#6B7280]">/ 100%</span>
                                                         </div>
                                                     </div>
-                                                    <div className="bg-black/40 rounded-3xl p-4 md:p-5 border border-white/5 backdrop-blur-sm group-hover:border-amber-500/30 transition-all text-center">
+                                                    <div className="bg-black/40 rounded-2xl sm:rounded-3xl p-3 sm:p-5 border border-white/5 backdrop-blur-sm group-hover:border-amber-500/30 transition-all text-center">
                                                         <span className="block text-[8px] font-black text-[#6B7280] tracking-widest uppercase mb-1">CONDUCTUAL</span>
                                                         <div className="flex items-baseline justify-center gap-1">
-                                                            <span className="text-2xl md:text-3xl font-black text-white leading-none">{scores.s}</span>
+                                                            <span className="text-xl sm:text-3xl font-black text-white leading-none">{scores.s}</span>
                                                             <span className="text-[10px] font-bold text-[#6B7280]">/ 100%</span>
                                                         </div>
                                                     </div>

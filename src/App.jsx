@@ -28,7 +28,7 @@ import SesionViewer from './components/SesionViewer';
 // Landing Page (página pública)
 function LandingPage() {
   return (
-    <div className="font-sans min-h-screen text-[#F3F4F6] bg-[#0C0C0C]">
+    <div className="font-sans min-h-screen text-[#F3F4F6] bg-[#0C0C0C] overflow-x-hidden">
       <Header />
       <main>
         <Hero />

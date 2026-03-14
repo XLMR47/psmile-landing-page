@@ -108,9 +108,9 @@ export default function LeadForm() {
                                     </div>
                                     <div className="group/input">
                                         <label className="block text-[11px] font-black text-[#9CA3AF] tracking-[0.2em] uppercase mb-3 px-1 group-focus-within/input:text-[#00D1FF] transition-colors">Categoría (Edad)</label>
-                                        <div className="grid grid-cols-2 gap-4">
+                                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
                                             {['Sub-13 / Sub-15', 'Sub-16 / Sub-18', 'Sub-20 / Pro', 'Cadete Formación'].map(lvl => (
-                                                <button type="button" key={lvl} onClick={() => setFormData({ ...formData, nivel: lvl })} className={`px-5 py-4 rounded-xl border text-sm font-black transition-all duration-300 tracking-wide uppercase ${formData.nivel === lvl ? 'bg-gradient-to-r from-[#0070F3] to-[#00D1FF] text-white border-transparent scale-[1.03] shadow-lg shadow-[#0070F3]/20' : 'bg-[#0F0F0F]/80 border-white/5 text-[#9CA3AF] hover:bg-white/5 hover:border-white/10'}`}>{lvl}</button>
+                                                <button type="button" key={lvl} onClick={() => setFormData({ ...formData, nivel: lvl })} className={`px-5 py-3 sm:py-4 rounded-xl border text-xs sm:text-sm font-black transition-all duration-300 tracking-wide uppercase ${formData.nivel === lvl ? 'bg-gradient-to-r from-[#0070F3] to-[#00D1FF] text-white border-transparent scale-[1.03] shadow-lg shadow-[#0070F3]/20' : 'bg-[#0F0F0F]/80 border-white/5 text-[#9CA3AF] hover:bg-white/5 hover:border-white/10'}`}>{lvl}</button>
                                             ))}
                                         </div>
                                     </div>

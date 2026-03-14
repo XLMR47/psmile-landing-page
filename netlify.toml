@@ -1,14 +1,9 @@
-# example netlify.toml
 [build]
   command = "npm run build"
-  functions = "netlify/functions"
   publish = "dist"
+  functions = "netlify/functions"
 
-# SPA Redirect - Required for React Router to work in production
 [[redirects]]
   from = "/*"
   to = "/index.html"
   status = 200
-
-[build.processing.secrets_scan]
-  omit_values = ["VITE_GROQ_API_KEY"]

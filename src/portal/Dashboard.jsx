@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { db } from '../firebase';
 import { collection, getDocs, orderBy, query, deleteDoc, doc, where } from 'firebase/firestore';
-import { Brain, LogOut, Plus, Users, Search, Trash2, ShieldCheck, Eye, Building2, Activity, BarChart, FlaskConical } from 'lucide-react';
+import { Brain, LogOut, Plus, Users, Search, Trash2, ShieldCheck, Eye, Building2, Activity, BarChart, FlaskConical, Menu, X } from 'lucide-react';
 import PlayerCard from './PlayerCard';
 import AddPlayerModal from './AddPlayerModal';
 import { getUserConfig, ACADEMIAS } from './academyConfig';
@@ -21,6 +21,7 @@ export default function Dashboard() {
     const [filterCategory, setFilterCategory] = useState('Todas');
     const [filterAcademia, setFilterAcademia] = useState('Todas');
     const [deleteConfirm, setDeleteConfirm] = useState(null);
+    const [showMobileMenu, setShowMobileMenu] = useState(false);
 
     const categorias = ['Todas', 'Sub-13', 'Sub-15', 'Sub-17', 'Sub-20'];
 
@@ -107,12 +108,12 @@ export default function Dashboard() {
                         </div>
                     </div>
 
-                    <div className="flex items-center gap-4">
+                    <div className="flex items-center gap-2 md:gap-4">
                         {isAdmin && (
-                            <>
+                            <div className="hidden lg:flex items-center gap-2">
                                 <button
                                     onClick={() => navigate('/portal/laboratorio')}
-                                    className="hidden md:flex items-center gap-2 bg-[#111827] hover:bg-[#8aebff]/10 border border-white/5 hover:border-[#8aebff]/30 text-[#6B7280] hover:text-[#8aebff] px-4 py-2 rounded-xl transition-all font-bold text-xs uppercase tracking-widest"
+                                    className="flex items-center gap-2 bg-[#111827] hover:bg-[#8aebff]/10 border border-white/5 hover:border-[#8aebff]/30 text-[#6B7280] hover:text-[#8aebff] px-4 py-2 rounded-xl transition-all font-bold text-xs uppercase tracking-widest"
                                     title="Laboratorio Psicodeportivo de Alto Rendimiento"
                                 >
                                     <FlaskConical size={14} />
@@ -120,7 +121,7 @@ export default function Dashboard() {
                                 </button>
                                 <button
                                     onClick={() => navigate('/portal/epsd-lite')}
-                                    className="hidden md:flex items-center gap-2 bg-[#111827] hover:bg-[#39FF14]/10 border border-white/5 hover:border-[#39FF14]/30 text-[#6B7280] hover:text-[#39FF14] px-4 py-2 rounded-xl transition-all font-bold text-xs uppercase tracking-widest"
+                                    className="flex items-center gap-2 bg-[#111827] hover:bg-[#39FF14]/10 border border-white/5 hover:border-[#39FF14]/30 text-[#6B7280] hover:text-[#39FF14] px-4 py-2 rounded-xl transition-all font-bold text-xs uppercase tracking-widest"
                                     title="Herramienta de Evaluación ePsD en Vivo"
                                 >
                                     <Activity size={14} />
@@ -128,21 +129,21 @@ export default function Dashboard() {
                                 </button>
                                 <button
                                     onClick={() => navigate('/portal/epsd-historial')}
-                                    className="hidden md:flex items-center gap-2 bg-[#111827] hover:bg-[#0070F3]/10 border border-white/5 hover:border-[#0070F3]/30 text-[#6B7280] hover:text-[#0070F3] px-4 py-2 rounded-xl transition-all font-bold text-xs uppercase tracking-widest"
+                                    className="flex items-center gap-2 bg-[#111827] hover:bg-[#0070F3]/10 border border-white/5 hover:border-[#0070F3]/30 text-[#6B7280] hover:text-[#0070F3] px-4 py-2 rounded-xl transition-all font-bold text-xs uppercase tracking-widest"
                                     title="Ver Historial de Resultados ePsD"
                                 >
                                     <BarChart size={14} />
                                     Resultados ePsD
                                 </button>
-                            </>
+                            </div>
                         )}
-                        <div className="hidden md:flex items-center gap-2 bg-[#111827] border border-white/5 rounded-full px-4 py-2">
+                        <div className="hidden sm:flex items-center gap-2 bg-[#111827] border border-white/5 rounded-full px-4 py-2">
                             {isAdmin ? (
                                 <ShieldCheck size={12} className="text-[#39FF14]" />
                             ) : (
                                 <Eye size={12} className="text-[#0070F3]" />
                             )}
-                            <span className="text-[10px] text-[#6B7280] font-bold tracking-widest uppercase">
+                            <span className="text-[10px] text-[#6B7280] font-bold tracking-widest uppercase truncate max-w-[80px]">
                                 {currentUser?.email?.split('@')[0]}
                             </span>
                             <span className={`text-[9px] font-black tracking-widest uppercase px-2 py-0.5 rounded-full ${isAdmin ? 'bg-[#39FF14]/10 text-[#39FF14]' : 'bg-[#0070F3]/10 text-[#0070F3]'}`}>
@@ -151,13 +152,84 @@ export default function Dashboard() {
                         </div>
                         <button
                             onClick={handleLogout}
-                            className="bg-[#111827] hover:bg-red-500/20 border border-white/5 hover:border-red-500/30 text-[#6B7280] hover:text-red-400 rounded-xl p-2.5 transition-all"
+                            className="hidden sm:flex bg-[#111827] hover:bg-red-500/20 border border-white/5 hover:border-red-500/30 text-[#6B7280] hover:text-red-400 rounded-xl p-2.5 transition-all"
                             title="Cerrar sesión"
                         >
                             <LogOut size={16} />
                         </button>
+                        
+                        {/* Mobile Menu Button */}
+                        <button 
+                            onClick={() => setShowMobileMenu(!showMobileMenu)}
+                            className="lg:hidden bg-[#111827] border border-white/5 text-white p-2.5 rounded-xl"
+                        >
+                            {showMobileMenu ? <X size={20} /> : <Menu size={20} />}
+                        </button>
                     </div>
                 </div>
+
+                {/* Mobile Menu Overlay */}
+                {showMobileMenu && (
+                    <div className="lg:hidden bg-[#0A0F1E] border-b border-white/5 p-6 animate-in slide-in-from-top duration-300">
+                        <div className="flex flex-col gap-4">
+                            <div className="flex items-center justify-between p-3 bg-[#111827] rounded-2xl border border-white/5 mb-2">
+                                <div className="flex items-center gap-3">
+                                    <div className={`p-2 rounded-lg ${isAdmin ? 'bg-[#39FF14]/10 text-[#39FF14]' : 'bg-[#0070F3]/10 text-[#0070F3]'}`}>
+                                        {isAdmin ? <ShieldCheck size={16} /> : <Eye size={16} />}
+                                    </div>
+                                    <div>
+                                        <p className="text-xs font-black text-white uppercase tracking-widest">{currentUser?.email?.split('@')[0]}</p>
+                                        <p className="text-[9px] text-[#6B7280] font-bold uppercase tracking-[0.2em]">{isAdmin ? 'Administrador' : 'Director Técnico'}</p>
+                                    </div>
+                                </div>
+                                <button onClick={handleLogout} className="p-2 text-red-500 hover:bg-red-500/10 rounded-xl transition-all">
+                                    <LogOut size={18} />
+                                </button>
+                            </div>
+
+                            {isAdmin && (
+                                <>
+                                    <button
+                                        onClick={() => { navigate('/portal/laboratorio'); setShowMobileMenu(false); }}
+                                        className="flex items-center gap-4 bg-[#111827] p-4 rounded-2xl border border-white/5 text-left"
+                                    >
+                                        <div className="p-2.5 bg-[#8aebff]/10 text-[#8aebff] rounded-xl border border-[#8aebff]/20">
+                                            <FlaskConical size={18} />
+                                        </div>
+                                        <div>
+                                            <p className="text-sm font-bold text-white uppercase tracking-tight">Laboratorio</p>
+                                            <p className="text-[10px] text-[#6B7280]">Análisis Psicodeportivo Pro</p>
+                                        </div>
+                                    </button>
+                                    <button
+                                        onClick={() => { navigate('/portal/epsd-lite'); setShowMobileMenu(false); }}
+                                        className="flex items-center gap-4 bg-[#111827] p-4 rounded-2xl border border-white/5 text-left"
+                                    >
+                                        <div className="p-2.5 bg-[#39FF14]/10 text-[#39FF14] rounded-xl border border-[#39FF14]/20">
+                                            <Activity size={18} />
+                                        </div>
+                                        <div>
+                                            <p className="text-sm font-bold text-white uppercase tracking-tight">ePsD Lite</p>
+                                            <p className="text-[10px] text-[#6B7280]">Evaluación en Vivo</p>
+                                        </div>
+                                    </button>
+                                    <button
+                                        onClick={() => { navigate('/portal/epsd-historial'); setShowMobileMenu(false); }}
+                                        className="flex items-center gap-4 bg-[#111827] p-4 rounded-2xl border border-white/5 text-left"
+                                    >
+                                        <div className="p-2.5 bg-[#0070F3]/10 text-[#0070F3] rounded-xl border border-[#0070F3]/20">
+                                            <BarChart size={18} />
+                                        </div>
+                                        <div>
+                                            <p className="text-sm font-bold text-white uppercase tracking-tight">Resultados ePsD</p>
+                                            <p className="text-[10px] text-[#6B7280]">Historial y Analíticas</p>
+                                        </div>
+                                    </button>
+                                </>
+                            )}
+                        </div>
+                    </div>
+                )}
             </header>
 
             {/* Main Content */}

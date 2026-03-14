@@ -1,11 +1,6 @@
 import { EPSD_OPERATIONAL_DEFINITIONS } from './epsdIntelligence';
 
-const GROQ_API_KEY = import.meta.env.VITE_GROQ_API_KEY;
-
 export const generateGroqAnalysis = async (playerData, evaluationData, historyData = []) => {
-    if (!GROQ_API_KEY) {
-        throw new Error("API Key de Groq no configurada.");
-    }
 
     const currentScores = Object.entries(evaluationData.subescalas)
         .map(([name, data]) => `- ${name}: ${data.indice}/100`)
@@ -141,18 +136,14 @@ export const generateGroqAnalysis = async (playerData, evaluationData, historyDa
     `;
 
     try {
-        const response = await fetch("https://api.groq.com/openai/v1/chat/completions", {
+        const response = await fetch("/.netlify/functions/analyze", {
             method: "POST",
             headers: {
-                "Authorization": `Bearer ${GROQ_API_KEY}`,
                 "Content-Type": "application/json"
             },
             body: JSON.stringify({
-                model: "llama-3.3-70b-versatile",
-                messages: [
-                    { role: "system", content: "Eres un generador de informes psicodeportivos de élite en formato JSON." },
-                    { role: "user", content: prompt }
-                ],
+                systemPrompt: "Eres un generador de informes psicodeportivos de élite en formato JSON.",
+                prompt: prompt,
                 temperature: 0.5,
                 response_format: { type: "json_object" }
             })
@@ -160,13 +151,13 @@ export const generateGroqAnalysis = async (playerData, evaluationData, historyDa
 
         if (!response.ok) {
             const error = await response.json();
-            throw new Error(error.error?.message || "Error al conectar con Groq");
+            throw new Error(error.error || "Error al conectar con el servicio de análisis");
         }
 
-        const result = await response.json();
-        return JSON.parse(result.choices[0].message.content);
+        const content = await response.text();
+        return JSON.parse(content);
     } catch (error) {
-        console.error("Groq API Error:", error);
+        console.error("Analysis Error:", error);
         throw error;
     }
 };

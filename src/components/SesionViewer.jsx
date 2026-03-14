@@ -34,7 +34,7 @@ function BreathTimer() {
   const CIRC = 2 * Math.PI * 55;
   const phases = [
     { n: 'INHALA', d: 4, c: '#4fa8c9' },
-    { n: 'PAUSA',  d: 2, c: '#e8a020' },
+    { n: 'PAUSA', d: 2, c: '#e8a020' },
     { n: 'EXHALA', d: 4, c: '#2eb8a0' },
   ];
   const [ph, setPh] = useState(0);
@@ -356,6 +356,15 @@ export default function SesionViewer() {
         textarea::placeholder { color: #6b8099; }
         input:focus { border-color: #c0392b !important; }
         textarea:focus { border-color: #c0392b !important; }
+        
+        @media (max-width: 480px) {
+          .session-header { padding: 10px 15px !important; gap: 8px !important; }
+          .session-badge { width: 32px !important; height: 32px !important; font-size: 16px !important; }
+          .session-title { fontSize: 13px !important; }
+          .timer-text { font-size: 16px !important; }
+          .timer-btn { font-size: 9px !important; padding: 3px 8px !important; }
+          .scale-btn { width: 40px !important; height: 40px !important; font-size: 14px !important; }
+        }
       `}</style>
 
       {/* Progress bar */}
@@ -364,26 +373,25 @@ export default function SesionViewer() {
       </div>
 
       {/* Header */}
-      <div style={S.header}>
+      <div style={S.header} className="session-header">
         <button onClick={() => navigate(`/portal/jugador/${jugadorId}/sesiones`)}
           style={{ background: '#111827', border: '1px solid rgba(255,255,255,0.05)', color: '#6b8099', borderRadius: 10, padding: '6px 10px', cursor: 'pointer' }}>
           <ArrowLeft size={16} />
         </button>
-        <div style={S.badge}>⚽</div>
+        <div style={S.badge} className="session-badge">⚽</div>
         <div>
-          <p style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: 10, fontWeight: 600, letterSpacing: 2, textTransform: 'uppercase', color: '#e05244', marginBottom: 2 }}>
-            Psicología Deportiva · PSMILE
+          <p style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: 9, fontWeight: 600, letterSpacing: 1.5, textTransform: 'uppercase', color: '#e05244', marginBottom: 2 }}>
+            PSMILE
           </p>
-          <p style={{ fontFamily: 'Syne, sans-serif', fontSize: 16, fontWeight: 800, color: '#fff', lineHeight: 1.1 }}>Las Emociones también Juegan</p>
-          {jugador && <p style={{ fontSize: 12, fontStyle: 'italic', color: '#6b8099', marginTop: 2 }}>{jugador.nombre} · {jugador.categoria}</p>}
+          <p style={{ fontFamily: 'Syne, sans-serif', fontSize: 14, fontWeight: 800, color: '#fff', lineHeight: 1.1 }} className="session-title">Las Emociones también Juegan</p>
         </div>
         <div style={{ marginLeft: 'auto', textAlign: 'right', flexShrink: 0 }}>
-          <div style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: 22, fontWeight: 600, color: timer.secs <= 600 ? '#e05244' : '#e8a020' }}>
+          <div style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: 18, fontWeight: 600, color: timer.secs <= 600 ? '#e05244' : '#e8a020' }} className="timer-text">
             {timer.fmt}
           </div>
-          <button onClick={timer.toggle}
-            style={{ background: 'rgba(232,160,32,0.12)', border: '1px solid #e8a020', color: '#e8a020', padding: '4px 12px', borderRadius: 100, fontFamily: 'Syne, sans-serif', fontSize: 11, fontWeight: 700, cursor: 'pointer', marginTop: 4 }}>
-            {timer.running ? '⏸ Pausar' : '▶ Iniciar'}
+          <button onClick={timer.toggle} className="timer-btn"
+            style={{ background: 'rgba(232,160,32,0.12)', border: '1px solid #e8a020', color: '#e8a020', padding: '4px 12px', borderRadius: 100, fontFamily: 'Syne, sans-serif', fontSize: 11, fontWeight: 700, cursor: 'pointer', marginTop: 2 }}>
+            {timer.running ? '⏸' : '▶'}
           </button>
         </div>
       </div>
@@ -417,217 +425,217 @@ export default function SesionViewer() {
         </div>
       ) : (
 
-      /* ── BLOCKS ─────────────────────────────────────────────── */
-      <div style={S.blocks}>
+        /* ── BLOCKS ─────────────────────────────────────────────── */
+        <div style={S.blocks}>
 
-        {/* BLOQUE 1 — CHECK-IN */}
-        <div id="block1" style={S.block(unlockedBlocks.includes(1), completedBlocks.includes(1))}>
-          <div style={S.blockHead} onClick={() => setActiveBlock(activeBlock === 1 ? null : 1)}>
-            <span style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: 11, color: '#6b8099', width: 22, textAlign: 'center' }}>01</span>
-            <span style={{ fontSize: 20 }}>🎯</span>
-            <div style={{ flex: 1 }}>
-              <p style={{ fontFamily: 'Syne, sans-serif', fontSize: 16, fontWeight: 700, color: '#fff' }}>¿Cómo llegaste hoy?</p>
-              <p style={{ fontSize: 12, fontStyle: 'italic', color: '#6b8099', marginTop: 2 }}>Punto de partida</p>
-            </div>
-            <span style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: 11, color: '#6b8099' }}>10 min</span>
-            <span style={{ color: '#6b8099', fontSize: 14, transition: 'transform 0.3s', transform: activeBlock === 1 ? 'rotate(180deg)' : 'none' }}>▾</span>
-          </div>
-          <div style={S.blockBody(activeBlock === 1)}>
-            <div style={S.ctxPill}><span style={{ width: 6, height: 6, borderRadius: '50%', background: '#c0392b', flexShrink: 0 }} />Sin filtro — lo primero que sientas</div>
-            <p style={{ fontFamily: 'Syne, sans-serif', fontSize: 22, fontWeight: 700, color: '#fff', textAlign: 'center', lineHeight: 1.35, marginBottom: 10 }}>Del 1 al 10<br />¿Cómo estás mentalmente hoy?</p>
-            <p style={{ fontFamily: 'Lora, serif', fontSize: 13, color: '#6b8099', fontStyle: 'italic', textAlign: 'center', marginBottom: 24 }}>1 = con la cabeza en otro lado · 10 = enfocado y listo</p>
-            <div style={{ display: 'flex', gap: 6, justifyContent: 'center', flexWrap: 'wrap', marginBottom: 10 }}>
-              {[1,2,3,4,5,6,7,8,9,10].map(n => (
-                <button key={n} style={S.scaleBtn(checkinVal === n)} onClick={() => setCheckinVal(n)}>{n}</button>
-              ))}
-            </div>
-            <div style={{ display: 'flex', justifyContent: 'space-between', fontFamily: 'JetBrains Mono, monospace', fontSize: 10, color: '#6b8099', padding: '0 2px', maxWidth: 480, margin: '0 auto' }}>
-              <span>Con la cabeza en otro lado</span><span>Enfocado y listo</span>
-            </div>
-            <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: 22, paddingTop: 16, borderTop: '1px solid #1e2d3d' }}>
-              <button style={S.advanceBtn(false)} onClick={() => advance(1, 2)}>Siguiente →</button>
-            </div>
-          </div>
-        </div>
-
-        {/* BLOQUE 2 — TERMÓMETRO */}
-        <div id="block2" style={S.block(unlockedBlocks.includes(2), completedBlocks.includes(2))}>
-          <div style={S.blockHead} onClick={() => unlockedBlocks.includes(2) && setActiveBlock(activeBlock === 2 ? null : 2)}>
-            <span style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: 11, color: '#6b8099', width: 22, textAlign: 'center' }}>02</span>
-            <span style={{ fontSize: 20 }}>🌡️</span>
-            <div style={{ flex: 1 }}>
-              <p style={{ fontFamily: 'Syne, sans-serif', fontSize: 16, fontWeight: 700, color: '#fff' }}>El Termómetro del Jugador</p>
-              <p style={{ fontSize: 12, fontStyle: 'italic', color: '#6b8099', marginTop: 2 }}>¿Qué cosas te hacen perder la cabeza en la cancha?</p>
-            </div>
-            <span style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: 11, color: '#6b8099' }}>10 min</span>
-            <span style={{ color: '#6b8099', fontSize: 14, transform: activeBlock === 2 ? 'rotate(180deg)' : 'none' }}>▾</span>
-          </div>
-          <div style={S.blockBody(activeBlock === 2)}>
-            <div style={S.ctxPill}><span style={{ width: 6, height: 6, borderRadius: '50%', background: '#c0392b', flexShrink: 0 }} />1 = casi nada · 5 = me saca muchísimo</div>
-            <SitCard sitId="sit1" emoji="😤" text="Cometes un error y tus compañeros o el profe te retan al tiro" sitRatings={sitRatings} rateSit={rateSit} S={S} />
-            <SitCard sitId="sit2" emoji="🟨" text="El árbitro te cobra algo que sientes que fue injusto" sitRatings={sitRatings} rateSit={rateSit} S={S} />
-            <SitCard sitId="sit3" emoji="🗣️" text="Un rival te provoca o se burla de ti durante el partido" sitRatings={sitRatings} rateSit={rateSit} S={S} />
-            <SitCard sitId="sit4" emoji="🥅" text="Fallas una oportunidad clara de gol o un penal importante" sitRatings={sitRatings} rateSit={rateSit} S={S} />
-            <SitCard sitId="sit5" emoji="📋" text="El profe te saca del partido o no te pone a jugar" sitRatings={sitRatings} rateSit={rateSit} S={S} />
-            {termInsight && (
-              <div style={{ background: 'rgba(192,57,43,0.12)', border: '1px solid rgba(192,57,43,0.2)', borderRadius: 9, padding: '12px 14px', marginTop: 12, fontFamily: 'Lora, serif', fontSize: 13, fontStyle: 'italic', color: 'rgba(255,255,255,0.7)' }}>
-                🔍 {termInsight}
+          {/* BLOQUE 1 — CHECK-IN */}
+          <div id="block1" style={S.block(unlockedBlocks.includes(1), completedBlocks.includes(1))}>
+            <div style={S.blockHead} onClick={() => setActiveBlock(activeBlock === 1 ? null : 1)}>
+              <span style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: 11, color: '#6b8099', width: 22, textAlign: 'center' }}>01</span>
+              <span style={{ fontSize: 20 }}>🎯</span>
+              <div style={{ flex: 1 }}>
+                <p style={{ fontFamily: 'Syne, sans-serif', fontSize: 16, fontWeight: 700, color: '#fff' }}>¿Cómo llegaste hoy?</p>
+                <p style={{ fontSize: 12, fontStyle: 'italic', color: '#6b8099', marginTop: 2 }}>Punto de partida</p>
               </div>
-            )}
-            <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: 22, paddingTop: 16, borderTop: '1px solid #1e2d3d' }}>
-              <button style={S.advanceBtn(false)} onClick={() => advance(2, 3)}>Siguiente →</button>
+              <span style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: 11, color: '#6b8099' }}>10 min</span>
+              <span style={{ color: '#6b8099', fontSize: 14, transition: 'transform 0.3s', transform: activeBlock === 1 ? 'rotate(180deg)' : 'none' }}>▾</span>
+            </div>
+            <div style={S.blockBody(activeBlock === 1)}>
+              <div style={S.ctxPill}><span style={{ width: 6, height: 6, borderRadius: '50%', background: '#c0392b', flexShrink: 0 }} />Sin filtro — lo primero que sientas</div>
+              <p style={{ fontFamily: 'Syne, sans-serif', fontSize: 22, fontWeight: 700, color: '#fff', textAlign: 'center', lineHeight: 1.35, marginBottom: 10 }}>Del 1 al 10<br />¿Cómo estás mentalmente hoy?</p>
+              <p style={{ fontFamily: 'Lora, serif', fontSize: 13, color: '#6b8099', fontStyle: 'italic', textAlign: 'center', marginBottom: 24 }}>1 = con la cabeza en otro lado · 10 = enfocado y listo</p>
+              <div style={{ display: 'flex', gap: 6, justifyContent: 'center', flexWrap: 'wrap', marginBottom: 10 }}>
+                {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map(n => (
+                  <button key={n} style={S.scaleBtn(checkinVal === n)} className="scale-btn" onClick={() => setCheckinVal(n)}>{n}</button>
+                ))}
+              </div>
+              <div style={{ display: 'flex', justifyContent: 'space-between', fontFamily: 'JetBrains Mono, monospace', fontSize: 10, color: '#6b8099', padding: '0 2px', maxWidth: 480, margin: '0 auto' }}>
+                <span>Con la cabeza en otro lado</span><span>Enfocado y listo</span>
+              </div>
+              <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: 22, paddingTop: 16, borderTop: '1px solid #1e2d3d' }}>
+                <button style={S.advanceBtn(false)} onClick={() => advance(1, 2)}>Siguiente →</button>
+              </div>
             </div>
           </div>
-        </div>
 
-        {/* BLOQUE 3 — VIDEO */}
-        <div id="block3" style={S.block(unlockedBlocks.includes(3), completedBlocks.includes(3))}>
-          <div style={S.blockHead} onClick={() => unlockedBlocks.includes(3) && setActiveBlock(activeBlock === 3 ? null : 3)}>
-            <span style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: 11, color: '#6b8099', width: 22, textAlign: 'center' }}>03</span>
-            <span style={{ fontSize: 20 }}>▶️</span>
-            <div style={{ flex: 1 }}>
-              <p style={{ fontFamily: 'Syne, sans-serif', fontSize: 16, fontWeight: 700, color: '#fff' }}>Reaccionar vs. Controlar</p>
-              <p style={{ fontSize: 12, fontStyle: 'italic', color: '#6b8099', marginTop: 2 }}>¿Qué le pasa al equipo cuando un jugador explota?</p>
+          {/* BLOQUE 2 — TERMÓMETRO */}
+          <div id="block2" style={S.block(unlockedBlocks.includes(2), completedBlocks.includes(2))}>
+            <div style={S.blockHead} onClick={() => unlockedBlocks.includes(2) && setActiveBlock(activeBlock === 2 ? null : 2)}>
+              <span style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: 11, color: '#6b8099', width: 22, textAlign: 'center' }}>02</span>
+              <span style={{ fontSize: 20 }}>🌡️</span>
+              <div style={{ flex: 1 }}>
+                <p style={{ fontFamily: 'Syne, sans-serif', fontSize: 16, fontWeight: 700, color: '#fff' }}>El Termómetro del Jugador</p>
+                <p style={{ fontSize: 12, fontStyle: 'italic', color: '#6b8099', marginTop: 2 }}>¿Qué cosas te hacen perder la cabeza en la cancha?</p>
+              </div>
+              <span style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: 11, color: '#6b8099' }}>10 min</span>
+              <span style={{ color: '#6b8099', fontSize: 14, transform: activeBlock === 2 ? 'rotate(180deg)' : 'none' }}>▾</span>
             </div>
-            <span style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: 11, color: '#6b8099' }}>10 min</span>
-            <span style={{ color: '#6b8099', fontSize: 14, transform: activeBlock === 3 ? 'rotate(180deg)' : 'none' }}>▾</span>
-          </div>
-          <div style={S.blockBody(activeBlock === 3)}>
-            <div style={S.ctxPill}><span style={{ width: 6, height: 6, borderRadius: '50%', background: '#c0392b', flexShrink: 0 }} />Mira qué le pasa al jugador y al equipo después</div>
-            <p style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: 10, fontWeight: 600, letterSpacing: 2, textTransform: 'uppercase', color: '#6b8099', marginBottom: 8 }}>Video — Lo que pasa cuando perdemos el control</p>
-            <div style={{ position: 'relative', background: '#0c1720', borderRadius: 11, overflow: 'hidden', aspectRatio: '16/9', marginBottom: 10, border: '1px solid #1e2d3d' }}>
-              {videoLoaded1 ? (
-                <iframe src={`https://www.youtube.com/embed/${videoRef1}?rel=0`} allowFullScreen style={{ width: '100%', height: '100%', border: 'none' }} />
-              ) : (
-                <div style={{ width: '100%', height: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 10, cursor: 'pointer' }}
-                  onClick={() => document.getElementById('videoInputArea').style.display = 'flex'}>
-                  <div style={{ width: 58, height: 58, background: 'rgba(192,57,43,0.16)', border: '2px solid #c0392b', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 22 }}>▶</div>
-                  <p style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: 10, color: '#6b8099' }}>Toca para cargar el video</p>
+            <div style={S.blockBody(activeBlock === 2)}>
+              <div style={S.ctxPill}><span style={{ width: 6, height: 6, borderRadius: '50%', background: '#c0392b', flexShrink: 0 }} />1 = casi nada · 5 = me saca muchísimo</div>
+              <SitCard sitId="sit1" emoji="😤" text="Cometes un error y tus compañeros o el profe te retan al tiro" sitRatings={sitRatings} rateSit={rateSit} S={S} />
+              <SitCard sitId="sit2" emoji="🟨" text="El árbitro te cobra algo que sientes que fue injusto" sitRatings={sitRatings} rateSit={rateSit} S={S} />
+              <SitCard sitId="sit3" emoji="🗣️" text="Un rival te provoca o se burla de ti durante el partido" sitRatings={sitRatings} rateSit={rateSit} S={S} />
+              <SitCard sitId="sit4" emoji="🥅" text="Fallas una oportunidad clara de gol o un penal importante" sitRatings={sitRatings} rateSit={rateSit} S={S} />
+              <SitCard sitId="sit5" emoji="📋" text="El profe te saca del partido o no te pone a jugar" sitRatings={sitRatings} rateSit={rateSit} S={S} />
+              {termInsight && (
+                <div style={{ background: 'rgba(192,57,43,0.12)', border: '1px solid rgba(192,57,43,0.2)', borderRadius: 9, padding: '12px 14px', marginTop: 12, fontFamily: 'Lora, serif', fontSize: 13, fontStyle: 'italic', color: 'rgba(255,255,255,0.7)' }}>
+                  🔍 {termInsight}
                 </div>
               )}
-            </div>
-            <div style={{ background: '#162231', border: '1px solid #1e2d3d', borderRadius: 10, padding: 14, marginTop: 4 }}>
-              <p style={{ fontFamily: 'Syne, sans-serif', fontSize: 15, fontWeight: 700, color: '#fff', marginBottom: 8 }}>¿Alguna vez te pasó algo así? ¿Cómo te fue después?</p>
-              <textarea style={{ ...S.fieldInput, minHeight: 60, lineHeight: 1.6, resize: 'none', marginBottom: 0 }} value={videoReflection} onChange={e => setVideoReflection(e.target.value)} placeholder="Siendo honesto..." />
-            </div>
-            <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: 22, paddingTop: 16, borderTop: '1px solid #1e2d3d' }}>
-              <button style={S.advanceBtn(false)} onClick={() => advance(3, 4)}>Siguiente →</button>
+              <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: 22, paddingTop: 16, borderTop: '1px solid #1e2d3d' }}>
+                <button style={S.advanceBtn(false)} onClick={() => advance(2, 3)}>Siguiente →</button>
+              </div>
             </div>
           </div>
-        </div>
 
-        {/* BLOQUE 4 — DISPARADORES */}
-        <div id="block4" style={S.block(unlockedBlocks.includes(4), completedBlocks.includes(4))}>
-          <div style={S.blockHead} onClick={() => unlockedBlocks.includes(4) && setActiveBlock(activeBlock === 4 ? null : 4)}>
-            <span style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: 11, color: '#6b8099', width: 22, textAlign: 'center' }}>04</span>
-            <span style={{ fontSize: 20 }}>🗺️</span>
-            <div style={{ flex: 1 }}>
-              <p style={{ fontFamily: 'Syne, sans-serif', fontSize: 16, fontWeight: 700, color: '#fff' }}>Mis Disparadores</p>
-              <p style={{ fontSize: 12, fontStyle: 'italic', color: '#6b8099', marginTop: 2 }}>¿Qué te saca y qué haces después?</p>
+          {/* BLOQUE 3 — VIDEO */}
+          <div id="block3" style={S.block(unlockedBlocks.includes(3), completedBlocks.includes(3))}>
+            <div style={S.blockHead} onClick={() => unlockedBlocks.includes(3) && setActiveBlock(activeBlock === 3 ? null : 3)}>
+              <span style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: 11, color: '#6b8099', width: 22, textAlign: 'center' }}>03</span>
+              <span style={{ fontSize: 20 }}>▶️</span>
+              <div style={{ flex: 1 }}>
+                <p style={{ fontFamily: 'Syne, sans-serif', fontSize: 16, fontWeight: 700, color: '#fff' }}>Reaccionar vs. Controlar</p>
+                <p style={{ fontSize: 12, fontStyle: 'italic', color: '#6b8099', marginTop: 2 }}>¿Qué le pasa al equipo cuando un jugador explota?</p>
+              </div>
+              <span style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: 11, color: '#6b8099' }}>10 min</span>
+              <span style={{ color: '#6b8099', fontSize: 14, transform: activeBlock === 3 ? 'rotate(180deg)' : 'none' }}>▾</span>
             </div>
-            <span style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: 11, color: '#6b8099' }}>15 min</span>
-            <span style={{ color: '#6b8099', fontSize: 14, transform: activeBlock === 4 ? 'rotate(180deg)' : 'none' }}>▾</span>
-          </div>
-          <div style={S.blockBody(activeBlock === 4)}>
-            <div style={S.ctxPill}><span style={{ width: 6, height: 6, borderRadius: '50%', background: '#c0392b', flexShrink: 0 }} />Qué pasó → qué sentiste → qué pensaste → qué hiciste</div>
-            {disps.map((d, i) => (
-              <div key={i} style={{ background: '#162231', border: '1px solid #1e2d3d', borderRadius: 11, padding: 18, marginBottom: 8 }}>
-                <p style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: 10, fontWeight: 600, letterSpacing: 2, textTransform: 'uppercase', color: '#e05244', marginBottom: 12 }}>⚡ Situación {String(i + 1).padStart(2, '0')}</p>
-                <p style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: 10, fontWeight: 600, letterSpacing: 1.5, textTransform: 'uppercase', color: '#6b8099', marginBottom: 5 }}>¿Qué pasó en la cancha?</p>
-                <input style={S.fieldInput} value={d.situacion} onChange={e => updateDisp(i, 'situacion', e.target.value)} placeholder={i === 0 ? 'Ej: El árbitro me cobró algo injusto' : ''} />
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
-                  <div>
-                    <p style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: 10, fontWeight: 600, letterSpacing: 1.5, textTransform: 'uppercase', color: '#6b8099', marginBottom: 5 }}>¿Qué sentiste?</p>
-                    <input style={S.fieldInput} value={d.emocion} onChange={e => updateDisp(i, 'emocion', e.target.value)} placeholder={i === 0 ? 'Ej: Rabia, vergüenza...' : ''} />
-                  </div>
-                  <div>
-                    <p style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: 10, fontWeight: 600, letterSpacing: 1.5, textTransform: 'uppercase', color: '#6b8099', marginBottom: 5 }}>¿Qué pensaste?</p>
-                    <input style={S.fieldInput} value={d.pensamiento} onChange={e => updateDisp(i, 'pensamiento', e.target.value)} placeholder={i === 0 ? "Ej: 'Esto es injusto'" : ''} />
-                  </div>
-                </div>
-                <p style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: 10, fontWeight: 600, letterSpacing: 1.5, textTransform: 'uppercase', color: '#6b8099', marginBottom: 5 }}>¿Qué hiciste después?</p>
-                <input style={S.fieldInput} value={d.conducta} onChange={e => updateDisp(i, 'conducta', e.target.value)} placeholder={i === 0 ? 'Ej: Reclamé, me bloqueé...' : ''} />
-                {dispInsights[i] && (
-                  <div style={{ background: 'rgba(192,57,43,0.12)', border: '1px solid rgba(192,57,43,0.2)', borderRadius: 9, padding: '10px 14px', fontFamily: 'Lora, serif', fontSize: 13, fontStyle: 'italic', color: 'rgba(255,255,255,0.7)' }}>
-                    🔍 ¡Bien! Reconocer el ciclo es el primer paso para poder cambiarlo.
+            <div style={S.blockBody(activeBlock === 3)}>
+              <div style={S.ctxPill}><span style={{ width: 6, height: 6, borderRadius: '50%', background: '#c0392b', flexShrink: 0 }} />Mira qué le pasa al jugador y al equipo después</div>
+              <p style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: 10, fontWeight: 600, letterSpacing: 2, textTransform: 'uppercase', color: '#6b8099', marginBottom: 8 }}>Video — Lo que pasa cuando perdemos el control</p>
+              <div style={{ position: 'relative', background: '#0c1720', borderRadius: 11, overflow: 'hidden', aspectRatio: '16/9', marginBottom: 10, border: '1px solid #1e2d3d' }}>
+                {videoLoaded1 ? (
+                  <iframe src={`https://www.youtube.com/embed/${videoRef1}?rel=0`} allowFullScreen style={{ width: '100%', height: '100%', border: 'none' }} />
+                ) : (
+                  <div style={{ width: '100%', height: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 10, cursor: 'pointer' }}
+                    onClick={() => document.getElementById('videoInputArea').style.display = 'flex'}>
+                    <div style={{ width: 58, height: 58, background: 'rgba(192,57,43,0.16)', border: '2px solid #c0392b', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 22 }}>▶</div>
+                    <p style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: 10, color: '#6b8099' }}>Toca para cargar el video</p>
                   </div>
                 )}
               </div>
-            ))}
-            <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: 22, paddingTop: 16, borderTop: '1px solid #1e2d3d' }}>
-              <button style={S.advanceBtn(false)} onClick={() => advance(4, 5)}>Siguiente →</button>
-            </div>
-          </div>
-        </div>
-
-        {/* BLOQUE 5 — RUTINA RRR */}
-        <div id="block5" style={S.block(unlockedBlocks.includes(5), completedBlocks.includes(5))}>
-          <div style={S.blockHead} onClick={() => unlockedBlocks.includes(5) && setActiveBlock(activeBlock === 5 ? null : 5)}>
-            <span style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: 11, color: '#6b8099', width: 22, textAlign: 'center' }}>05</span>
-            <span style={{ fontSize: 20 }}>⚡</span>
-            <div style={{ flex: 1 }}>
-              <p style={{ fontFamily: 'Syne, sans-serif', fontSize: 16, fontWeight: 700, color: '#fff' }}>Mi Rutina RRR</p>
-              <p style={{ fontSize: 12, fontStyle: 'italic', color: '#6b8099', marginTop: 2 }}>Tu botón de reset personal</p>
-            </div>
-            <span style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: 11, color: '#6b8099' }}>15 min</span>
-            <span style={{ color: '#6b8099', fontSize: 14, transform: activeBlock === 5 ? 'rotate(180deg)' : 'none' }}>▾</span>
-          </div>
-          <div style={S.blockBody(activeBlock === 5)}>
-            <div style={S.ctxPill}><span style={{ width: 6, height: 6, borderRadius: '50%', background: '#c0392b', flexShrink: 0 }} />Reconocer · Resetear · Reenfocarse — 3 segundos en la cancha</div>
-            <RRRStep letter="R" bg="#c0392b" title="RECONOZCO" desc="Noto la señal en mi cuerpo antes de explotar">
-              <p style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: 10, fontWeight: 600, letterSpacing: 1.5, textTransform: 'uppercase', color: '#6b8099', marginBottom: 5 }}>¿Dónde lo sientes primero?</p>
-              <input style={S.fieldInput} value={rrrReconocer} onChange={e => setRrrReconocer(e.target.value)} placeholder="Ej: Me aprieta el pecho, me tiemblan las manos..." />
-            </RRRStep>
-            <RRRStep letter="R" bg="#e8a020" title="RESETEO" desc='Un gesto físico tuyo que dice "para, vuelve"'>
-              <p style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: 10, fontWeight: 600, letterSpacing: 1.5, textTransform: 'uppercase', color: '#6b8099', marginBottom: 5 }}>¿Cuál es tu gesto de reset?</p>
-              <input style={S.fieldInput} value={rrrReseteo} onChange={e => setRrrReseteo(e.target.value)} placeholder="Ej: Me ajusto la camiseta, doy un paso atrás..." />
-            </RRRStep>
-            <RRRStep letter="R" bg="#2eb8a0" title="REENFOCO" desc="Respiración 4-2-4 + tu palabra de vuelta al juego">
-              <BreathTimer />
-              <p style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: 10, fontWeight: 600, letterSpacing: 1.5, textTransform: 'uppercase', color: '#6b8099', marginBottom: 5, marginTop: 12 }}>Tu palabra de vuelta al juego</p>
-              <input style={S.fieldInput} value={palabraAncla} onChange={e => setPalabraAncla(e.target.value)} placeholder="Ej: 'Ya' · 'Siguiente' · 'Enfócate' · 'Tú puedes'" />
-              <div style={{ textAlign: 'center' }}>
-                <a href="https://psmilechile.com" target="_blank" rel="noreferrer"
-                  style={{ display: 'inline-flex', alignItems: 'center', gap: 7, background: 'rgba(46,184,160,0.1)', border: '1px solid rgba(46,184,160,0.3)', color: '#2eb8a0', padding: '8px 16px', borderRadius: 100, fontFamily: 'Syne, sans-serif', fontSize: 12, fontWeight: 700, textDecoration: 'none', marginTop: 12 }}>
-                  🫁 Entrenador de pulsaciones — psmilechile.com
-                </a>
+              <div style={{ background: '#162231', border: '1px solid #1e2d3d', borderRadius: 10, padding: 14, marginTop: 4 }}>
+                <p style={{ fontFamily: 'Syne, sans-serif', fontSize: 15, fontWeight: 700, color: '#fff', marginBottom: 8 }}>¿Alguna vez te pasó algo así? ¿Cómo te fue después?</p>
+                <textarea style={{ ...S.fieldInput, minHeight: 60, lineHeight: 1.6, resize: 'none', marginBottom: 0 }} value={videoReflection} onChange={e => setVideoReflection(e.target.value)} placeholder="Siendo honesto..." />
               </div>
-            </RRRStep>
-            <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: 22, paddingTop: 16, borderTop: '1px solid #1e2d3d' }}>
-              <button style={S.advanceBtn(false)} onClick={() => advance(5, 6)}>Ir al cierre →</button>
+              <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: 22, paddingTop: 16, borderTop: '1px solid #1e2d3d' }}>
+                <button style={S.advanceBtn(false)} onClick={() => advance(3, 4)}>Siguiente →</button>
+              </div>
             </div>
           </div>
-        </div>
 
-        {/* BLOQUE 6 — COMPROMISO */}
-        <div id="block6" style={S.block(unlockedBlocks.includes(6), completedBlocks.includes(6))}>
-          <div style={S.blockHead} onClick={() => unlockedBlocks.includes(6) && setActiveBlock(activeBlock === 6 ? null : 6)}>
-            <span style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: 11, color: '#6b8099', width: 22, textAlign: 'center' }}>06</span>
-            <span style={{ fontSize: 20 }}>🏁</span>
-            <div style={{ flex: 1 }}>
-              <p style={{ fontFamily: 'Syne, sans-serif', fontSize: 16, fontWeight: 700, color: '#fff' }}>Mi Compromiso</p>
-              <p style={{ fontSize: 12, fontStyle: 'italic', color: '#6b8099', marginTop: 2 }}>¿Qué vas a hacer diferente en la cancha?</p>
+          {/* BLOQUE 4 — DISPARADORES */}
+          <div id="block4" style={S.block(unlockedBlocks.includes(4), completedBlocks.includes(4))}>
+            <div style={S.blockHead} onClick={() => unlockedBlocks.includes(4) && setActiveBlock(activeBlock === 4 ? null : 4)}>
+              <span style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: 11, color: '#6b8099', width: 22, textAlign: 'center' }}>04</span>
+              <span style={{ fontSize: 20 }}>🗺️</span>
+              <div style={{ flex: 1 }}>
+                <p style={{ fontFamily: 'Syne, sans-serif', fontSize: 16, fontWeight: 700, color: '#fff' }}>Mis Disparadores</p>
+                <p style={{ fontSize: 12, fontStyle: 'italic', color: '#6b8099', marginTop: 2 }}>¿Qué te saca y qué haces después?</p>
+              </div>
+              <span style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: 11, color: '#6b8099' }}>15 min</span>
+              <span style={{ color: '#6b8099', fontSize: 14, transform: activeBlock === 4 ? 'rotate(180deg)' : 'none' }}>▾</span>
             </div>
-            <span style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: 11, color: '#6b8099' }}>10 min</span>
-            <span style={{ color: '#6b8099', fontSize: 14, transform: activeBlock === 6 ? 'rotate(180deg)' : 'none' }}>▾</span>
+            <div style={S.blockBody(activeBlock === 4)}>
+              <div style={S.ctxPill}><span style={{ width: 6, height: 6, borderRadius: '50%', background: '#c0392b', flexShrink: 0 }} />Qué pasó → qué sentiste → qué pensaste → qué hiciste</div>
+              {disps.map((d, i) => (
+                <div key={i} style={{ background: '#162231', border: '1px solid #1e2d3d', borderRadius: 11, padding: 18, marginBottom: 8 }}>
+                  <p style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: 10, fontWeight: 600, letterSpacing: 2, textTransform: 'uppercase', color: '#e05244', marginBottom: 12 }}>⚡ Situación {String(i + 1).padStart(2, '0')}</p>
+                  <p style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: 10, fontWeight: 600, letterSpacing: 1.5, textTransform: 'uppercase', color: '#6b8099', marginBottom: 5 }}>¿Qué pasó en la cancha?</p>
+                  <input style={S.fieldInput} value={d.situacion} onChange={e => updateDisp(i, 'situacion', e.target.value)} placeholder={i === 0 ? 'Ej: El árbitro me cobró algo injusto' : ''} />
+                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
+                    <div>
+                      <p style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: 10, fontWeight: 600, letterSpacing: 1.5, textTransform: 'uppercase', color: '#6b8099', marginBottom: 5 }}>¿Qué sentiste?</p>
+                      <input style={S.fieldInput} value={d.emocion} onChange={e => updateDisp(i, 'emocion', e.target.value)} placeholder={i === 0 ? 'Ej: Rabia, vergüenza...' : ''} />
+                    </div>
+                    <div>
+                      <p style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: 10, fontWeight: 600, letterSpacing: 1.5, textTransform: 'uppercase', color: '#6b8099', marginBottom: 5 }}>¿Qué pensaste?</p>
+                      <input style={S.fieldInput} value={d.pensamiento} onChange={e => updateDisp(i, 'pensamiento', e.target.value)} placeholder={i === 0 ? "Ej: 'Esto es injusto'" : ''} />
+                    </div>
+                  </div>
+                  <p style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: 10, fontWeight: 600, letterSpacing: 1.5, textTransform: 'uppercase', color: '#6b8099', marginBottom: 5 }}>¿Qué hiciste después?</p>
+                  <input style={S.fieldInput} value={d.conducta} onChange={e => updateDisp(i, 'conducta', e.target.value)} placeholder={i === 0 ? 'Ej: Reclamé, me bloqueé...' : ''} />
+                  {dispInsights[i] && (
+                    <div style={{ background: 'rgba(192,57,43,0.12)', border: '1px solid rgba(192,57,43,0.2)', borderRadius: 9, padding: '10px 14px', fontFamily: 'Lora, serif', fontSize: 13, fontStyle: 'italic', color: 'rgba(255,255,255,0.7)' }}>
+                      🔍 ¡Bien! Reconocer el ciclo es el primer paso para poder cambiarlo.
+                    </div>
+                  )}
+                </div>
+              ))}
+              <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: 22, paddingTop: 16, borderTop: '1px solid #1e2d3d' }}>
+                <button style={S.advanceBtn(false)} onClick={() => advance(4, 5)}>Siguiente →</button>
+              </div>
+            </div>
           </div>
-          <div style={S.blockBody(activeBlock === 6)}>
-            <div style={S.ctxPill}><span style={{ width: 6, height: 6, borderRadius: '50%', background: '#c0392b', flexShrink: 0 }} />Una sola cosa, concreta y tuya</div>
-            <div style={{ background: 'linear-gradient(135deg,rgba(192,57,43,0.12),rgba(232,160,32,0.12))', border: '1px solid rgba(232,160,32,0.22)', borderRadius: 13, padding: 20 }}>
-              <p style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: 10, fontWeight: 600, letterSpacing: 2, textTransform: 'uppercase', color: '#e8a020', marginBottom: 8 }}>Lo que me llevo hoy</p>
-              <p style={{ fontFamily: 'Syne, sans-serif', fontSize: 15, fontWeight: 700, color: '#fff', marginBottom: 12 }}>La próxima vez que sienta que voy a explotar, voy a...</p>
-              <textarea style={{ width: '100%', background: 'rgba(0,0,0,0.22)', border: '1px solid rgba(232,160,32,0.2)', borderRadius: 8, color: '#fff', fontFamily: 'Lora, serif', fontSize: 14, padding: 11, resize: 'none', outline: 'none', minHeight: 70, lineHeight: 1.6 }}
-                value={compromiso} onChange={e => setCompromiso(e.target.value)} placeholder="Escríbelo en tus palabras..." />
-            </div>
-            <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: 22, paddingTop: 16, borderTop: '1px solid #1e2d3d' }}>
-              <button style={{ ...S.advanceBtn(true), opacity: saving ? 0.7 : 1 }} onClick={saveComplete} disabled={saving}>
-                {saving ? '⏳ Guardando...' : '✓ Terminar y guardar'}
-              </button>
-            </div>
-          </div>
-        </div>
 
-      </div>
+          {/* BLOQUE 5 — RUTINA RRR */}
+          <div id="block5" style={S.block(unlockedBlocks.includes(5), completedBlocks.includes(5))}>
+            <div style={S.blockHead} onClick={() => unlockedBlocks.includes(5) && setActiveBlock(activeBlock === 5 ? null : 5)}>
+              <span style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: 11, color: '#6b8099', width: 22, textAlign: 'center' }}>05</span>
+              <span style={{ fontSize: 20 }}>⚡</span>
+              <div style={{ flex: 1 }}>
+                <p style={{ fontFamily: 'Syne, sans-serif', fontSize: 16, fontWeight: 700, color: '#fff' }}>Mi Rutina RRR</p>
+                <p style={{ fontSize: 12, fontStyle: 'italic', color: '#6b8099', marginTop: 2 }}>Tu botón de reset personal</p>
+              </div>
+              <span style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: 11, color: '#6b8099' }}>15 min</span>
+              <span style={{ color: '#6b8099', fontSize: 14, transform: activeBlock === 5 ? 'rotate(180deg)' : 'none' }}>▾</span>
+            </div>
+            <div style={S.blockBody(activeBlock === 5)}>
+              <div style={S.ctxPill}><span style={{ width: 6, height: 6, borderRadius: '50%', background: '#c0392b', flexShrink: 0 }} />Reconocer · Resetear · Reenfocarse — 3 segundos en la cancha</div>
+              <RRRStep letter="R" bg="#c0392b" title="RECONOZCO" desc="Noto la señal en mi cuerpo antes de explotar">
+                <p style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: 10, fontWeight: 600, letterSpacing: 1.5, textTransform: 'uppercase', color: '#6b8099', marginBottom: 5 }}>¿Dónde lo sientes primero?</p>
+                <input style={S.fieldInput} value={rrrReconocer} onChange={e => setRrrReconocer(e.target.value)} placeholder="Ej: Me aprieta el pecho, me tiemblan las manos..." />
+              </RRRStep>
+              <RRRStep letter="R" bg="#e8a020" title="RESETEO" desc='Un gesto físico tuyo que dice "para, vuelve"'>
+                <p style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: 10, fontWeight: 600, letterSpacing: 1.5, textTransform: 'uppercase', color: '#6b8099', marginBottom: 5 }}>¿Cuál es tu gesto de reset?</p>
+                <input style={S.fieldInput} value={rrrReseteo} onChange={e => setRrrReseteo(e.target.value)} placeholder="Ej: Me ajusto la camiseta, doy un paso atrás..." />
+              </RRRStep>
+              <RRRStep letter="R" bg="#2eb8a0" title="REENFOCO" desc="Respiración 4-2-4 + tu palabra de vuelta al juego">
+                <BreathTimer />
+                <p style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: 10, fontWeight: 600, letterSpacing: 1.5, textTransform: 'uppercase', color: '#6b8099', marginBottom: 5, marginTop: 12 }}>Tu palabra de vuelta al juego</p>
+                <input style={S.fieldInput} value={palabraAncla} onChange={e => setPalabraAncla(e.target.value)} placeholder="Ej: 'Ya' · 'Siguiente' · 'Enfócate' · 'Tú puedes'" />
+                <div style={{ textAlign: 'center' }}>
+                  <a href="https://psmilechile.com" target="_blank" rel="noreferrer"
+                    style={{ display: 'inline-flex', alignItems: 'center', gap: 7, background: 'rgba(46,184,160,0.1)', border: '1px solid rgba(46,184,160,0.3)', color: '#2eb8a0', padding: '8px 16px', borderRadius: 100, fontFamily: 'Syne, sans-serif', fontSize: 12, fontWeight: 700, textDecoration: 'none', marginTop: 12 }}>
+                    🫁 Entrenador de pulsaciones — psmilechile.com
+                  </a>
+                </div>
+              </RRRStep>
+              <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: 22, paddingTop: 16, borderTop: '1px solid #1e2d3d' }}>
+                <button style={S.advanceBtn(false)} onClick={() => advance(5, 6)}>Ir al cierre →</button>
+              </div>
+            </div>
+          </div>
+
+          {/* BLOQUE 6 — COMPROMISO */}
+          <div id="block6" style={S.block(unlockedBlocks.includes(6), completedBlocks.includes(6))}>
+            <div style={S.blockHead} onClick={() => unlockedBlocks.includes(6) && setActiveBlock(activeBlock === 6 ? null : 6)}>
+              <span style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: 11, color: '#6b8099', width: 22, textAlign: 'center' }}>06</span>
+              <span style={{ fontSize: 20 }}>🏁</span>
+              <div style={{ flex: 1 }}>
+                <p style={{ fontFamily: 'Syne, sans-serif', fontSize: 16, fontWeight: 700, color: '#fff' }}>Mi Compromiso</p>
+                <p style={{ fontSize: 12, fontStyle: 'italic', color: '#6b8099', marginTop: 2 }}>¿Qué vas a hacer diferente en la cancha?</p>
+              </div>
+              <span style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: 11, color: '#6b8099' }}>10 min</span>
+              <span style={{ color: '#6b8099', fontSize: 14, transform: activeBlock === 6 ? 'rotate(180deg)' : 'none' }}>▾</span>
+            </div>
+            <div style={S.blockBody(activeBlock === 6)}>
+              <div style={S.ctxPill}><span style={{ width: 6, height: 6, borderRadius: '50%', background: '#c0392b', flexShrink: 0 }} />Una sola cosa, concreta y tuya</div>
+              <div style={{ background: 'linear-gradient(135deg,rgba(192,57,43,0.12),rgba(232,160,32,0.12))', border: '1px solid rgba(232,160,32,0.22)', borderRadius: 13, padding: 20 }}>
+                <p style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: 10, fontWeight: 600, letterSpacing: 2, textTransform: 'uppercase', color: '#e8a020', marginBottom: 8 }}>Lo que me llevo hoy</p>
+                <p style={{ fontFamily: 'Syne, sans-serif', fontSize: 15, fontWeight: 700, color: '#fff', marginBottom: 12 }}>La próxima vez que sienta que voy a explotar, voy a...</p>
+                <textarea style={{ width: '100%', background: 'rgba(0,0,0,0.22)', border: '1px solid rgba(232,160,32,0.2)', borderRadius: 8, color: '#fff', fontFamily: 'Lora, serif', fontSize: 14, padding: 11, resize: 'none', outline: 'none', minHeight: 70, lineHeight: 1.6 }}
+                  value={compromiso} onChange={e => setCompromiso(e.target.value)} placeholder="Escríbelo en tus palabras..." />
+              </div>
+              <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: 22, paddingTop: 16, borderTop: '1px solid #1e2d3d' }}>
+                <button style={{ ...S.advanceBtn(true), opacity: saving ? 0.7 : 1 }} onClick={saveComplete} disabled={saving}>
+                  {saving ? '⏳ Guardando...' : '✓ Terminar y guardar'}
+                </button>
+              </div>
+            </div>
+          </div>
+
+        </div>
       )}
     </div>
   );

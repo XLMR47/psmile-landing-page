@@ -90,11 +90,11 @@ export default function Expert() {
                     {/* Bloque de Texto y Credenciales (Derecha) */}
                     <div className="expert-text-block">
                         <span className="text-[10px] font-bold text-[#0070F3] tracking-[0.3em] uppercase block mb-4">Tu Mentor en el Camino al Éxito</span>
-                        <h2 className="text-3xl md:text-5xl font-black text-white mb-6 leading-tight">
+                        <h2 className="text-3xl md:text-5xl font-black text-white mb-6 leading-tight text-center lg:text-left">
                             Ciencia y Pasión al servicio de tu <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#0070F3] to-[#00D1FF]">rendimiento</span>.
                         </h2>
 
-                        <p className="text-[#9CA3AF] text-lg leading-relaxed mb-10">
+                        <p className="text-[#9CA3AF] text-base md:text-lg leading-relaxed mb-10 text-center lg:text-left">
                             "Soy <span className="text-white font-bold">Luis Enrique Morales</span>, Licenciado en Psicología especializado en el ámbito deportivo a través de Neurociencias y Psicología del Fútbol. Mi sistema integra las neurociencias aplicadas y el entrenamiento de élite para que cada joven talento domine la presión, optimice su rendimiento y encuentre su mejor versión competitiva."
                         </p>
 
@@ -164,9 +164,11 @@ export default function Expert() {
                         </div>
 
                         {/* Botón */}
-                        <a href="#planes" className="inline-flex bg-[#0070F3] hover:bg-[#0056B3] text-white px-8 py-4 rounded-xl text-sm font-black uppercase tracking-widest transition-all transform hover:scale-105 shadow-lg shadow-[#0070F3]/20">
-                            Quiero trabajar con Luis
-                        </a>
+                        <div className="flex justify-center lg:justify-start">
+                            <a href="#planes" className="bg-[#0070F3] hover:bg-[#0056B3] text-white px-8 py-4 rounded-xl text-sm font-black uppercase tracking-widest transition-all transform hover:scale-105 shadow-lg shadow-[#0070F3]/20">
+                                Quiero trabajar con Luis
+                            </a>
+                        </div>
                     </div>
 
                 </div>

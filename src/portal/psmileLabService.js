@@ -4,8 +4,6 @@ import { getStorage, ref, getBytes } from 'firebase/storage';
 // Configurar el worker de PDF.js (usamos un CDN para no engrosar el bundle local)
 pdfjsLib.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjsLib.version}/pdf.worker.min.js`;
 
-const GROQ_API_KEY = import.meta.env.VITE_GROQ_API_KEY;
-
 /**
  * Función para extraer texto de un PDF a partir de su URL
  */
@@ -166,20 +164,15 @@ Genera la "Síntesis Maestra" basada en la correlación de estos documentos bajo
 `;
 
     try {
-        if (!GROQ_API_KEY) throw new Error("API Key de Groq no encontrada");
-
-        const response = await fetch("https://api.groq.com/openai/v1/chat/completions", {
+        const response = await fetch("/.netlify/functions/analyze", {
             method: "POST",
             headers: {
-                "Authorization": `Bearer ${GROQ_API_KEY}`,
                 "Content-Type": "application/json"
             },
             body: JSON.stringify({
                 model: modelId,
-                messages: [
-                    { role: "system", content: systemPrompt },
-                    { role: "user", content: userPrompt }
-                ],
+                systemPrompt: systemPrompt,
+                prompt: userPrompt,
                 temperature: 0.2,
                 response_format: { type: "json_object" }
             })
@@ -187,11 +180,11 @@ Genera la "Síntesis Maestra" basada en la correlación de estos documentos bajo
 
         if (!response.ok) {
             const errorData = await response.json();
-            throw new Error(errorData.error?.message || "Error en Groq API");
+            throw new Error(errorData.error || "Error en el servicio de análisis");
         }
 
-        const result = await response.json();
-        return JSON.parse(result.choices[0].message.content);
+        const content = await response.text();
+        return JSON.parse(content);
         
     } catch (error) {
         console.error("Lab Service Error:", error);

@@ -7,7 +7,7 @@ import {
     LayoutDashboard, Users, Inbox, FileText, 
     Grid, Filter, SortDesc, Check, FileDown, 
     Share2, FlaskConical, LineChart, Sparkles, 
-    Zap, ChevronDown, History, Loader2, Info
+    Zap, ChevronDown, History, Loader2, Info, X
 } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import { getUserConfig } from './academyConfig';
@@ -34,6 +34,10 @@ export default function PsmileLab() {
         marcoTeorico: true,
         dimensions: ['Estabilidad Cognitiva', 'Fatiga Neuromuscular']
     });
+
+    // Mobile UI State
+    const [showSidebar, setShowSidebar] = useState(false);
+    const [showConfig, setShowConfig] = useState(false);
 
     // Fetch initial player list
     useEffect(() => {
@@ -96,6 +100,8 @@ export default function PsmileLab() {
                 setAllReports(merged);
                 setSelectedReports([]); 
                 setMasterAnalysis(null);
+                // Cerrar sidebar en móvil tras seleccionar
+                setShowSidebar(false);
             } catch (err) {
                 console.error("Error fetching all reports:", err);
             } finally {
@@ -170,6 +176,8 @@ export default function PsmileLab() {
             const result = await generateLabMasterAnalysis(payload);
             console.log("DEBUG: Resultado recibido de la IA:", result);
             setMasterAnalysis(result);
+            // Cerrar config en móvil tras analizar
+            setShowConfig(false);
 
         } catch (err) {
             console.error("DEBUG: Master Analysis failed:", err);
@@ -208,9 +216,9 @@ export default function PsmileLab() {
     const filteredPlayersList = players.filter(p => p.nombre?.toLowerCase().includes(searchTerm.toLowerCase()));
 
     return (
-        <div className="bg-[#0d1322] text-[#dde2f8] font-sans selection:bg-[#8aebff]/30 min-h-screen flex overflow-hidden">
+        <div className="bg-[#0d1322] text-[#dde2f8] font-sans selection:bg-[#8aebff]/30 min-h-screen flex relative overflow-hidden">
             {/* Sidebar nav logic adapted from code.html */}
-            <aside className="w-72 bg-[#151b2b] flex flex-col border-r border-[#3c494c]/15 z-50">
+            <aside className={`fixed inset-y-0 left-0 w-72 bg-[#151b2b] flex flex-col border-r border-[#3c494c]/15 z-[60] transition-transform duration-300 transform lg:static lg:translate-x-0 ${showSidebar ? 'translate-x-0' : '-translate-x-full'}`}>
                 <div className="p-6">
                     <div className="flex items-center gap-3 mb-8">
                         <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-[#8aebff] to-[#22d3ee] flex items-center justify-center text-[#00363e] shadow-[0_0_15px_rgba(138,235,255,0.3)]">
@@ -281,18 +289,30 @@ export default function PsmileLab() {
 
             {/* Main Workspace */}
             <main className="flex-1 flex flex-col min-w-0 bg-[#0d1322] overflow-hidden">
-                <header className="h-16 flex items-center justify-between px-8 bg-[#0d1322]/80 backdrop-blur-md border-b border-[#3c494c]/10 z-40">
-                    <div className="flex items-center gap-4">
-                        <h2 className="font-medium text-lg text-[#dde2f8]">Repositorio de Pruebas</h2>
-                        <div className="h-4 w-[1px] bg-[#3c494c]/30"></div>
-                        <p className="text-xs text-[#bbc9cd]">
-                            Resultados para: <span className="text-[#4edea3] font-bold">{selectedPlayer?.nombre || '--'}</span>
+                <header className="h-16 flex items-center justify-between px-4 lg:px-8 bg-[#0d1322]/80 backdrop-blur-md border-b border-[#3c494c]/10 z-40">
+                    <div className="flex items-center gap-3">
+                        <button 
+                            onClick={() => setShowSidebar(true)}
+                            className="lg:hidden p-2 text-[#8aebff] hover:bg-[#8aebff]/10 rounded-lg transition-colors"
+                        >
+                            <Grid size={20} />
+                        </button>
+                        <h2 className="font-medium text-sm lg:text-lg text-[#dde2f8] truncate">Repositorio</h2>
+                        <div className="hidden sm:block h-4 w-[1px] bg-[#3c494c]/30"></div>
+                        <p className="hidden sm:block text-xs text-[#bbc9cd]">
+                            Atleta: <span className="text-[#4edea3] font-bold">{selectedPlayer?.nombre || '--'}</span>
                         </p>
                     </div>
-                    <div className="flex items-center gap-4 text-[#bbc9cd]">
-                        <Bell size={18} className="cursor-pointer hover:text-[#8aebff]" />
-                        <Settings size={18} className="cursor-pointer hover:text-[#8aebff]" />
-                        <HelpCircle size={18} className="cursor-pointer hover:text-[#8aebff]" />
+                    <div className="flex items-center gap-2 lg:gap-4 text-[#bbc9cd]">
+                        <button 
+                            onClick={() => setShowConfig(true)}
+                            className="lg:hidden p-2 text-[#8aebff] hover:bg-[#8aebff]/10 rounded-lg transition-colors"
+                            title="Configuración de IA"
+                        >
+                            <Settings size={20} />
+                        </button>
+                        <Bell size={18} className="hidden sm:block cursor-pointer hover:text-[#8aebff]" />
+                        <HelpCircle size={18} className="hidden sm:block cursor-pointer hover:text-[#8aebff]" />
                     </div>
                 </header>
 
@@ -492,41 +512,37 @@ export default function PsmileLab() {
                 </div>
 
                 {/* Footer Orchestrator */}
-                <footer className="h-20 px-8 flex items-center justify-between border-t border-[#3c494c]/15 bg-[#151b2b]/60 backdrop-blur-md z-50">
-                    <div className="flex items-center gap-4">
-                        <div className="bg-[#8aebff]/10 border border-[#8aebff]/20 px-4 py-2 rounded-md">
-                            <p className="text-xs font-bold text-[#8aebff] tracking-wide">
-                                <span className="text-lg mr-2 italic">{selectedReports.length}</span> 
-                                Informes seleccionados en la cesta de datos
+                <footer className="h-auto lg:h-20 p-4 lg:px-8 flex flex-col lg:flex-row items-center justify-between border-t border-[#3c494c]/15 bg-[#151b2b]/60 backdrop-blur-md z-50 gap-4">
+                    <div className="flex items-center gap-4 w-full lg:w-auto">
+                        <div className="bg-[#8aebff]/10 border border-[#8aebff]/20 px-3 lg:px-4 py-2 rounded-md flex-1 lg:flex-none">
+                            <p className="text-[10px] lg:text-xs font-bold text-[#8aebff] tracking-wide">
+                                <span className="text-sm lg:text-lg mr-2 italic">{selectedReports.length}</span> 
+                                Informes en cesta
                             </p>
                         </div>
-                        <div className="hidden lg:flex gap-4 ml-8">
-                             <div className="flex items-center gap-2 text-[#8aebff]">
-                                <FlaskConical size={18} />
-                                <span className="text-xs uppercase font-bold tracking-widest">Cruces Cruzados</span>
-                            </div>
-                        </div>
                     </div>
-                    <div className="flex items-center gap-4">
+                    <div className="flex items-center gap-4 w-full lg:w-auto">
                         <button 
                             disabled={selectedReports.length === 0 || generatingMaster}
                             onClick={handleExecuteMasterAnalysis}
-                            className="flex items-center gap-2 bg-gradient-to-r from-[#8aebff] to-[#22d3ee] disabled:opacity-50 disabled:grayscale text-[#00363e] px-8 py-3 rounded-md font-bold text-sm shadow-[0_0_20px_rgba(138,235,255,0.4)] hover:scale-[1.02] transition-all"
+                            className="w-full lg:w-auto flex items-center justify-center gap-2 bg-gradient-to-r from-[#8aebff] to-[#22d3ee] disabled:opacity-50 disabled:grayscale text-[#00363e] px-8 py-3 rounded-md font-bold text-sm shadow-[0_0_20px_rgba(138,235,255,0.4)] hover:scale-[1.02] transition-all"
                         >
                             {generatingMaster ? <Loader2 className="animate-spin" /> : <Zap size={18} />}
-                            EJECUTAR ANÁLISIS MAESTRO
+                            {generatingMaster ? 'PROCESANDO...' : 'EJECUTAR ANÁLISIS MAESTRO'}
                         </button>
                     </div>
                 </footer>
             </main>
 
             {/* Right Config Aside */}
-            <aside className="w-80 bg-[#151b2b] border-l border-[#3c494c]/15 p-6 flex flex-col gap-8">
-                <div>
-                    <h3 className="font-bold text-base mb-6 flex items-center gap-2">
-                        <Sparkles className="text-[#8aebff]" /> Configuración Laboratorio
+            <aside className={`fixed inset-y-0 right-0 w-80 bg-[#151b2b] border-l border-[#3c494c]/15 p-6 flex flex-col gap-8 z-[60] transition-transform duration-300 transform lg:static lg:translate-x-0 ${showConfig ? 'translate-x-0' : 'translate-x-full'}`}>
+                <div className="flex items-center justify-between lg:block">
+                    <h3 className="font-bold text-base mb-6 lg:mb-6 flex items-center gap-2">
+                        <Sparkles className="text-[#8aebff]" /> Configuración
                     </h3>
-                    <div className="space-y-6">
+                    <button onClick={() => setShowConfig(false)} className="lg:hidden p-2 text-[#bbc9cd]"><X size={20} /></button>
+                </div>
+                <div className="space-y-6">
                         <div className="space-y-3">
                             <label className="text-[10px] font-bold uppercase tracking-widest text-[#bbc9cd]">Nivel de Razonamiento</label>
                             <div className="relative">
@@ -553,12 +569,11 @@ export default function PsmileLab() {
                                     <div className={`w-3 h-3 bg-white rounded-full absolute top-0.5 transition-all ${aiConfig.marcoTeorico ? 'right-0.5' : 'left-0.5'}`}></div>
                                 </div>
                             </div>
-                            <p className="text-[10px] text-[#bbc9cd] leading-normal italic">Implementa marcos teóricos de neurociencia aplicada al deporte.</p>
-                        </div>
-                    </div>
+                    <p className="text-[10px] text-[#bbc9cd] leading-normal italic">Implementa marcos teóricos de neurociencia aplicada al deporte.</p>
                 </div>
+            </div>
 
-                <div className="mt-auto pt-6 border-t border-[#3c494c]/15">
+            <div className="mt-auto pt-6 border-t border-[#3c494c]/15">
                     <button 
                         disabled={selectedReports.length === 0 || generatingMaster}
                         onClick={handleExecuteMasterAnalysis}
@@ -569,6 +584,14 @@ export default function PsmileLab() {
                     <p className="text-[9px] text-center text-[#bbc9cd] font-bold uppercase mt-4">Laboratorio de Alta Performance</p>
                 </div>
             </aside>
+
+            {/* Backdrop for mobile */}
+            {(showSidebar || showConfig) && (
+                <div 
+                    onClick={() => { setShowSidebar(false); setShowConfig(false); }}
+                    className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[55] lg:hidden animate-in fade-in duration-300"
+                ></div>
+            )}
         </div>
     );
 }
