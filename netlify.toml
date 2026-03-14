@@ -11,4 +11,4 @@
   status = 200
 
 [build.processing.secrets_scan]
-  omit_keys = ["VITE_GROQ_API_KEY"]
+  omit_values = ["VITE_GROQ_API_KEY"]
