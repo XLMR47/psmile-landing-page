@@ -188,6 +188,9 @@ export default function SesionViewer() {
         [`bloque_${blockNum}`]: { ...data, guardadoEn: new Date().toISOString() },
         ultimoBloque: blockNum,
         actualizadoEn: serverTimestamp(),
+        // Asegurar que tenga fecha y tipo para ser visible en el historial
+        fecha: new Date().toISOString().split('T')[0],
+        tipo: 'E-Learning (Sesión IQ)'
       }, { merge: true });
     } catch (err) {
       console.error('Error guardando bloque:', err);

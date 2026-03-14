@@ -1,5 +1,6 @@
 import * as pdfjsLib from 'pdfjs-dist';
-import { getStorage, ref, getBytes } from 'firebase/storage';
+import { ref, getBytes } from 'firebase/storage';
+import { storage } from '../firebase';
 
 // Configurar el worker de PDF.js (usamos un CDN para no engrosar el bundle local)
 pdfjsLib.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjsLib.version}/pdf.worker.min.js`;
@@ -28,30 +29,39 @@ async function extractTextFromPDF(url) {
 
 async function extractTextFromHTML(url) {
     try {
-        const storage = getStorage();
+        if (!url) return "[Sin URL]";
+        
+        // Si no es una URL de Firebase Storage, intentamos un fetch directo (puede fallar por CORS)
+        if (!url.includes('firebasestorage.googleapis.com')) {
+            const resp = await fetch(url);
+            const html = await resp.text();
+            const parser = new DOMParser();
+            const doc = parser.parseFromString(html, 'text/html');
+            return doc.body.innerText || doc.body.textContent || html;
+        }
+
         const decodedUrl = decodeURIComponent(url);
+        // Extraer el path entre /o/ y ?
         const pathMatch = decodedUrl.match(/o\/(.+?)\?/);
         
-        console.log("🔍 URL decodificada:", decodedUrl);
-        console.log("🔍 Path extraído:", pathMatch?.[1]);
-        
-        if (!pathMatch) throw new Error("No se pudo extraer el path de Firebase");
+        if (!pathMatch) {
+            console.warn("⚠️ No se pudo extraer el path de la URL, intentando fetch directo:", url);
+            const resp = await fetch(url);
+            return await resp.text();
+        }
         
         const filePath = pathMatch[1];
         const storageRef = ref(storage, filePath);
         
-        console.log("🔍 Intentando getBytes...");
         const bytes = await getBytes(storageRef);
-        console.log("✅ getBytes OK, tamaño:", bytes.byteLength);
-        
         const html = new TextDecoder().decode(bytes);
         const parser = new DOMParser();
         const doc = parser.parseFromString(html, 'text/html');
         return doc.body.innerText || doc.body.textContent || html;
         
     } catch (error) {
-        console.error("❌ Error exacto:", error.code, error.message);
-        return "[Error al extraer texto de este documento]";
+        console.error("❌ Error extrayendo HTML:", error);
+        return `[Error al extraer texto: ${error.message}]`;
     }
 }
 

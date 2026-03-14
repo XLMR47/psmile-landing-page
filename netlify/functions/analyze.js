@@ -1,4 +1,4 @@
-const fetch = require('node-fetch');
+// netlify/functions/analyze.js
 
 exports.handler = async (event, context) => {
   // Solo permitir POST

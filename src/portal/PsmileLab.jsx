@@ -44,9 +44,22 @@ export default function PsmileLab() {
         const fetchPlayers = async () => {
             setLoadingPlayers(true);
             try {
-                const q = query(collection(db, 'jugadores'), orderBy('createdAt', 'desc'));
+                let q;
+                if (isAdmin) {
+                    q = query(collection(db, 'jugadores'));
+                } else {
+                    q = query(
+                        collection(db, 'jugadores'),
+                        where('academiaId', '==', userConfig.academiaId)
+                    );
+                }
                 const snapshot = await getDocs(q);
-                setPlayers(snapshot.docs.map(d => ({ id: d.id, ...d.data() })));
+                let list = snapshot.docs.map(d => ({ id: d.id, ...d.data() }));
+                
+                // Ordenar en memoria por fecha de creación (createdAt desc)
+                list.sort((a, b) => (b.createdAt || '').localeCompare(a.createdAt || ''));
+                
+                setPlayers(list);
             } catch (err) {
                 console.error("Error fetching players:", err);
             } finally {
@@ -54,7 +67,7 @@ export default function PsmileLab() {
             }
         };
         fetchPlayers();
-    }, []);
+    }, [userConfig.academiaId, isAdmin]);
 
     // Fetch evaluations and history when player is selected
     useEffect(() => {
