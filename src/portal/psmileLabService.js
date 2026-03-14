@@ -5,6 +5,19 @@ import { storage } from '../firebase';
 // Configurar el worker de PDF.js (usamos un CDN para no engrosar el bundle local)
 pdfjsLib.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjsLib.version}/pdf.worker.min.js`;
 
+async function fetchWithRetry(url, options, retries = 3, delayMs = 5000) {
+    for (let i = 0; i < retries; i++) {
+        const res = await fetch(url, options);
+        if (res.status === 429) {
+            console.log(`⏳ Rate limit, esperando ${delayMs}ms... intento ${i + 1}/${retries}`);
+            await new Promise(r => setTimeout(r, delayMs));
+            continue;
+        }
+        return res;
+    }
+    throw new Error("Rate limit persistente después de reintentos");
+}
+
 /**
  * Función para extraer texto de un PDF a partir de su URL
  */
@@ -30,38 +43,27 @@ async function extractTextFromPDF(url) {
 async function extractTextFromHTML(url) {
     try {
         if (!url) return "[Sin URL]";
-        
-        // Si no es una URL de Firebase Storage, intentamos un fetch directo (puede fallar por CORS)
-        if (!url.includes('firebasestorage.googleapis.com')) {
-            const resp = await fetch(url);
-            const html = await resp.text();
-            const parser = new DOMParser();
-            const doc = parser.parseFromString(html, 'text/html');
-            return doc.body.innerText || doc.body.textContent || html;
-        }
 
-        const decodedUrl = decodeURIComponent(url);
-        // Extraer el path entre /o/ y ?
-        const pathMatch = decodedUrl.match(/o\/(.+?)\?/);
-        
-        if (!pathMatch) {
-            console.warn("⚠️ No se pudo extraer el path de la URL, intentando fetch directo:", url);
-            const resp = await fetch(url);
-            return await resp.text();
-        }
-        
-        const filePath = pathMatch[1];
-        const storageRef = ref(storage, filePath);
-        
-        const bytes = await getBytes(storageRef);
-        const html = new TextDecoder().decode(bytes);
-        const parser = new DOMParser();
-        const doc = parser.parseFromString(html, 'text/html');
-        return doc.body.innerText || doc.body.textContent || html;
-        
+        console.log("🔍 Solicitando extracción de HTML vía Netlify Function:", url);
+        const res = await fetchWithRetry('/.netlify/functions/analyze', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ fetchUrl: url })
+        });
+
+        if (!res.ok) throw new Error("Error en proxy de extracción");
+
+        const data = await res.json();
+        const texto = data.htmlContent || "[Error al leer documento]";
+
+        // Truncar a 3000 caracteres para no agotar tokens
+        return texto.length > 3000
+            ? texto.substring(0, 3000) + "\n...[truncado]"
+            : texto;
+
     } catch (error) {
         console.error("❌ Error extrayendo HTML:", error);
-        return `[Error al extraer texto: ${error.message}]`;
+        return "[Error al extraer texto de este documento]";
     }
 }
 
@@ -77,9 +79,10 @@ export async function generateLabMasterAnalysis(payload) {
     // Usamos un array para recolectar el contenido y luego unirlo (join)
     const documentosExtraidos = await Promise.all(evidencia_seleccionada.map(async (ev, index) => {
         let contenido = "";
-        
+
         if (ev.tipo === 'epsd_evaluacion') {
-            contenido = JSON.stringify(ev.data_epsd, null, 2);
+            const raw = JSON.stringify(ev.data_epsd, null, 2);
+            contenido = raw.length > 3000 ? raw.substring(0, 3000) + "\n...[truncado]" : raw;
         } else if (ev.data_externa?.externalUrl) {
             const url = ev.data_externa.externalUrl;
             if (url.toLowerCase().includes('.pdf')) {
@@ -146,20 +149,82 @@ Con esta extensión teórica, el perfil psicodeportológico de un jugador queda 
 Su "Software" Cognitivo: Cuántos milisegundos tarda en procesar el 80% de la información visual del campo y su capacidad ejecutiva para frenar impulsos y tomar decisiones tácticas.
 Su Motor Emocional: Qué nivel de plasticidad tiene su cuerpo para no quedar atrapado en el miedo o la rabia, y si su motivación recae en procesos internos controlables o en la validación externa.
 Su Ecosistema Conductual: Cómo sus vínculos socioafectivos, la influencia del entrenador (profecía autocumplida) y su madurez biológica y social impactan su capacidad de cooperar bajo máxima presión dentro del campo.
+PROTOCOLO DE ANÁLISIS:
+1. Lee TODOS los documentos antes de emitir cualquier juicio.
+2. Identifica qué instrumento es cada documento: ePsD (observación competencia), psicometría (EPI, Lodsón, Tapping, Motivacional), autoreporte (autopercepción).
+3. Cruza las 3 fuentes por dimensión y determina convergencia.
+4. Si hay divergencia entre ePsD y autoreporte → hallazgo clínico de BAJA CONGRUENCIA.
+5. Evalúa si el ePsD captura lo que los tests psicométricos también detectan (validez convergente).
+6. Basa TODOS los hallazgos en evidencia explícita. No inventes datos numéricos.
+7. Responde ÚNICAMENTE en JSON válido.
+8. Si no hay datos psicométricos disponibles, indica explícitamente "Sin datos psicométricos en esta sesión" en lugar de null.
+9. Si no hay autoreporte, indica "Sin autoreporte registrado".
+10. Aun sin psicometría ni autoreporte, SIEMPRE genera el resumen_clinico, hallazgos y sugerencias basándote en los datos ePsD disponibles.
+11. En validacion_epsd, si solo hay datos ePsD, indica qué dimensiones necesitarían psicometría para ser validadas.
 
-ANALYSIS PROTOCOL:
-1. Data Unification: Cruza obligatoriamente los datos de Intervalos (ePsD) con Reportes de Historial (PDF/HTML).
-2. Pattern Recognition: Identifica causas neurofisiológicas de fatiga o bloqueo basándote en el Marco Teórico.
-3. Pronóstico: Determinar el "Ready Score" basándote en la integración de las 3 dimensiones.
-
-FORMATO DE SALIDA (JSON REQUERIDO):
+FORMATO DE SALIDA JSON:
 {
-  "readyScore": number (0-10),
-  "resumen": string,
-  "hallazgos": [{ "titulo": string, "descripcion": string, "impacto": "positivo" | "neutro" | "critico" }],
-  "indicadores": { "foco": number, "resiliencia": number, "carga": number },
-  "kpis_especificos": { "eficiencia_ms": string, "plasticidad_conductual": string, "congruencia_pct": string },
-  "sugerencias": string[] 
+  "readyScore": number (0-10, basado en integración real de las 3 dimensiones),
+  "resumen_clinico": "narrativa integradora de máximo 3 oraciones que sintetice el perfil del jugador cruzando todas las fuentes",
+
+  "matriz_convergente": {
+    "cognitiva": {
+      "epsd": "qué observó el ePsD en esta dimensión",
+      "psicometria": "qué midieron Lodsón, Tapping u otros tests cognitivos (Sin datos psicométricos en esta sesión si no hay datos)",
+      "autoreporte": "qué dice el jugador de su propio rendimiento cognitivo (Sin autoreporte registrado si no hay datos)",
+      "convergencia": "alta | media | baja | no_aplica",
+      "interpretacion": "qué significa esta convergencia o divergencia clínicamente (o por qué no aplica)"
+    },
+    "emocional": {
+      "epsd": "qué observó el ePsD en esta dimensión",
+      "psicometria": "qué indicó el EPI u otros tests emocionales (Sin datos psicométricos en esta sesión si no hay datos)",
+      "autoreporte": "qué dice el jugador de su estabilidad emocional (Sin autoreporte registrado si no hay datos)",
+      "convergencia": "alta | media | baja | no_aplica",
+      "interpretacion": "qué significa esta convergencia o divergencia clínicamente (o por qué no aplica)"
+    },
+    "conductual": {
+      "epsd": "qué observó el ePsD en esta dimensión",
+      "psicometria": "qué indicó el test motivacional u otros (Sin datos psicométricos en esta sesión si no hay datos)",
+      "autoreporte": "cómo percibe el jugador su rol social y motivación (Sin autoreporte registrado si no hay datos)",
+      "convergencia": "alta | media | baja | no_aplica",
+      "interpretacion": "qué significa esta convergencia o divergencia clínicamente (o por qué no aplica)"
+    }
+  },
+
+  "validacion_epsd": {
+    "areas_validadas": ["dimensiones donde el ePsD coincide con la psicometría (vacío si no hay psicometría)"],
+    "areas_divergentes": ["dimensiones donde hay discrepancia entre ePsD y tests (vacío si no hay psicometría)"],
+    "hipotesis_divergencia": "por qué podrían diferir estas fuentes (o 'No aplica sin psicometría' si no hay datos)",
+    "conclusion_validez": "el ePsD parece capturar X con precisión pero necesita revisión en Y (o 'Se requiere psicometría para validar ePsD en todas las dimensiones' si solo hay ePsD)"
+  },
+
+  "congruencia_jugador": {
+    "nivel": "alta | media | baja | no_aplica",
+    "descripcion": "qué tan alineada está la autopercepción del jugador con los datos objetivos del ePsD y la psicometría (o 'No aplica sin autoreporte' si no hay datos)",
+    "implicacion_clinica": "qué significa esto para la intervención psicológica (o 'No aplica sin autoreporte' si no hay datos)"
+  },
+
+  "perfil_motivacional": "resultado | rendimiento | proceso | no_determinado",
+  "etapa_evolutiva": "iniciación | formación | especialización | profesional | no_especificada",
+
+  "hallazgos": [
+    {
+      "titulo": "nombre del hallazgo",
+      "descripcion": "explicación clínica basada en evidencia de los documentos",
+      "impacto": "positivo | neutro | critico",
+      "dimension": "cognitiva | emocional | conductual",
+      "fuentes_que_lo_respaldan": ["ePsD", "EPI", "autoreporte", "Lodsón", "Tapping", "Motivacional"]
+    }
+  ],
+
+  "sugerencias": [
+    {
+      "intervencion": "qué hacer específicamente",
+      "dimension": "cognitiva | emocional | conductual",
+      "prioridad": "inmediata | corto_plazo | largo_plazo",
+      "fundamento": "en qué dato concreto de los documentos se basa esta sugerencia"
+    }
+  ]
 }
 `;
 
@@ -182,7 +247,7 @@ Genera la "Síntesis Maestra" basada en la correlación de estos documentos bajo
             body: JSON.stringify({
                 model: modelId,
                 systemPrompt: systemPrompt,
-                prompt: userPrompt,
+                userPrompt: userPrompt,
                 temperature: 0.2,
                 response_format: { type: "json_object" }
             })
@@ -193,9 +258,13 @@ Genera la "Síntesis Maestra" basada en la correlación de estos documentos bajo
             throw new Error(errorData.error || "Error en el servicio de análisis");
         }
 
-        const content = await response.text();
-        return JSON.parse(content);
-        
+        const data = await response.json();
+        // Extraer el contenido del primer choice y parsearlo como JSON
+        const rawContent = data.choices?.[0]?.message?.content;
+        if (!rawContent) throw new Error("La IA devolvió una respuesta vacía.");
+
+        return JSON.parse(rawContent);
+
     } catch (error) {
         console.error("Lab Service Error:", error);
         throw error;

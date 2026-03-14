@@ -411,111 +411,150 @@ export default function PsmileLab() {
                                 <div className="absolute top-0 right-0 p-8 opacity-5">
                                     <FlaskConical size={200} />
                                 </div>
-                                <div className="max-w-4xl mx-auto space-y-10 relative z-10">
-                                    <div className="flex justify-between items-start">
+                                <div className="max-w-5xl mx-auto space-y-10 relative z-10">
+                                    {/* Encabezado Profesional */}
+                                    <div className="flex justify-between items-start border-b border-[#3c494c]/20 pb-8">
                                         <div>
-                                            <span className="px-2 py-1 bg-[#4edea3]/10 text-[#4edea3] text-[10px] font-bold uppercase border border-[#4edea3]/20 rounded-sm">Confidencial - Nivel Profesional</span>
-                                            <h2 className="text-3xl font-bold mt-4 tracking-tight">Síntesis Maestra Basada en Evidencia</h2>
+                                            <div className="flex items-center gap-2 mb-4">
+                                                <span className="px-2 py-1 bg-[#4edea3]/10 text-[#4edea3] text-[10px] font-bold uppercase border border-[#4edea3]/20 rounded-sm">Protocolo Multifactorial</span>
+                                                <span className={`px-2 py-1 text-[10px] font-bold uppercase rounded-sm border ${masterAnalysis.congruencia_jugador?.nivel === 'alta' ? 'bg-green-500/10 text-green-400 border-green-500/20' : 'bg-yellow-500/10 text-yellow-400 border-yellow-500/20'}`}>
+                                                    Congruencia: {masterAnalysis.congruencia_jugador?.nivel === "N/A" || masterAnalysis.congruencia_jugador?.nivel === "no_aplica" || !masterAnalysis.congruencia_jugador 
+                                                        ? "Requiere autoreporte del jugador" 
+                                                        : masterAnalysis.congruencia_jugador.nivel}
+                                                </span>
+                                            </div>
+                                            <h2 className="text-3xl font-bold tracking-tight">Síntesis Maestra de Perfil Integral</h2>
                                             <p className="text-[#bbc9cd] mt-2 text-sm">
-                                                Atleta: {selectedPlayer?.nombre} | Modelo: <span className="text-[#8aebff] font-mono">DeepSeek-R1 (High Reasoning)</span>
+                                                Atleta: <span className="text-white font-semibold">{selectedPlayer?.nombre}</span> | Etapa: <span className="text-[#8aebff] uppercase font-bold">{masterAnalysis.etapa_evolutiva || 'No especificada'}</span>
                                             </p>
                                         </div>
                                         <div className="text-right">
                                             <p className="text-5xl font-bold text-[#8aebff]">{masterAnalysis.readyScore}</p>
-                                            <p className="text-[10px] font-bold text-[#bbc9cd] uppercase mt-1">Ready Score</p>
+                                            <p className="text-[10px] font-bold text-[#bbc9cd] uppercase mt-1 tracking-[0.2em]">Ready Score</p>
                                         </div>
                                     </div>
 
-                                    <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-                                        <div className="space-y-4">
-                                            <h4 className="text-xs font-bold uppercase tracking-widest text-[#bbc9cd]">Foco Cognitivo</h4>
-                                            <div className="h-2 bg-[#2f3445] rounded-full overflow-hidden">
-                                                <div className="h-full bg-[#8aebff] shadow-[0_0_10px_rgba(138,235,255,0.4)]" style={{ width: `${masterAnalysis.indicadores.foco}%` }}></div>
-                                            </div>
-                                            <p className="text-[10px] text-[#bbc9cd]">Estabilidad atencional superior al promedio.</p>
-                                        </div>
-                                        <div className="space-y-4">
-                                            <h4 className="text-xs font-bold uppercase tracking-widest text-[#bbc9cd]">Resiliencia</h4>
-                                            <div className="h-2 bg-[#2f3445] rounded-full overflow-hidden">
-                                                <div className="h-full bg-[#4edea3] shadow-[0_0_10px_rgba(78,222,163,0.4)]" style={{ width: `${masterAnalysis.indicadores.resiliencia}%` }}></div>
-                                            </div>
-                                            <p className="text-[10px] text-[#bbc9cd]">Nivel óptimo de recuperación post-error.</p>
-                                        </div>
-                                        <div className="space-y-4">
-                                            <h4 className="text-xs font-bold uppercase tracking-widest text-[#bbc9cd]">Carga Mental</h4>
-                                            <div className="h-2 bg-[#2f3445] rounded-full overflow-hidden">
-                                                <div className="h-full bg-[#ffb4ab] shadow-[0_0_10px_rgba(255,180,171,0.4)]" style={{ width: `${masterAnalysis.indicadores.carga}%` }}></div>
-                                            </div>
-                                            <p className="text-[10px] text-[#bbc9cd]">Carga equilibrada para competencia.</p>
+                                    {/* Resumen Clínico */}
+                                    <div className="bg-[#111827] p-6 rounded-xl border border-[#8aebff]/10">
+                                        <h4 className="text-[10px] font-bold text-[#8aebff] uppercase tracking-widest mb-3 flex items-center gap-2">
+                                            <Brain size={14} /> Resumen Clínico Integrador
+                                        </h4>
+                                        <p className="text-sm text-[#dde2f8] leading-relaxed italic">
+                                            "{masterAnalysis.resumen_clinico || "Resumen no disponible con los datos actuales"}"
+                                        </p>
+                                        <div className="mt-4 flex gap-4 text-[10px] font-bold uppercase">
+                                            <span className="text-[#bbc9cd]">Perfil Motivado a: <span className="text-[#4edea3]">{masterAnalysis.perfil_motivacional || "No determinado"}</span></span>
                                         </div>
                                     </div>
 
-                                    {masterAnalysis.kpis_especificos && (
-                                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 pt-4 border-t border-[#3c494c]/10">
-                                            <div className="p-4 bg-[#111827] rounded-xl border border-[#3c494c]/20">
-                                                <p className="text-[9px] font-bold text-[#bbc9cd] uppercase tracking-[0.2em] mb-1">Eficiencia de Procesamiento</p>
-                                                <p className="text-xl font-bold text-[#8aebff]">{masterAnalysis.kpis_especificos.eficiencia_ms}</p>
-                                            </div>
-                                            <div className="p-4 bg-[#111827] rounded-xl border border-[#3c494c]/20">
-                                                <p className="text-[9px] font-bold text-[#bbc9cd] uppercase tracking-[0.2em] mb-1">Plasticidad Conductual</p>
-                                                <p className="text-xl font-bold text-[#4edea3]">{masterAnalysis.kpis_especificos.plasticidad_conductual}</p>
-                                            </div>
-                                            <div className="p-4 bg-[#111827] rounded-xl border border-[#3c494c]/20">
-                                                <p className="text-[9px] font-bold text-[#bbc9cd] uppercase tracking-[0.2em] mb-1">Congruencia Percepción-Campo</p>
-                                                <p className="text-xl font-bold text-white">{masterAnalysis.kpis_especificos.congruencia_pct}</p>
-                                            </div>
-                                        </div>
-                                    )}
-
-                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-12 pt-8 border-t border-[#3c494c]/10">
-                                        <div className="space-y-4">
-                                            <h4 className="font-bold text-lg flex items-center gap-2">
-                                                <LineChart className="text-[#4edea3]" /> Hallazgo Maestro
-                                            </h4>
-                                            <p className="text-sm text-[#bbc9cd] leading-relaxed italic mb-4">
-                                                "{masterAnalysis.resumen}"
-                                            </p>
-                                            
-                                            {masterAnalysis.hallazgos && (
-                                                <div className="space-y-3 mt-6">
-                                                    <h5 className="text-[10px] font-bold uppercase tracking-[.2em] text-[#bbc9cd]">Evidencia Cruzada:</h5>
-                                                    {masterAnalysis.hallazgos.map((h, i) => (
-                                                        <div key={i} className="p-3 bg-[#191f2f] rounded-lg border border-[#3c494c]/20">
-                                                            <div className="flex justify-between items-center mb-1">
-                                                                <span className="text-xs font-bold text-[#8aebff]">{h.titulo}</span>
-                                                                <span className={`text-[8px] font-bold px-1.5 py-0.5 rounded uppercase ${h.impacto === 'critico' ? 'bg-red-500/20 text-red-400' : h.impacto === 'positivo' ? 'bg-green-500/20 text-green-400' : 'bg-blue-500/20 text-blue-400'}`}>
-                                                                    {h.impacto}
-                                                                </span>
-                                                            </div>
-                                                            <p className="text-[10px] text-[#bbc9cd] italic">"{h.descripcion}"</p>
+                                    {/* Matriz de Convergencia */}
+                                    <div className="space-y-4">
+                                        <h4 className="text-xs font-bold uppercase tracking-[0.2em] text-[#bbc9cd] mb-6">Matriz de Convergencia Científica</h4>
+                                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                            {Object.entries(masterAnalysis.matriz_convergente || {}).map(([dim, data]) => (
+                                                <div key={dim} className="p-4 bg-[#191f2f] rounded-xl border border-[#3c494c]/20 hover:border-[#8aebff]/30 transition-all group">
+                                                    <div className="flex justify-between items-center mb-4">
+                                                        <h5 className="font-bold text-sm text-[#8aebff] capitalize">{dim}</h5>
+                                                        <span className={`text-[8px] font-bold px-1.5 py-0.5 rounded uppercase ${data.convergencia === 'alta' ? 'bg-green-500/20 text-green-400' : 'bg-yellow-500/20 text-yellow-400'}`}>
+                                                            {data.convergencia}
+                                                        </span>
+                                                    </div>
+                                                    <div className="space-y-3 text-[10px]">
+                                                        <div>
+                                                            <p className="text-[#bbc9cd] mb-1 font-bold">ePsD:</p>
+                                                            <p className="text-white/80 italic">"{data.epsd}"</p>
                                                         </div>
-                                                    ))}
+                                                        {data.psicometria && (
+                                                            <div>
+                                                                <p className="text-[#bbc9cd] mb-1 font-bold">Psicometría:</p>
+                                                                <p className="text-white/80 italic">"{data.psicometria}"</p>
+                                                            </div>
+                                                        )}
+                                                        <div className="pt-2 border-t border-[#3c494c]/20">
+                                                            <p className="text-[#8aebff] font-bold">Interpretación:</p>
+                                                            <p className="text-[#bbc9cd]">{data.interpretacion}</p>
+                                                        </div>
+                                                    </div>
                                                 </div>
-                                            )}
+                                            ))}
                                         </div>
-                                        <div className="space-y-4">
+                                    </div>
+
+                                    {/* Validación ePsD y Congruencia */}
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                        <div className="p-5 bg-[#111827] rounded-xl border border-[#3c494c]/20">
+                                            <h5 className="text-[10px] font-bold text-[#4edea3] uppercase tracking-widest mb-4">Validación ePsD vs Psicometría</h5>
+                                            <div className="space-y-3">
+                                                <div>
+                                                    <p className="text-[9px] text-[#bbc9cd] uppercase font-bold mb-1">Áreas Validadas:</p>
+                                                    <div className="flex flex-wrap gap-2">
+                                                        {masterAnalysis.validacion_epsd?.areas_validadas?.map(a => (
+                                                            <span key={a} className="px-2 py-0.5 bg-green-500/10 text-green-400 text-[9px] rounded-full">{a}</span>
+                                                        ))}
+                                                    </div>
+                                                </div>
+                                                <div>
+                                                    <p className="text-[9px] text-[#bbc9cd] uppercase font-bold mb-1">Conclusión de Validez:</p>
+                                                    <p className="text-xs text-[#bbc9cd]">{masterAnalysis.validacion_epsd?.conclusion_validez || "Se requiere psicometría para validar el ePsD"}</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div className="p-5 bg-[#111827] rounded-xl border border-[#3c494c]/20">
+                                            <h5 className="text-[10px] font-bold text-[#ffb4ab] uppercase tracking-widest mb-4">Análisis de Congruencia Cognitiva</h5>
+                                            <p className="text-xs text-[#bbc9cd] mb-2">{masterAnalysis.congruencia_jugador?.descripcion}</p>
+                                            <div className="mt-4 pt-4 border-t border-[#3c494c]/10">
+                                                <p className="text-[9px] text-[#8aebff] uppercase font-bold mb-1">Implicación Clínica:</p>
+                                                <p className="text-xs italic text-[#bbc9cd]">{masterAnalysis.congruencia_jugador?.implicacion_clinica}</p>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    {/* Hallazgos y Sugerencias */}
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-12 pt-8 border-t border-[#3c494c]/10">
+                                        <div className="space-y-6">
                                             <h4 className="font-bold text-lg flex items-center gap-2">
-                                                <Brain className="text-[#8aebff]" /> Sugerencia del Especialista
+                                                <LineChart className="text-[#4edea3]" /> Hallazgos Clínicos
                                             </h4>
-                                            <ul className="space-y-3">
+                                            <div className="space-y-4">
+                                                {masterAnalysis.hallazgos?.map((h, i) => (
+                                                    <div key={i} className="p-4 bg-[#191f2f] rounded-lg border border-[#3c494c]/20">
+                                                        <div className="flex justify-between items-center mb-2">
+                                                            <span className="text-xs font-bold text-[#8aebff]">{h.titulo}</span>
+                                                            <span className={`text-[8px] font-bold px-1.5 py-0.5 rounded uppercase ${h.impacto === 'critico' ? 'bg-red-500/20 text-red-400' : h.impacto === 'positivo' ? 'bg-green-500/20 text-green-400' : 'bg-blue-500/20 text-blue-400'}`}>
+                                                                {h.impacto}
+                                                            </span>
+                                                        </div>
+                                                        <p className="text-xs text-[#bbc9cd] mb-2">{h.descripcion}</p>
+                                                        <div className="flex justify-between items-center pt-2 mt-2 border-t border-[#3c494c]/10">
+                                                            <span className="text-[9px] text-[#4edea3] font-bold uppercase">{h.dimension}</span>
+                                                            <div className="flex gap-1">
+                                                                {h.fuentes_que_lo_respaldan?.map(f => (
+                                                                    <span key={f} className="text-[8px] bg-[#3c494c]/30 text-[#bbc9cd] px-1 rounded">{f}</span>
+                                                                ))}
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                ))}
+                                            </div>
+                                        </div>
+                                        <div className="space-y-6">
+                                            <h4 className="font-bold text-lg flex items-center gap-2">
+                                                <Sparkles className="text-[#8aebff]" /> Plan de Intervención S.D.C.
+                                            </h4>
+                                            <div className="space-y-4">
                                                 {masterAnalysis.sugerencias?.map((s, i) => (
-                                                    <li key={i} className="flex items-start gap-3 text-sm text-[#bbc9cd]">
-                                                        <span className="w-1.5 h-1.5 rounded-full bg-[#8aebff] mt-1.5 shrink-0"></span>
-                                                        {s}
-                                                    </li>
-                                                )) || (
-                                                    <>
-                                                        <li className="flex items-start gap-3 text-sm text-[#bbc9cd]">
-                                                            <span className="w-1.5 h-1.5 rounded-full bg-[#8aebff] mt-1.5 shrink-0"></span>
-                                                            Priorizar micro-descansos cognitivos ante picos de demanda visual.
-                                                        </li>
-                                                        <li className="flex items-start gap-3 text-sm text-[#bbc9cd]">
-                                                            <span className="w-1.5 h-1.5 rounded-full bg-[#8aebff] mt-1.5 shrink-0"></span>
-                                                            Ajustar anclajes verbales específicos para el segundo tiempo.
-                                                        </li>
-                                                    </>
-                                                )}
-                                            </ul>
+                                                    <div key={i} className="p-4 bg-[#111827] rounded-lg border-l-4 border-[#8aebff]">
+                                                        <div className="flex justify-between items-start mb-2">
+                                                            <p className="text-sm font-bold text-[#dde2f8]">{s.intervencion}</p>
+                                                            <span className={`text-[8px] font-bold px-1.5 py-0.5 rounded uppercase ${s.prioridad === 'inmediata' ? 'bg-red-500/20 text-red-400' : 'bg-[#8aebff]/10 text-[#8aebff]'}`}>
+                                                                {s.prioridad}
+                                                            </span>
+                                                        </div>
+                                                        <p className="text-[10px] text-[#bbc9cd] italic mb-2">Fundamento: {s.fundamento || "Basado en observación ePsD"}</p>
+                                                        <span className="text-[9px] text-[#4edea3] font-bold uppercase">{s.dimension}</span>
+                                                    </div>
+                                                ))}
+                                            </div>
                                         </div>
                                     </div>
                                 </div>

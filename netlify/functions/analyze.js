@@ -1,61 +1,79 @@
 // netlify/functions/analyze.js
+// Netlify Function to proxy Groq API calls and fetch HTML content without CORS issues.
 
-exports.handler = async (event, context) => {
-  // Solo permitir POST
-  if (event.httpMethod !== "POST") {
-    return { statusCode: 405, body: "Method Not Allowed" };
-  }
-
-  const GROQ_API_KEY = process.env.GROQ_API_KEY;
-  if (!GROQ_API_KEY) {
-    return { 
-      statusCode: 500, 
-      body: JSON.stringify({ error: "GROQ_API_KEY no configurada en el servidor." }) 
-    };
+exports.handler = async (event) => {
+  // Only allow POST requests
+  if (event.httpMethod !== 'POST') {
+    return { statusCode: 405, body: 'Method Not Allowed' };
   }
 
   try {
     const body = JSON.parse(event.body);
-    const { prompt, model = "llama-3.3-70b-versatile", messages, systemPrompt } = body;
+    const { systemPrompt, userPrompt, prompt, model, fetchUrl, temperature, response_format } = body;
 
-    // Construir los mensajes para Groq
-    let finalMessages = [];
-    if (systemPrompt) {
-        finalMessages.push({ role: "system", content: systemPrompt });
-    }
-    if (messages) {
-        finalMessages = [...finalMessages, ...messages];
-    } else if (prompt) {
-        finalMessages.push({ role: "user", content: prompt });
+    // --- CASE 1: Fetch HTML Content (CORS Proxy) ---
+    if (fetchUrl) {
+      try {
+        const response = await fetch(fetchUrl);
+        const html = await response.text();
+        // Extract text and clean up tags/whitespace
+        const cleanContent = html.replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim();
+        return {
+          statusCode: 200,
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ htmlContent: cleanContent })
+        };
+      } catch (e) {
+        return {
+          statusCode: 500,
+          body: JSON.stringify({ error: "Error al leer documento remoto: " + e.message })
+        };
+      }
     }
 
-    const response = await fetch("https://api.groq.com/openai/v1/chat/completions", {
+    // --- CASE 2: Groq AI Analysis ---
+    const GROQ_API_KEY = process.env.GROQ_API_KEY;
+    if (!GROQ_API_KEY) {
+      return { 
+        statusCode: 500, 
+        body: JSON.stringify({ error: "GROQ_API_KEY no configurada en el servidor de Netlify." }) 
+      };
+    }
+
+    // Support both 'userPrompt' and 'prompt' for backward compatibility
+    const messages = [];
+    if (systemPrompt) messages.push({ role: "system", content: systemPrompt });
+    if (userPrompt || prompt) messages.push({ role: "user", content: userPrompt || prompt });
+
+    const groqResponse = await fetch("https://api.groq.com/openai/v1/chat/completions", {
       method: "POST",
       headers: {
         "Authorization": `Bearer ${GROQ_API_KEY}`,
         "Content-Type": "application/json"
       },
       body: JSON.stringify({
-        model,
-        messages: finalMessages,
-        temperature: body.temperature || 0.5,
-        response_format: body.response_format || { type: "json_object" }
+        model: model || "llama-3.3-70b-versatile",
+        messages: messages,
+        temperature: temperature !== undefined ? temperature : 0.2,
+        response_format: response_format || { type: "json_object" }
       })
     });
 
-    if (!response.ok) {
-      const errorData = await response.json();
-      return {
-        statusCode: response.status,
-        body: JSON.stringify({ error: errorData.error?.message || "Error en Groq API" })
-      };
+    const data = await groqResponse.json();
+    
+    if (!groqResponse.ok) {
+        return {
+            statusCode: groqResponse.status,
+            body: JSON.stringify({ error: data.error?.message || "Error en Groq API" })
+        };
     }
 
-    const data = await response.json();
     return {
       statusCode: 200,
-      body: data.choices[0].message.content
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(data)
     };
+
   } catch (error) {
     return {
       statusCode: 500,

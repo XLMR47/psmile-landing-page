@@ -154,8 +154,12 @@ export const generateGroqAnalysis = async (playerData, evaluationData, historyDa
             throw new Error(error.error || "Error al conectar con el servicio de análisis");
         }
 
-        const content = await response.text();
-        return JSON.parse(content);
+        const data = await response.json();
+        // Extraer el contenido del primer choice y parsearlo como JSON
+        const rawContent = data.choices?.[0]?.message?.content;
+        if (!rawContent) throw new Error("La IA devolvió una respuesta vacía.");
+        
+        return JSON.parse(rawContent);
     } catch (error) {
         console.error("Analysis Error:", error);
         throw error;
