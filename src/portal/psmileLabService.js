@@ -42,23 +42,24 @@ async function extractTextFromPDF(url) {
 
 async function extractTextFromHTML(url) {
     try {
-        if (!url) return "[Sin URL]";
-
         console.log("🔍 Solicitando extracción de HTML vía Netlify Function:", url);
         const res = await fetchWithRetry('/.netlify/functions/analyze', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ fetchUrl: url })
         });
-
-        if (!res.ok) throw new Error("Error en proxy de extracción");
-
         const data = await res.json();
-        const texto = data.htmlContent || "[Error al leer documento]";
+        let texto = data.htmlContent || "[Error al leer documento]";
 
-        // Truncar a 3000 caracteres para no agotar tokens
-        return texto.length > 3000
-            ? texto.substring(0, 3000) + "\n...[truncado]"
+        texto = texto
+            .replace(/<style[^>]*>[\s\S]*?<\/style>/gi, '')
+            .replace(/<script[^>]*>[\s\S]*?<\/script>/gi, '')
+            .replace(/<[^>]+>/g, ' ')
+            .replace(/\s+/g, ' ')
+            .trim();
+
+        return texto.length > 6000
+            ? texto.substring(0, 6000) + "\n...[truncado]"
             : texto;
 
     } catch (error) {
@@ -81,8 +82,40 @@ export async function generateLabMasterAnalysis(payload) {
         let contenido = "";
 
         if (ev.tipo === 'epsd_evaluacion') {
-            const raw = JSON.stringify(ev.data_epsd, null, 2);
-            contenido = raw.length > 3000 ? raw.substring(0, 3000) + "\n...[truncado]" : raw;
+            const d = ev.data_epsd;
+            
+            const datosLimpios = {
+                nombre_evaluacion: d.nombre || d.titulo || "Evaluación ePsD",
+                fecha: d.fecha || d.createdAt || "Sin fecha",
+                jugador: d.jugador || d.atleta || "Sin nombre",
+                categoria: d.categoria || "Sin categoría",
+                posicion: d.posicion || "Sin posición",
+                dimensiones: {
+                    cognitiva: d.cognitiva ?? d.dimensionCognitiva ?? null,
+                    emocional: d.emocional ?? d.dimensionEmocional ?? null,
+                    conductual: d.conductual ?? d.dimensionConductual ?? d.conductualSocial ?? null
+                },
+                subescalas: d.subescalas || d.items || d.indicadores || null,
+                observaciones: d.observaciones || d.notas || d.comentarios || null,
+                score_total: d.scoreTotal || d.puntajeTotal || d.totalScore || null,
+                intervalos: d.intervalos || d.periodos || null,
+            };
+
+            // Eliminar campos null
+            Object.keys(datosLimpios).forEach(k => {
+                if (datosLimpios[k] === null || datosLimpios[k] === undefined) {
+                    delete datosLimpios[k];
+                }
+            });
+            if (datosLimpios.dimensiones) {
+                Object.keys(datosLimpios.dimensiones).forEach(k => {
+                    if (datosLimpios.dimensiones[k] === null) {
+                        delete datosLimpios.dimensiones[k];
+                    }
+                });
+            }
+
+            contenido = JSON.stringify(datosLimpios, null, 2);
         } else if (ev.data_externa?.externalUrl) {
             const url = ev.data_externa.externalUrl;
             if (url.toLowerCase().includes('.pdf')) {

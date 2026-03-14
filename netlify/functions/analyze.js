@@ -12,16 +12,22 @@ exports.handler = async (event) => {
     const { systemPrompt, userPrompt, prompt, model, fetchUrl, temperature, response_format } = body;
 
     // --- CASE 1: Fetch HTML Content (CORS Proxy) ---
-    if (fetchUrl) {
+    if (body.fetchUrl) {
       try {
-        const response = await fetch(fetchUrl);
-        const html = await response.text();
-        // Extract text and clean up tags/whitespace
-        const cleanContent = html.replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim();
+        const response = await fetch(body.fetchUrl);
+        let html = await response.text();
+        
+        html = html
+            .replace(/<style[^>]*>[\s\S]*?<\/style>/gi, '')
+            .replace(/<script[^>]*>[\s\S]*?<\/script>/gi, '')
+            .replace(/<[^>]+>/g, ' ')
+            .replace(/\s+/g, ' ')
+            .trim();
+
         return {
-          statusCode: 200,
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ htmlContent: cleanContent })
+            statusCode: 200,
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ htmlContent: html })
         };
       } catch (e) {
         return {
