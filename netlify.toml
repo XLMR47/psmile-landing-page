@@ -9,3 +9,6 @@
   from = "/*"
   to = "/index.html"
   status = 200
+
+[build.processing.secrets_scan]
+  omit_keys = ["VITE_GROQ_API_KEY"]
