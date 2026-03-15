@@ -74,7 +74,7 @@ async function extractTextFromHTML(url) {
  */
 export async function generateLabMasterAnalysis(payload) {
     const { jugador, evidencia_seleccionada, config } = payload;
-    const modelId = config.model || "llama-3.3-70b-versatile";
+    const modelId = config.model || "claude-sonnet";
 
     // 1. ACUMULADOR DE TEXTO DE DOCUMENTOS
     // Usamos un array para recolectar el contenido y luego unirlo (join)
@@ -282,7 +282,8 @@ Genera la "Síntesis Maestra" basada en la correlación de estos documentos bajo
                 systemPrompt: systemPrompt,
                 userPrompt: userPrompt,
                 temperature: 0.2,
-                response_format: { type: "json_object" }
+                response_format: { type: "json_object" },
+                max_tokens: 4000
             })
         });
 

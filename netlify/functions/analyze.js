@@ -37,47 +37,70 @@ exports.handler = async (event) => {
       }
     }
 
-    // --- CASE 2: Groq AI Analysis ---
-    const GROQ_API_KEY = process.env.GROQ_API_KEY;
-    if (!GROQ_API_KEY) {
-      return { 
-        statusCode: 500, 
-        body: JSON.stringify({ error: "GROQ_API_KEY no configurada en el servidor de Netlify." }) 
+    // --- CASE 2: AI Analysis ---
+    let apiUrl, headers, payload;
+
+    if (model?.startsWith("claude")) {
+      apiUrl = "https://api.anthropic.com/v1/messages";
+      headers = {
+        "x-api-key": process.env.ANTHROPIC_API_KEY,
+        "anthropic-version": "2023-06-01",
+        "Content-Type": "application/json"
+      };
+      payload = {
+        model: "claude-sonnet-4-20250514",
+        max_tokens: body.max_tokens || 4000,
+        system: systemPrompt,
+        messages: [{ role: "user", content: userPrompt || prompt }]
+      };
+    } else {
+      const GROQ_API_KEY = process.env.GROQ_API_KEY;
+      if (!GROQ_API_KEY) {
+        return { 
+          statusCode: 500, 
+          body: JSON.stringify({ error: "GROQ_API_KEY no configurada en el servidor." }) 
+        };
+      }
+      apiUrl = "https://api.groq.com/openai/v1/chat/completions";
+      headers = {
+        "Authorization": `Bearer ${GROQ_API_KEY}`,
+        "Content-Type": "application/json"
+      };
+      payload = {
+        model: model || "llama-3.3-70b-versatile",
+        messages: systemPrompt ? [{role:"system", content:systemPrompt}, {role:"user", content:userPrompt||prompt}] : [{role:"user", content:userPrompt||prompt}],
+        temperature: temperature !== undefined ? temperature : 0.2,
+        max_tokens: body.max_tokens,
+        response_format: response_format || { type: "json_object" }
       };
     }
 
-    // Support both 'userPrompt' and 'prompt' for backward compatibility
-    const messages = [];
-    if (systemPrompt) messages.push({ role: "system", content: systemPrompt });
-    if (userPrompt || prompt) messages.push({ role: "user", content: userPrompt || prompt });
-
-    const groqResponse = await fetch("https://api.groq.com/openai/v1/chat/completions", {
+    const aiResponse = await fetch(apiUrl, {
       method: "POST",
-      headers: {
-        "Authorization": `Bearer ${GROQ_API_KEY}`,
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({
-        model: model || "llama-3.3-70b-versatile",
-        messages: messages,
-        temperature: temperature !== undefined ? temperature : 0.2,
-        response_format: response_format || { type: "json_object" }
-      })
+      headers: headers,
+      body: JSON.stringify(payload)
     });
 
-    const data = await groqResponse.json();
+    const data = await aiResponse.json();
     
-    if (!groqResponse.ok) {
+    if (!aiResponse.ok) {
         return {
-            statusCode: groqResponse.status,
-            body: JSON.stringify({ error: data.error?.message || "Error en Groq API" })
+            statusCode: aiResponse.status,
+            body: JSON.stringify({ error: data.error?.message || data.error || "Error en AI API" })
         };
+    }
+
+    let content;
+    if (model?.startsWith("claude")) {
+        content = data.content?.[0]?.text;
+    } else {
+        content = data.choices?.[0]?.message?.content;
     }
 
     return {
       statusCode: 200,
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(data)
+      body: JSON.stringify({ choices: [{ message: { content } }] })
     };
 
   } catch (error) {
