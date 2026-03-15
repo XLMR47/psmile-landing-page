@@ -294,8 +294,14 @@ Genera la "Síntesis Maestra" basada en la correlación de estos documentos bajo
 
         const data = await response.json();
         // Extraer el contenido del primer choice y parsearlo como JSON
-        const rawContent = data.choices?.[0]?.message?.content;
+        let rawContent = data.choices?.[0]?.message?.content;
         if (!rawContent) throw new Error("La IA devolvió una respuesta vacía.");
+
+        // Eliminar markdown fences que Claude a veces agrega
+        rawContent = rawContent
+            .replace(/```json\n?/gi, '')
+            .replace(/```\n?/gi, '')
+            .trim();
 
         return JSON.parse(rawContent);
 
