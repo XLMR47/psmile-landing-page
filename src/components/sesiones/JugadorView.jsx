@@ -3,7 +3,7 @@
 // Cambia automáticamente cuando el facilitador avanza el bloque.
 // Ruta: /sala/:sesionId/jugador/:jugadorId
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useParams } from 'react-router-dom';
 import { db } from '../../firebase';
 import { doc, onSnapshot } from 'firebase/firestore';
@@ -58,6 +58,21 @@ export default function JugadorView() {
     return () => unsub();
   }, [sesionId]);
 
+  // Mapa de bloques por índice — fallback si configuracion no está en Firestore
+  const BLOQUE_IDS = ['checkin','semaforo','mapa','impostor','rrr','kahoot','checkout'];
+  const bloqueIdx    = (sesion?.bloqueActual || 1) - 1;
+  const bloqueConfig = sesion?.configuracion?.bloques?.[bloqueIdx];
+  const bloqueId     = bloqueConfig?.id || BLOQUE_IDS[bloqueIdx] || 'checkin';
+
+  // Scroll al tope + vibración cuando cambia el bloque
+  // Movido aquí arriba para evitar Error #310 (llamada condicional tras loading/sesion checks)
+  useEffect(() => {
+    if (!loading && sesion) {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+      if (navigator.vibrate) navigator.vibrate([80, 40, 80]);
+    }
+  }, [bloqueId, loading, !!sesion]);
+
   const marcarGuardado = (bloqueId) => {
     setGuardado(prev => ({ ...prev, [bloqueId]: true }));
   };
@@ -82,18 +97,7 @@ export default function JugadorView() {
   if (sesion.estado === 'cancelada')  return <PantallaEspera mensaje="La sesión fue cancelada" />;
   if (sesion.estado === 'lobby')      return <PantallaEspera mensaje="Esperando al facilitador..." pulsing />;
 
-  // Mapa de bloques por índice — fallback si configuracion no está en Firestore
-  const BLOQUE_IDS = ['checkin','semaforo','mapa','impostor','rrr','kahoot','checkout'];
-  const bloqueIdx    = (sesion.bloqueActual || 1) - 1;
-  const bloqueConfig = sesion.configuracion?.bloques?.[bloqueIdx];
-  const bloqueId     = bloqueConfig?.id || BLOQUE_IDS[bloqueIdx] || 'checkin';
   const yaGuardado   = guardado[bloqueId] || false;
-
-  // Scroll al tope + vibración cuando cambia el bloque
-  useEffect(() => {
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-    if (navigator.vibrate) navigator.vibrate([80, 40, 80]);
-  }, [bloqueId]);
 
   return (
     <div style={S.page}>
@@ -263,7 +267,7 @@ function BloqueMapa({ onGuardar, saving }) {
   const [colorActivo, setColor] = useState('#ff2d2d');
   const [trazos, setTrazos]     = useState([]);
   const [isDrawing, setIsDrawing] = useState(false);
-  const canvasRef = require('react').useRef(null);
+  const canvasRef = useRef(null);
 
   const CIRC_MAP = 2 * Math.PI * 50;
 
@@ -408,7 +412,7 @@ function BloqueRRR({ onGuardar, saving }) {
   const [bCnt, setBCnt]   = useState(0);
   const [bCyc, setBCyc]   = useState(0);
   const [bRun, setBRun]   = useState(false);
-  const bRef = require('react').useRef(null);
+  const bRef = useRef(null);
 
   const toggleBreath = () => {
     if (bRun) { clearInterval(bRef.current); setBRun(false); return; }
