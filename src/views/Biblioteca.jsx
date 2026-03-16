@@ -117,7 +117,6 @@ export default function Biblioteca() {
 
     return (
         <div className="min-h-screen bg-[#080808] text-white font-sans flex flex-col overflow-x-hidden">
-            <Header />
 
             <main className="flex-1 pt-32 pb-24 relative">
                 {/* Background effects */}
@@ -228,11 +227,19 @@ export default function Biblioteca() {
                                     </div>
                                 </div>
 
-                                {/* Interactive Breathing */}
-                                <div className="mt-8">
-                                    <TacticalBreathing unlocked={allUnlocked} onRequestUnlock={handleOpenUnlockModal} />
-                                </div>
                             </div>
+                        </div>
+                    </div>
+
+                    {/* Full-width Tactical Breathing Tool */}
+                    <div className="mb-24">
+                        <div className="flex items-center gap-4 mb-8">
+                            <h2 className="text-xl font-black uppercase tracking-widest text-white/40">Marcapasos de Respiración Táctica</h2>
+                            <div className="flex-1 h-px bg-white/5"></div>
+                        </div>
+                        <div className="bg-[#141414] rounded-3xl border border-white/5 p-8 md:p-12 overflow-hidden relative group">
+                            <div className="absolute top-0 right-0 w-64 h-64 bg-[#0070F3]/5 rounded-full blur-[100px] pointer-events-none group-hover:bg-[#0070F3]/10 transition-colors"></div>
+                            <TacticalBreathing unlocked={allUnlocked} onRequestUnlock={handleOpenUnlockModal} />
                         </div>
                     </div>
 

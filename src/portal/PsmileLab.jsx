@@ -82,15 +82,18 @@ export default function PsmileLab() {
                 );
                 
                 // Fetch Historial de Reportes (External)
-                const qHistorial = query(
-                    collection(db, 'jugadores', selectedPlayer.id, 'reportes'),
-                    orderBy('createdAt', 'desc')
-                );
+                let snapHistorial = { docs: [] };
+                try {
+                    const qHistorial = query(
+                        collection(db, 'jugadores', selectedPlayer.id, 'reportes'),
+                        orderBy('createdAt', 'desc')
+                    );
+                    snapHistorial = await getDocs(qHistorial);
+                } catch (hErr) {
+                    console.error("Error fetching report history (permissions?):", hErr);
+                }
 
-                const [snapEpsd, snapHistorial] = await Promise.all([
-                    getDocs(qEpsd),
-                    getDocs(qHistorial)
-                ]);
+                const snapEpsd = await getDocs(qEpsd);
 
                 const epsdData = snapEpsd.docs.map(d => ({ 
                     id: d.id, 

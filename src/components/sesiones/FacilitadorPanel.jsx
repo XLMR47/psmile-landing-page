@@ -123,8 +123,10 @@ export default function FacilitadorPanel() {
   if (!sesion)  return <ErrorScreen msg="Sesión no encontrada" />;
 
   const charla       = CHARLAS.find(c => c.id === sesion.charlaId);
-  const bloqueIdx    = (sesion.bloqueActual || 1) - 1; // 0-based para arrays
-  const slide        = SLIDES[bloqueIdx] || SLIDES[0];
+  const bloqueIdx    = (sesion.bloqueActual || 1) - 1; 
+  
+  // Safety checks
+  const slide        = SLIDES[bloqueIdx] || SLIDES[0] || { accent: '#0070F3', title: 'Cargando...' };
   const bloqueConfig = charla?.bloques?.[bloqueIdx];
   const bloqueId     = bloqueConfig?.id || 'checkin';
   const PanelComp    = PANEL_MAP[bloqueId] || null;
