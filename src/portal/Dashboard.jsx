@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { db } from '../firebase';
 import { collection, getDocs, orderBy, query, deleteDoc, doc, where } from 'firebase/firestore';
-import { Brain, LogOut, Plus, Users, Search, Trash2, ShieldCheck, Eye, Building2, Activity, BarChart, FlaskConical, Menu, X } from 'lucide-react';
+import { Brain, LogOut, Plus, Users, Search, Trash2, ShieldCheck, Eye, Building2, Activity, BarChart, FlaskConical, Menu, X, Radio } from 'lucide-react';
 import PlayerCard from './PlayerCard';
 import AddPlayerModal from './AddPlayerModal';
 import { getUserConfig, ACADEMIAS } from './academyConfig';
@@ -136,6 +136,26 @@ export default function Dashboard() {
                                     <BarChart size={14} />
                                     Resultados ePsD
                                 </button>
+                                <button
+                                    onClick={() => navigate('/portal/sesion/nueva')}
+                                    className="flex items-center gap-2 bg-[#111827] hover:bg-[#ff2d2d]/10 border border-white/5 hover:border-[#ff2d2d]/30 text-[#6B7280] hover:text-[#ff6b6b] px-4 py-2 rounded-xl transition-all font-bold text-xs uppercase tracking-widest"
+                                    title="Iniciar sesión grupal en tiempo real"
+                                >
+                                    <Radio size={14} />
+                                    Sesión Live
+                                </button>
+                            </div>
+                        )}
+                        {!isAdmin && userConfig.academiaId === 'neurosport' && (
+                            <div className="hidden lg:flex items-center gap-2">
+                                <button
+                                    onClick={() => navigate('/portal/sesion/nueva')}
+                                    className="flex items-center gap-2 bg-[#111827] hover:bg-[#ff2d2d]/10 border border-white/5 hover:border-[#ff2d2d]/30 text-[#6B7280] hover:text-[#ff6b6b] px-4 py-2 rounded-xl transition-all font-bold text-xs uppercase tracking-widest"
+                                    title="Iniciar sesión grupal en tiempo real"
+                                >
+                                    <Radio size={14} />
+                                    Sesión Live
+                                </button>
                             </div>
                         )}
                         <div className="hidden sm:flex items-center gap-2 bg-[#111827] border border-white/5 rounded-full px-4 py-2">
@@ -226,7 +246,33 @@ export default function Dashboard() {
                                             <p className="text-[10px] text-[#6B7280]">Historial y Analíticas</p>
                                         </div>
                                     </button>
+                                    <button
+                                        onClick={() => { navigate('/portal/sesion/nueva'); setShowMobileMenu(false); }}
+                                        className="flex items-center gap-4 bg-[#111827] p-4 rounded-2xl border border-white/5 text-left"
+                                    >
+                                        <div className="p-2.5 bg-[#ff2d2d]/10 text-[#ff6b6b] rounded-xl border border-[#ff2d2d]/20">
+                                            <Radio size={18} />
+                                        </div>
+                                        <div>
+                                            <p className="text-sm font-bold text-white uppercase tracking-tight">Sesión Live</p>
+                                            <p className="text-[10px] text-[#6B7280]">Sesión grupal en vivo</p>
+                                        </div>
+                                    </button>
                                 </>
+                            )}
+                            {!isAdmin && userConfig.academiaId === 'neurosport' && (
+                                <button
+                                    onClick={() => { navigate('/portal/sesion/nueva'); setShowMobileMenu(false); }}
+                                    className="flex items-center gap-4 bg-[#111827] p-4 rounded-2xl border border-white/5 text-left"
+                                >
+                                    <div className="p-2.5 bg-[#ff2d2d]/10 text-[#ff6b6b] rounded-xl border border-[#ff2d2d]/20">
+                                        <Radio size={18} />
+                                    </div>
+                                    <div>
+                                        <p className="text-sm font-bold text-white uppercase tracking-tight">Sesión Live</p>
+                                        <p className="text-[10px] text-[#6B7280]">Sesión grupal en vivo</p>
+                                    </div>
+                                </button>
                             )}
                         </div>
                     </div>

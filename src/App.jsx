@@ -1,4 +1,6 @@
 import { Routes, Route } from 'react-router-dom';
+import { useEffect } from 'react';
+import { clarity } from '@microsoft/clarity';
 import Header from './components/Header';
 import Hero from './components/Hero';
 import About from './components/About';
@@ -13,6 +15,7 @@ import Testimonials from './components/Testimonials';
 import LeadForm from './components/LeadForm';
 import Footer from './components/Footer';
 import Alliances from './components/Alliances';
+import WhatsAppButton from './components/WhatsAppButton';
 
 import LoginPage from './portal/LoginPage';
 import Dashboard from './portal/Dashboard';
@@ -24,6 +27,9 @@ import PsmileLab from './portal/PsmileLab';
 import CharlaAutorregulacion from './portal/CharlaAutorregulacion';
 import PlayerSesiones from './components/PlayerSesiones';
 import SesionViewer from './components/SesionViewer';
+import { LobbyFacilitador, LobbyJugador } from './components/sesiones/SesionLobby';
+import FacilitadorPanel from './components/sesiones/FacilitadorPanel';
+import JugadorView from './components/sesiones/JugadorView';
 
 // Landing Page (página pública)
 function LandingPage() {
@@ -45,11 +51,16 @@ function LandingPage() {
         <LeadForm />
       </main>
       <Footer />
+      <WhatsAppButton />
     </div>
   );
 }
 
 function App() {
+  useEffect(() => {
+    clarity.init('vwf92gna94');
+  }, []);
+
   return (
     <Routes>
       {/* Landing Page pública */}
@@ -121,6 +132,26 @@ function App() {
           </ProtectedRoute>
         }
       />
+      <Route
+        path="/portal/sesion/nueva"
+        element={
+          <ProtectedRoute>
+            <LobbyFacilitador />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/portal/facilitador/:sesionId"
+        element={
+          <ProtectedRoute>
+            <FacilitadorPanel />
+          </ProtectedRoute>
+        }
+      />
+
+      {/* Rutas Públicas de Sala */}
+      <Route path="/sala" element={<LobbyJugador />} />
+      <Route path="/sala/:sesionId/jugador/:jugadorId" element={<JugadorView />} />
     </Routes>
   );
 }

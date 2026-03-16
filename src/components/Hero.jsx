@@ -86,9 +86,9 @@ export default function Hero() {
                         </div>
 
                         <h1 className="hero-elem text-5xl md:text-7xl lg:text-[80px] font-black text-white leading-[1.05] tracking-tighter mb-6">
-                            Entrena tu mente <br />
-                            como un <br />
-                            <span className="text-[#0070F3] italic font-serif tracking-normal pr-4">profesional</span>
+                            Psicología <br />
+                            Deportiva de <br />
+                            <span className="text-[#0070F3] italic font-serif tracking-normal pr-4">Élite</span>
                         </h1>
 
                         <p className="hero-elem text-[#F3F4F6] text-lg md:text-xl max-w-xl font-medium leading-relaxed mb-10">
