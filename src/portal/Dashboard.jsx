@@ -14,6 +14,8 @@ export default function Dashboard() {
     const userConfig = getUserConfig(currentUser?.email);
     const isAdmin = userConfig.role === 'admin';
 
+    console.log("[DASH_DEBUG] User:", currentUser?.email, "Role:", userConfig.role, "Academia:", userConfig.academiaId);
+
     const [players, setPlayers] = useState([]);
     const [loading, setLoading] = useState(true);
     const [showAddModal, setShowAddModal] = useState(false);

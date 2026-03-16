@@ -19,6 +19,8 @@ export default function PsmileLab() {
     const userConfig = getUserConfig(currentUser?.email);
     const isAdmin = userConfig.role === 'admin';
 
+    console.log("[LAB_DEBUG] User:", currentUser?.email, "Role:", userConfig.role, "Academia:", userConfig.academiaId);
+
     // State
     const [players, setPlayers] = useState([]);
     const [selectedPlayer, setSelectedPlayer] = useState(null);
