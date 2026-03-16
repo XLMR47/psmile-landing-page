@@ -4,6 +4,9 @@
   functions = "netlify/functions"
 
 [functions]
+  directory = "netlify/functions"
+
+[functions.analyze]
   timeout = 30
 
 [[redirects]]
