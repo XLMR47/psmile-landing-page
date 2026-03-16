@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
-import { Menu, X } from 'lucide-react';
+import { Menu, X, Lock } from 'lucide-react';
+import { Link } from 'react-router-dom';
 
 export default function Header() {
     const [scrolled, setScrolled] = useState(false);
@@ -30,7 +31,11 @@ export default function Header() {
                     <a href="#experto" className="text-[10px] font-bold text-[#F3F4F6] hover:text-[#0070F3] transition-colors uppercase tracking-widest">El Experto</a>
                     <a href="#testimonios" className="text-[10px] font-bold text-[#F3F4F6] hover:text-[#0070F3] transition-colors uppercase tracking-widest">Resultados</a>
                     <a href="#planes" className="text-[10px] font-bold text-[#F3F4F6] hover:text-[#0070F3] transition-colors uppercase tracking-widest">Planes</a>
-                    <a href="#recursos" className="text-[10px] font-black text-[#0C0C0C] bg-[#FFFFFF] hover:bg-[#32E612] px-4 py-1.5 rounded-full uppercase tracking-widest transition-all hover:scale-105 shadow-[0_0_12px_rgba(57,255,20,0.4)] animate-pulse">🎁 Recursos</a>
+                    <Link to="/biblioteca" className="text-[10px] font-black text-[#0C0C0C] bg-[#FFFFFF] hover:bg-[#32E612] px-4 py-1.5 rounded-full uppercase tracking-widest transition-all hover:scale-105 shadow-[0_0_12px_rgba(57,255,20,0.4)] animate-pulse">📚 Biblioteca</Link>
+                    <Link to="/portal" className="text-[10px] font-bold text-[#9CA3AF] hover:text-white transition-colors uppercase tracking-widest flex items-center gap-1.5 border-l border-white/10 pl-6">
+                        <Lock size={12} />
+                        Acceso Staff
+                    </Link>
                 </nav>
 
                 {/* Right Area: Status + CTA (Desktop) + Mobile Toggle */}
@@ -62,7 +67,11 @@ export default function Header() {
                         <a href="#experto" onClick={() => setIsMenuOpen(false)} className="text-sm font-bold text-[#F3F4F6] uppercase tracking-[0.2em]">El Experto</a>
                         <a href="#testimonios" onClick={() => setIsMenuOpen(false)} className="text-sm font-bold text-[#F3F4F6] uppercase tracking-[0.2em]">Resultados</a>
                         <a href="#planes" onClick={() => setIsMenuOpen(false)} className="text-sm font-bold text-[#F3F4F6] uppercase tracking-[0.2em]">Planes</a>
-                        <a href="#recursos" onClick={() => setIsMenuOpen(false)} className="text-sm font-black text-[#0C0C0C] bg-[#FFFFFF] px-8 py-3 rounded-full uppercase tracking-widest">🎁 Recursos Gratuitos</a>
+                        <Link to="/biblioteca" onClick={() => setIsMenuOpen(false)} className="text-sm font-black text-[#0C0C0C] bg-[#FFFFFF] px-8 py-3 rounded-full uppercase tracking-widest">📚 Biblioteca</Link>
+                        <Link to="/portal" onClick={() => setIsMenuOpen(false)} className="text-sm font-bold text-[#9CA3AF] uppercase tracking-[0.2em] flex items-center gap-2">
+                            <Lock size={16} />
+                            Acceso Staff
+                        </Link>
                         <a href="#diagnostico" onClick={() => setIsMenuOpen(false)} className="w-full text-center bg-[#0070F3] text-white py-4 rounded-xl font-black uppercase tracking-widest text-sm mt-4">
                             Asegurar Cupo Ahora
                         </a>

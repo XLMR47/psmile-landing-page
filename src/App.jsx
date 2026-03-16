@@ -7,7 +7,6 @@ import MissionVision from './components/MissionVision';
 import Methodology from './components/Methodology';
 import Comparison from './components/Comparison';
 import Library from './components/Library';
-import Resources from './components/Resources';
 import Expert from './components/Expert';
 import Pricing from './components/Pricing';
 import Testimonials from './components/Testimonials';
@@ -29,6 +28,7 @@ import SesionViewer from './components/SesionViewer';
 import { LobbyFacilitador, LobbyJugador } from './components/sesiones/SesionLobby';
 import FacilitadorPanel from './components/sesiones/FacilitadorPanel';
 import JugadorView from './components/sesiones/JugadorView';
+import Biblioteca from './views/Biblioteca';
 
 // Landing Page (página pública)
 function LandingPage() {
@@ -37,16 +37,15 @@ function LandingPage() {
       <Header />
       <main>
         <Hero />
+        <Testimonials />
         <About />
         {/* <MissionVision /> - Eliminado temporalmente para agilizar la lectura */}
         <Methodology />
         <Comparison />
         <Expert />
-        <Testimonials />
         <Alliances />
         <Pricing />
         {/* <Library /> - Oculto temporalmente, reactivar después */}
-        <Resources />
         <LeadForm />
       </main>
       <Footer />
@@ -149,7 +148,8 @@ function App() {
         }
       />
 
-      {/* Rutas Públicas de Sala */}
+      {/* Rutas Públicas */}
+      <Route path="/biblioteca" element={<Biblioteca />} />
       <Route path="/sala" element={<LobbyJugador />} />
       <Route path="/sala/:sesionId/jugador/:jugadorId" element={<JugadorView />} />
     </Routes>

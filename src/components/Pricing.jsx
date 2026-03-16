@@ -73,10 +73,13 @@ export default function Pricing() {
 
                         <div className="space-y-4">
                             <a
-                                href={`https://wa.me/56951435062?text=${encodeURIComponent("Hola Luis! 👋 Me interesa el [Diagnóstico de Élite] para mi hijo. ¿Cómo podemos agendar la primera sesión?")}`}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="w-full inline-flex items-center justify-center py-3 rounded-lg border border-[#00D1FF]/30 text-[#00D1FF] font-bold text-sm hover:bg-[#00D1FF]/10 transition-colors uppercase tracking-wider text-center"
+                                href="https://pay.hotmart.com/C104916618Q?checkoutMode=2&off=o3px82u3"
+                                onClick={(e) => {
+                                    if (window.HotmartCheckout) {
+                                        e.preventDefault();
+                                    }
+                                }}
+                                className="hotmart-fb hotmart__button-checkout w-full inline-flex items-center justify-center py-3 rounded-lg bg-[#00D1FF] text-black font-black text-sm hover:bg-[#00B8E6] transition-all transform hover:scale-[1.02] uppercase tracking-wider text-center shadow-lg shadow-[#00D1FF]/20"
                             >
                                 AGENDAR MI DIAGNÓSTICO
                             </a>
@@ -94,21 +97,21 @@ export default function Pricing() {
                         <div className={`transition-all duration-500 ease-in-out ${expandedPlan === 1 ? 'max-h-[500px] opacity-100 mt-8' : 'max-h-0 opacity-0 pointer-events-none'}`}>
                             <div className="space-y-6 pt-6 border-t border-white/5">
                                 <div className="flex gap-4">
-                                    <Microscope size={20} className="text-[#0070F3] shrink-0" />
+                                    <Microscope size={20} className="text-[#00D1FF] shrink-0" />
                                     <div>
                                         <h4 className="text-sm font-bold text-white mb-1">Radiografía Mental Científica</h4>
                                         <p className="text-xs text-[#9CA3AF] leading-relaxed">No es una charla; es un análisis de personalidad, motivación y atención con instrumentos psicométricos estructurados.</p>
                                     </div>
                                 </div>
                                 <div className="flex gap-4">
-                                    <Users size={20} className="text-[#0070F3] shrink-0" />
+                                    <Users size={20} className="text-[#00D1FF] shrink-0" />
                                     <div>
                                         <h4 className="text-sm font-bold text-white mb-1">Claridad para la Familia</h4>
                                         <p className="text-xs text-[#9CA3AF] leading-relaxed">Sesión de feedback donde explicamos a los padres el perfil mental de su hijo en lenguaje sencillo.</p>
                                     </div>
                                 </div>
                                 <div className="flex gap-4">
-                                    <Target size={20} className="text-[#0070F3] shrink-0" />
+                                    <Target size={20} className="text-[#00D1FF] shrink-0" />
                                     <div>
                                         <h4 className="text-sm font-bold text-white mb-1">Entrenamiento mental para el maximo rendimiento</h4>
                                         <p className="text-xs text-[#9CA3AF] leading-relaxed">Entrevista centrada en soluciones para definir el "futuro deseado" y las metas del jugador.</p>
@@ -160,10 +163,13 @@ export default function Pricing() {
 
                         <div className="space-y-4">
                             <a
-                                href={`https://wa.me/56951435062?text=${encodeURIComponent("Hola Luis! 👋 Quiero asegurar un cupo en el programa [Performance & Mental Skills] para mi hijo. Vengo de la web oficial.")}`}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="relative w-full inline-flex items-center justify-center py-3 rounded-lg bg-[#0070F3] hover:bg-[#0056B3] text-white font-black text-sm transition-all transform hover:scale-[1.02] shadow-lg shadow-[#0070F3]/30 uppercase tracking-wider text-center overflow-visible"
+                                href="https://pay.hotmart.com/C104916618Q?checkoutMode=2&off=pvrj98nf"
+                                onClick={(e) => {
+                                    if (window.HotmartCheckout) {
+                                        e.preventDefault();
+                                    }
+                                }}
+                                className="relative w-full inline-flex items-center justify-center py-3 rounded-lg bg-[#0070F3] hover:bg-[#0056B3] text-white font-black text-sm transition-all transform hover:scale-[1.02] shadow-lg shadow-[#0070F3]/30 uppercase tracking-wider text-center overflow-visible hotmart-fb hotmart__button-checkout"
                             >
                                 RESERVAR MI CUPO (QUEDAN 5)
                                 <span className="absolute -top-2 -right-2 flex h-4 w-4">
@@ -250,10 +256,13 @@ export default function Pricing() {
 
                         <div className="space-y-4">
                             <a
-                                href={`https://wa.me/56951435062?text=${encodeURIComponent("Hola Luis! 👋 Me interesa el programa [Élite 360] y me gustaría postular para trabajar contigo. ¿Qué pasos siguen?")}`}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="w-full inline-flex items-center justify-center py-3 rounded-lg border border-[#00D1FF]/30 text-[#00D1FF] font-bold text-sm hover:bg-[#00D1FF]/10 transition-colors uppercase tracking-wider text-center"
+                                href="https://pay.hotmart.com/C104916618Q?checkoutMode=2&off=plwr7ck0"
+                                onClick={(e) => {
+                                    if (window.HotmartCheckout) {
+                                        e.preventDefault();
+                                    }
+                                }}
+                                className="hotmart-fb hotmart__button-checkout w-full inline-flex items-center justify-center py-3 rounded-lg border border-[#00D1FF] bg-transparent text-[#00D1FF] font-black text-sm hover:bg-[#00D1FF]/10 transition-all transform hover:scale-[1.02] uppercase tracking-wider text-center"
                             >
                                 POSTULAR A ÉLITE 360
                             </a>

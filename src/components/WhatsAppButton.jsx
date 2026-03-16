@@ -1,8 +1,8 @@
 import React from 'react';
 
 const WhatsAppButton = () => {
-    // Número placeholder, el usuario puede actualizarlo después
-    const phoneNumber = "56982183210"; 
+    // Número de contacto oficial de PSMILE
+    const phoneNumber = "56951435062"; 
     const message = encodeURIComponent("Hola PSMILE, me gustaría recibir información sobre el diagnóstico para mi hijo/a.");
     const whatsappUrl = `https://wa.me/${phoneNumber}?text=${message}`;
 

@@ -14,6 +14,14 @@ import {
   cancelarSesion, CHARLAS
 } from '../../utils/sesionHelpers';
 
+// ── Paneles de resultados por bloque ────────────────────────────
+import PanelCheckin   from './bloques/PanelCheckin';
+import PanelSemaforo  from './bloques/PanelSemaforo';
+import PanelMapa      from './bloques/PanelMapa';
+import PanelImpostor  from './bloques/PanelImpostor';
+import PanelRRR       from './bloques/PanelRRR';
+import PanelCheckout  from './bloques/PanelCheckout';
+
 // ── Contenido de diapositivas por bloque ────────────────────────
 const SLIDES = [
   // Bloque 1 — Check-in
@@ -243,13 +251,6 @@ export default function FacilitadorPanel() {
             ) : (
               <PanelGenerico bloqueId={bloqueId} jugadores={jugadores} respondieron={respondieron} />
             )}
-
-            {/* Link de Kahoot si estamos en ese bloque */}
-            {bloqueId === 'kahoot' && (
-              <div style={{ marginTop: 20 }}>
-                <KahootControl sesionId={sesionId} sesion={sesion} />
-              </div>
-            )}
           </div>
 
           {/* Controles */}
@@ -261,7 +262,7 @@ export default function FacilitadorPanel() {
                 style={{ width: '100%', padding: '10px', borderRadius: 10, border: `1px solid ${sesion.mostrarResultados ? 'rgba(0,230,118,0.3)' : 'rgba(255,215,0,0.3)'}`, background: sesion.mostrarResultados ? 'rgba(0,230,118,0.1)' : 'rgba(255,215,0,0.08)', color: sesion.mostrarResultados ? '#00e676' : '#ffd700', fontFamily: "'Barlow Condensed', sans-serif", fontSize: 13, fontWeight: 800, letterSpacing: 2, textTransform: 'uppercase', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 7, transition: 'all 0.2s' }}>
                 {sesion.mostrarResultados
                   ? <><EyeOff size={14} /> Ocultar resultados</>
-                  : <><Eye size={14} /> Proyectar resultados</>
+                  : <><Eye size={14} /> Revelar al grupo</>
                 }
               </button>
             )}
@@ -782,8 +783,8 @@ function StatCard({ label, value, color, sub }) {
 // KAHOOT CONTROL — facilitador ingresa el link
 // ════════════════════════════════════════════════════════════════
 function KahootControl({ sesionId, sesion }) {
-  const [url, setUrl] = useState(sesion?.kahootUrl || '');
-  const [saved, setSaved] = useState(false);
+  const [url, setUrl] = React.useState(sesion?.kahootUrl || '');
+  const [saved, setSaved] = React.useState(false);
 
   const handleSave = async () => {
     if (!url.trim()) return;

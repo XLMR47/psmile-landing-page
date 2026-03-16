@@ -50,6 +50,13 @@ export default function Alliances() {
             motto: "Valor y Gloria",
             instagram: "https://www.instagram.com/bewefutbolelite/",
         },
+        {
+            name: "NeuroSport Chile",
+            logo: "https://scontent.cdninstagram.com/v/t51.2885-19/44884218_345707102882519_2446069589734326272_n.jpg?_nc_ht=scontent.cdninstagram.com&_nc_cat=103&_nc_ohc=placeholder&edm=APs17CUBAAAA&ccb=7-5&oh=placeholder&oe=placeholder&_nc_sid=placeholder", // Placeholder URL, se sugiere subir el logo a /public/images/
+            description: "Centro de entrenamiento personalizado y academia de talentos líder en Neurociencia aplicada al deporte.",
+            motto: "Neurociencia Aplicada",
+            instagram: "https://www.instagram.com/neurosportchile/",
+        },
     ];
 
     return (

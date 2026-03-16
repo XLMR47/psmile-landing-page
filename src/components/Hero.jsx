@@ -69,9 +69,9 @@ export default function Hero() {
                         <div className="absolute inset-0 bg-gradient-to-r from-[#0C0C0C] via-[#0C0C0C]/80 to-transparent z-10 w-2/3"></div>
                         <div className="absolute inset-0 bg-gradient-to-t from-[#0C0C0C] via-transparent to-[#0C0C0C]/50 z-10 h-full"></div>
                         <img
-                            src="/images/hero_tunnel.png"
+                            src="https://phmtfuozhwspycbwrggd.supabase.co/storage/v1/object/sign/as/0316-ezgif.com-video-to-webp-converter.webp?token=eyJraWQiOiJzdG9yYWdlLXVybC1zaWduaW5nLWtleV85MzVlYzI5NC1lNGUyLTRiMjctOGU0Ny0yZWYyN2FhYjYxZTciLCJhbGciOiJIUzI1NiJ9.eyJ1cmwiOiJhcy8wMzE2LWV6Z2lmLmNvbS12aWRlby10by13ZWJwLWNvbnZlcnRlci53ZWJwIiwiaWF0IjoxNzczNjc4NzAwLCJleHAiOjE4MDUyMTQ3MDB9.MYvFQIbTXLs3zbOPIxIfwGW8XyPC3K6Gq-cKOrtu3x4"
                             alt="Futbolista joven concentrado"
-                            className="hero-bg w-full h-full object-cover object-[center_top] opacity-40 mix-blend-luminosity grayscale contrast-125"
+                            className="hero-bg w-full h-full object-cover object-[center_top] opacity-50"
                         />
                     </div>
                 </div>

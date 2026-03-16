@@ -32,7 +32,7 @@ export default function Footer() {
                         <a href="https://www.facebook.com/Apoyops.digital/" target="_blank" rel="noopener noreferrer" className="w-10 h-10 rounded-full bg-[#141414] border border-white/5 flex items-center justify-center hover:bg-[#1877F2] hover:border-[#1877F2] transition-colors group">
                             <Facebook size={18} className="text-[#9CA3AF] group-hover:text-white" />
                         </a>
-                        <a href="https://www.instagram.com/psmile_2025/" target="_blank" rel="noopener noreferrer" className="w-10 h-10 rounded-full bg-[#141414] border border-white/5 flex items-center justify-center hover:bg-[#E4405F] hover:border-[#E4405F] transition-colors group">
+                        <a href="https://www.instagram.com/psmilechile/" target="_blank" rel="noopener noreferrer" className="w-10 h-10 rounded-full bg-[#141414] border border-white/5 flex items-center justify-center hover:bg-[#E4405F] hover:border-[#E4405F] transition-colors group">
                             <Instagram size={18} className="text-[#9CA3AF] group-hover:text-white" />
                         </a>
                         <a href="https://www.youtube.com/@Psmile-Performance" target="_blank" rel="noopener noreferrer" className="w-10 h-10 rounded-full bg-[#141414] border border-white/5 flex items-center justify-center hover:bg-[#FF0000] hover:border-[#FF0000] transition-colors group">
