@@ -7,7 +7,7 @@ import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import { db } from '../../firebase';
 import { doc, onSnapshot } from 'firebase/firestore';
-import { guardarRespuesta, limpiarSesionJugador } from '../../utils/sesionHelpers';
+import { guardarRespuesta, limpiarSesionJugador, CHARLAS } from '../../utils/sesionHelpers';
 import { Wifi, CheckCircle2, Loader2 } from 'lucide-react';
 
 // ── Colores y fuentes base (mismos que la charla HTML) ───────────
@@ -74,7 +74,8 @@ export default function JugadorView() {
   if (sesion.estado === 'lobby')      return <PantallaEspera mensaje="Esperando al facilitador..." pulsing />;
 
   const bloqueIdx = (sesion.bloqueActual || 1) - 1;
-  const charla = sesion.charlaId === 'charla_autorregulacion' ? CHARLAS[0] : null; // Fallback to first charla
+  // Buscar la charla por ID o usar la primera si no se encuentra (robusto para el MVP)
+  const charla = CHARLAS.find(c => c.id === sesion.charlaId) || CHARLAS[0];
   const bloqueConfig = charla?.bloques?.[bloqueIdx];
   const bloqueId = bloqueConfig?.id || 'checkin';
   const yaGuardado = guardado[bloqueId] || false;
@@ -131,22 +132,8 @@ export default function JugadorView() {
   );
 }
 
-// ── CHARLAS mock for resolution ──
-const CHARLAS = [
-  {
-    id: 'charla_autorregulacion',
-    titulo: 'Autorregulación Emocional',
-    bloques: [
-      { id: 'checkin',  nombre: 'Check-in', icono: '🎯' },
-      { id: 'semaforo', nombre: 'Semáforo', icono: '🚦' },
-      { id: 'mapa',     nombre: 'Mapa',     icono: '🗺️' },
-      { id: 'impostor', nombre: 'Impostor', icono: '🃏' },
-      { id: 'rrr',      nombre: 'RRR',      icono: '⚡' },
-      { id: 'kahoot',   nombre: 'Kahoot',   icono: '🎮' },
-      { id: 'checkout', nombre: 'Checkout', icono: '🏁' },
-    ]
-  }
-];
+// La lista de charlas ahora se importa directamente de sesionHelpers.js
+// para asegurar que los IDs de bloques coincidan entre facilitador y jugador.
 
 // ════════════════════════════════════════════════════════════════
 // BLOQUES INDIVIDUALES
