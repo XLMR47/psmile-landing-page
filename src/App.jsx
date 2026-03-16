@@ -1,6 +1,5 @@
 import { Routes, Route } from 'react-router-dom';
 import { useEffect } from 'react';
-import { clarity } from '@microsoft/clarity';
 import Header from './components/Header';
 import Hero from './components/Hero';
 import About from './components/About';
@@ -57,8 +56,9 @@ function LandingPage() {
 }
 
 function App() {
+  // Microsoft Clarity ahora se inicializa desde index.html para evitar errores de build
   useEffect(() => {
-    clarity.init('vwf92gna94');
+    // Código de inicialización de otros servicios si fuera necesario
   }, []);
 
   return (
