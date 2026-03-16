@@ -118,6 +118,7 @@ export default function FacilitadorPanel() {
   const navigate     = useNavigate();
   const { sesion, jugadores, respuestas, loading } = useSesionActiva(sesionId);
   const [confirmStop, setConfirmStop] = useState(false);
+  const [showResumen, setShowResumen] = useState(false);
 
   if (loading) return <LoadingScreen />;
   if (!sesion)  return <ErrorScreen msg="Sesión no encontrada" />;
@@ -145,7 +146,6 @@ export default function FacilitadorPanel() {
     }
   };
   const handleRevelar = () => toggleMostrarResultados(sesionId, !sesion.mostrarResultados);
-  const [showResumen, setShowResumen] = useState(false);
 
   const handleStop = async () => {
     await cancelarSesion(sesionId);
