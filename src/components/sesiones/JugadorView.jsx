@@ -6,9 +6,9 @@
 import { useState, useEffect, useRef } from 'react';
 import { useParams } from 'react-router-dom';
 import { db } from '../../firebase';
-import { doc, onSnapshot } from 'firebase/firestore';
+import { doc, onSnapshot, collection } from 'firebase/firestore';
 import { guardarRespuesta, limpiarSesionJugador } from '../../utils/sesionHelpers';
-import { Wifi, CheckCircle2, Loader2 } from 'lucide-react';
+import { Wifi, CheckCircle2, Loader2, Brain } from 'lucide-react';
 
 // ── Colores y fuentes base (mismos que la charla HTML) ───────────
 const S = {
@@ -39,6 +39,8 @@ export default function JugadorView() {
   const [loading,   setLoading]   = useState(true);
   const [guardado,  setGuardado]  = useState({});  // {bloqueId: true}
   const [nombre,    setNombre]    = useState('');
+  const [jugadores, setJugadores] = useState([]);
+  const [respuestas, setRespuestas] = useState({});
 
   // Recuperar nombre del localStorage
   useEffect(() => {
@@ -57,6 +59,27 @@ export default function JugadorView() {
     });
     return () => unsub();
   }, [sesionId]);
+
+  // Escuchar jugadores
+  useEffect(() => {
+    if (!sesionId) return;
+    const unsub = onSnapshot(collection(db, 'sesiones', sesionId, 'jugadores'), (snap) => {
+      const list = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+      setJugadores(list);
+    });
+    return () => unsub();
+  }, [sesionId]);
+
+  // Escuchar respuestas (solo si mostrarResultados es true para ahorrar datos)
+  useEffect(() => {
+    if (!sesionId || !sesion?.mostrarResultados) return;
+    const unsub = onSnapshot(collection(db, 'sesiones', sesionId, 'respuestas'), (snap) => {
+      const dict = {};
+      snap.docs.forEach(d => { dict[d.id] = d.data(); });
+      setRespuestas(dict);
+    });
+    return () => unsub();
+  }, [sesionId, sesion?.mostrarResultados]);
 
   // Mapa de bloques por índice — fallback si configuracion no está en Firestore
   const BLOQUE_IDS = ['checkin','semaforo','mapa','impostor','rrr','kahoot','checkout'];
@@ -637,7 +660,7 @@ const PantallaGuardado = ({ bloqueId, bloqueConfig, mostrarResultados, sesionId,
   // Vistas de resultados simplificadas para el celular
   const ResultView = () => {
     if (bloqueId === 'checkin') {
-      const vals = Object.entries(respuestas).filter(([k]) => k.endsWith('_checkin')).map(([, v]) => v.valor || 0).filter(Boolean);
+      const vals = Object.entries(respuestas || {}).filter(([k]) => k.endsWith('_checkin')).map(([, v]) => v.valor || 0).filter(Boolean);
       const avg = vals.length ? (vals.reduce((a, b) => a + b, 0) / vals.length).toFixed(1) : '—';
       return (
         <div style={{ marginTop: 24, padding: 16, background: 'rgba(0,112,243,0.05)', borderRadius: 16, border: '1px solid rgba(0,112,243,0.1)' }}>
@@ -654,7 +677,7 @@ const PantallaGuardado = ({ bloqueId, bloqueConfig, mostrarResultados, sesionId,
         { id: 'me-fui', icon: '😶', color: '#ffd700' },
         { id: 'respire', icon: '😤', color: '#00e676' }
       ];
-      Object.values(respuestas).filter(r => r.bloqueId === 'semaforo').forEach(r => {
+      Object.values(respuestas || {}).filter(r => r.bloqueId === 'semaforo').forEach(r => {
         ['sit1','sit2','sit3','sit4','sit5','sit6'].forEach(s => { if(r[s] && counts[r[s]] !== undefined) counts[r[s]]++; });
       });
       const total = Object.values(counts).reduce((a,b)=>a+b, 0);
@@ -670,7 +693,7 @@ const PantallaGuardado = ({ bloqueId, bloqueConfig, mostrarResultados, sesionId,
       );
     }
     if (bloqueId === 'rrr') {
-      const palabras = Object.values(respuestas).filter(r => r.bloqueId === 'rrr' && r.palabraAncla).map(r => r.palabraAncla);
+      const palabras = Object.values(respuestas || {}).filter(r => r.bloqueId === 'rrr' && r.palabraAncla).map(r => r.palabraAncla);
       return (
         <div style={{ marginTop: 24, display: 'flex', flexWrap: 'wrap', gap: 6, justifyContent: 'center' }}>
           {palabras.slice(0, 10).map((p, i) => (
@@ -680,7 +703,7 @@ const PantallaGuardado = ({ bloqueId, bloqueConfig, mostrarResultados, sesionId,
       );
     }
     if (bloqueId === 'checkout') {
-      const words = Object.values(respuestas).filter(r => r.bloqueId === 'checkout').flatMap(r => [r.palabra1, r.palabra2, r.palabra3].filter(Boolean));
+      const words = Object.values(respuestas || {}).filter(r => r.bloqueId === 'checkout').flatMap(r => [r.palabra1, r.palabra2, r.palabra3].filter(Boolean));
       const freq = {}; words.forEach(w => { const val = w.toUpperCase().trim(); freq[val] = (freq[val]||0)+1; });
       const sorted = Object.entries(freq).sort((a,b)=>b[1]-a[1]).slice(0, 12);
       return (
