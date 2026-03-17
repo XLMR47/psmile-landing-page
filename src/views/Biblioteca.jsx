@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
-import { Download, Lock, MonitorPlay, CheckCircle2, LockKeyhole, Unlock, Brain, ArrowLeft } from "lucide-react";
+import { Download, Lock, MonitorPlay, CheckCircle2, LockKeyhole, Unlock, Brain, ArrowLeft, ChevronRight } from "lucide-react";
+import { trackEvent } from "../utils/tracking";
 import { Link } from "react-router-dom";
 import Header from "../components/Header";
 import Footer from "../components/Footer";
@@ -16,6 +17,25 @@ export default function Biblioteca() {
     // Check localStorage on mount
     useEffect(() => {
         window.scrollTo(0, 0);
+        
+        // Import Hotmart Widget Script & Styles
+        const importHotmart = () => {
+            if (!document.querySelector('script[src*="hotmart.com/checkout/widget.min.js"]')) {
+                const script = document.createElement('script');
+                script.src = 'https://static.hotmart.com/checkout/widget.min.js';
+                script.async = true;
+                document.head.appendChild(script);
+            }
+            if (!document.querySelector('link[href*="hotmart.com/css/hotmart-fb.min.css"]')) {
+                const link = document.createElement('link');
+                link.rel = 'stylesheet';
+                link.type = 'text/css';
+                link.href = 'https://static.hotmart.com/css/hotmart-fb.min.css';
+                document.head.appendChild(link);
+            }
+        };
+        importHotmart();
+
         const stored = localStorage.getItem('psmile_resources_unlocked');
         if (stored === 'true') {
             setAllUnlocked(true);
@@ -247,13 +267,23 @@ export default function Biblioteca() {
                     <div className="bg-gradient-to-r from-[#141414] to-[#0A0A0A] border border-white/5 rounded-[2.5rem] p-8 md:p-16 flex flex-col md:flex-row items-center gap-12 text-center md:text-left overflow-hidden relative">
                         <div className="absolute top-0 right-0 w-64 h-64 bg-[#DFFF00]/5 rounded-full blur-[100px] pointer-events-none"></div>
                         <div className="flex-1">
-                            <span className="text-[#DFFF00] text-[10px] font-black uppercase tracking-[0.3em] mb-4 block">Próximamente</span>
+                            <span className="text-[#0070F3] text-[10px] font-black uppercase tracking-[0.3em] mb-4 block">Oferta Especial</span>
                             <h2 className="text-3xl md:text-5xl font-black mb-6 italic uppercase tracking-tighter text-white">
-                                PSMILE <span className="text-[#DFFF00]">PREMIUM</span>
+                                ¿LISTO PARA EL <span className="text-[#0070F3]">SIGUIENTE NIVEL</span>?
                             </h2>
-                            <p className="text-[#9CA3AF] text-lg max-w-xl">
-                                Estamos desarrollando una plataforma avanzada de entrenamiento cognitivo y seguimiento de rendimiento. El siguiente nivel de la psicología deportiva está llegando.
+                            <p className="text-[#9CA3AF] text-sm md:text-lg max-w-xl mb-10 leading-relaxed">
+                                Inicia tu proceso con un diagnóstico completo de tus habilidades mentales y cognitivas. Es el primer paso para los futbolistas de élite que buscan la excelencia.
                             </p>
+                            <a 
+                                href="https://pay.hotmart.com/F104947989L?checkoutMode=2&off=abjvr85a"
+                                onClick={() => trackEvent('Purchase', { value: 12990, currency: 'CLP', content_name: 'Diagnóstico de Élite (Biblioteca)' })}
+                                className="hotmart-fb hotmart__button-checkout inline-flex items-center gap-4 px-8 py-5 bg-white text-black font-black text-xs md:text-sm uppercase tracking-widest rounded-xl hover:bg-[#0070F3] hover:text-white transition-all transform hover:scale-[1.02] shadow-2xl shadow-white/5 relative overflow-hidden group/btn"
+                            >
+                                <span className="relative z-10 flex items-center gap-3">
+                                    AGENDAR MI DIAGNÓSTICO POR $12.990 <ChevronRight size={18} />
+                                </span>
+                                <span className="absolute inset-0 bg-gradient-to-r from-transparent via-black/5 to-transparent -translate-x-full group-hover/btn:animate-[shimmer_1.5s_infinite] pointer-events-none"></span>
+                            </a>
                         </div>
                         <div className="flex-shrink-0">
                             <div className="w-24 h-24 bg-[#DFFF00]/10 border border-[#DFFF00]/20 rounded-full flex items-center justify-center animate-pulse">

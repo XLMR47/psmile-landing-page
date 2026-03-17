@@ -135,7 +135,14 @@ export default function JugadorView() {
       <div style={{ padding: '20px 16px 80px', maxWidth: 520, margin: '0 auto', animation: 'blockChange 0.35s ease' }} key={bloqueId}>
 
         {yaGuardado ? (
-          <PantallaGuardado bloqueId={bloqueId} bloqueConfig={bloqueConfig} mostrarResultados={sesion.mostrarResultados} />
+          <PantallaGuardado 
+            bloqueId={bloqueId} 
+            bloqueConfig={bloqueConfig} 
+            mostrarResultados={sesion.mostrarResultados}
+            sesionId={sesionId}
+            jugadores={jugadores}
+            respuestas={respuestas}
+          />
         ) : (
           <>
             {bloqueId === 'checkin'  && <BloqueCheckin  sesionId={sesionId} jugadorId={jugadorId} nombre={nombre} onGuardar={handleGuardar} saving={saving} />}
@@ -401,47 +408,102 @@ function BloqueImpostor({ onGuardar, saving }) {
 }
 
 // ── RRR ───────────────────────────────────────────────────────────
+// ── RRR Componentes Auxiliares (fuera para estabilidad) ──────────
 const CIRC = 2 * Math.PI * 50;
-const BPHS = [{n:'INHALA',d:4,c:'#29b6f6'},{n:'PAUSA',d:2,c:'#ffd700'},{n:'EXHALA',d:4,c:'#00e676'}];
+const BPHS = [
+  { n: 'INHALA', d: 4, c: '#29b6f6' },
+  { n: 'PAUSA',  d: 2, c: '#ffd700' },
+  { n: 'EXHALA', d: 8, c: '#00e676' }
+];
 
-function BloqueRRR({ onGuardar, saving }) {
-  const [reconocer,    setReconocer]    = useState('');
-  const [resetear,     setResetear]     = useState('');
-  const [palabraAncla, setPalabraAncla] = useState('');
+const BreathingTimer = () => {
   const [bPh, setBPh]     = useState(0);
   const [bCnt, setBCnt]   = useState(0);
   const [bCyc, setBCyc]   = useState(0);
   const [bRun, setBRun]   = useState(false);
-  const bRef = useRef(null);
 
-  const toggleBreath = () => {
-    if (bRun) { clearInterval(bRef.current); setBRun(false); return; }
-    setBRun(true);
-    bRef.current = setInterval(() => {
-      setBCnt(prev => {
-        const next = prev + 1;
-        if (next >= BPHS[bPh].d) {
-          setBPh(p => { const np=(p+1)%3; if(np===0) setBCyc(c=>c+1); return np; });
-          return 0;
-        }
-        return next;
-      });
-    }, 1000);
-  };
+  useEffect(() => {
+    let interval = null;
+    if (bRun) {
+      interval = setInterval(() => {
+        setBCnt(prev => {
+          const currentPhase = BPHS[bPh];
+          const next = prev + 1;
+          if (next >= currentPhase.d) {
+            setBPh(p => {
+              const nextPhaseIdx = (p + 1) % 3;
+              if (nextPhaseIdx === 0) {
+                setBCyc(c => {
+                  const nextCyc = c + 1;
+                  if (nextCyc >= 4) setBRun(false);
+                  return nextCyc;
+                });
+              }
+              return nextPhaseIdx;
+            });
+            return 0;
+          }
+          return next;
+        });
+      }, 1000);
+    } else {
+      clearInterval(interval);
+    }
+    return () => clearInterval(interval);
+  }, [bRun, bPh]);
 
-  const RStep = ({ letter, bg, tc, title, desc, children }) => (
-    <div style={{ display: 'grid', gridTemplateColumns: '48px 1fr', borderRadius: 11, overflow: 'hidden', border: '1px solid #1a2640', marginBottom: 10 }}>
-      <div style={{ background: bg, display: 'flex', alignItems: 'center', justifyContent: 'center', fontFamily: "'Bebas Neue', sans-serif", fontSize: 28, color: tc||'#fff' }}>{letter}</div>
-      <div style={{ padding: '12px 12px 12px 4px', background: '#0e1526' }}>
-        <div style={{ fontFamily: "'Barlow Condensed', sans-serif", fontSize: 13, fontWeight: 800, letterSpacing: 2, textTransform: 'uppercase', color: '#fff', marginBottom: 2 }}>{title}</div>
-        <div style={{ fontSize: 11, color: '#4a6480', fontStyle: 'italic', marginBottom: 8 }}>{desc}</div>
-        {children}
+  const phase = BPHS[bPh];
+
+  return (
+    <div style={{ background: '#040608', borderRadius: 10, padding: 16, textAlign: 'center', marginBottom: 10 }}>
+      <p style={{ fontSize: 12, fontStyle: 'italic', color: 'rgba(255,255,255,0.4)', marginBottom: 12 }}>Inhala 4 · Pausa 2 · Exhala 8</p>
+      <div style={{ position: 'relative', width: 90, height: 90, margin: '0 auto 12px' }}>
+        <svg width={90} height={90} style={{ transform: 'rotate(-90deg)' }} viewBox="0 0 140 140">
+          <circle fill="none" stroke="#1a2640" strokeWidth={7} cx={70} cy={70} r={50} />
+          <circle fill="none" stroke={phase.c} strokeWidth={7} strokeLinecap="round"
+            strokeDasharray={CIRC} strokeDashoffset={CIRC * (1 - bCnt / phase.d)}
+            style={{ transition: 'stroke-dashoffset 0.1s linear, stroke 0.5s' }}
+            cx={70} cy={70} r={50} />
+        </svg>
+        <div style={{ position: 'absolute', inset: 0, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
+          <span style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: 32, color: '#fff', lineHeight: 1 }}>{phase.d - bCnt}</span>
+          <span style={{ fontFamily: "'Barlow Condensed', sans-serif", fontSize: 8, fontWeight: 700, letterSpacing: 2, color: '#4a6480', marginTop: 2 }}>{phase.n}</span>
+        </div>
+      </div>
+      <div style={{ display: 'flex', gap: 7, justifyContent: 'center' }}>
+        <button onClick={() => setBRun(!bRun)}
+          style={{ background: '#ffd700', color: '#000', border: 'none', borderRadius: 100, padding: '7px 18px', fontFamily: "'Barlow Condensed', sans-serif", fontSize: 12, fontWeight: 800, letterSpacing: 1, cursor: 'pointer' }}>
+          {bRun ? '⏸ PAUSAR' : (bCyc >= 4 ? 'REPETIR' : '▶ PRACTICAR')}
+        </button>
+        <button onClick={() => { setBRun(false); setBPh(0); setBCnt(0); setBCyc(0); }}
+          style={{ background: 'transparent', color: '#4a6480', border: '1px solid #1a2640', borderRadius: 100, padding: '7px 12px', fontFamily: "'Barlow Condensed', sans-serif", fontSize: 12, fontWeight: 800, cursor: 'pointer' }}>
+          ↺
+        </button>
+      </div>
+      <div style={{ fontFamily: "'Barlow Condensed', sans-serif", fontSize: 10, fontWeight: 700, letterSpacing: 1, textTransform: 'uppercase', color: bCyc >= 4 ? '#00e676' : '#4a6480', marginTop: 8 }}>
+        {bCyc >= 4 ? '✓ ¡4 Ciclos Completados!' : `${bCyc} / 4 ciclos`}
       </div>
     </div>
   );
+};
 
-  const listo = reconocer && resetear && palabraAncla;
-  const phase = BPHS[bPh];
+const RStep = ({ letter, bg, tc, title, desc, children }) => (
+  <div style={{ display: 'grid', gridTemplateColumns: '48px 1fr', borderRadius: 11, overflow: 'hidden', border: '1px solid #1a2640', marginBottom: 10 }}>
+    <div style={{ background: bg, display: 'flex', alignItems: 'center', justifyContent: 'center', fontFamily: "'Bebas Neue', sans-serif", fontSize: 28, color: tc||'#fff' }}>{letter}</div>
+    <div style={{ padding: '12px 12px 12px 4px', background: '#0e1526' }}>
+      <div style={{ fontFamily: "'Barlow Condensed', sans-serif", fontSize: 13, fontWeight: 800, letterSpacing: 2, textTransform: 'uppercase', color: '#fff', marginBottom: 2 }}>{title}</div>
+      <div style={{ fontSize: 11, color: '#4a6480', fontStyle: 'italic', marginBottom: 8 }}>{desc}</div>
+      {children}
+    </div>
+  </div>
+);
+
+function BloqueRRR({ onGuardar, saving }) {
+  const [reconocer, setReconocer] = useState('');
+  const [resetear, setResetear] = useState('');
+  const [palabraAncla, setPalabraAncla] = useState('');
+
+  const listo = reconocer.trim() && resetear.trim() && palabraAncla.trim();
 
   return (
     <div>
@@ -457,37 +519,8 @@ function BloqueRRR({ onGuardar, saving }) {
         <input style={S.input} value={resetear} onChange={e=>setResetear(e.target.value)} placeholder="Ej: ajusto la camiseta..." />
       </RStep>
 
-      <RStep letter="R" bg="#00e676" tc="#000" title="REENFOCO" desc="Respiración 4-2-4 + palabra ancla">
-        {/* Timer de respiración */}
-        <div style={{ background: '#040608', borderRadius: 10, padding: 16, textAlign: 'center', marginBottom: 10 }}>
-          <p style={{ fontSize: 12, fontStyle: 'italic', color: 'rgba(255,255,255,0.4)', marginBottom: 12 }}>Inhala 4 · Pausa 2 · Exhala 4</p>
-          <div style={{ position: 'relative', width: 90, height: 90, margin: '0 auto 12px' }}>
-            <svg width={90} height={90} style={{ transform: 'rotate(-90deg)' }} viewBox="0 0 140 140">
-              <circle fill="none" stroke="#1a2640" strokeWidth={7} cx={70} cy={70} r={50} />
-              <circle fill="none" stroke={phase.c} strokeWidth={7} strokeLinecap="round"
-                strokeDasharray={CIRC} strokeDashoffset={CIRC * (1 - bCnt / phase.d)}
-                style={{ transition: 'stroke-dashoffset 0.1s linear, stroke 0.5s' }}
-                cx={70} cy={70} r={50} />
-            </svg>
-            <div style={{ position: 'absolute', inset: 0, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
-              <span style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: 32, color: '#fff', lineHeight: 1 }}>{phase.d - bCnt}</span>
-              <span style={{ fontFamily: "'Barlow Condensed', sans-serif", fontSize: 8, fontWeight: 700, letterSpacing: 2, color: '#4a6480', marginTop: 2 }}>{phase.n}</span>
-            </div>
-          </div>
-          <div style={{ display: 'flex', gap: 7, justifyContent: 'center' }}>
-            <button onClick={toggleBreath}
-              style={{ background: '#ffd700', color: '#000', border: 'none', borderRadius: 100, padding: '7px 18px', fontFamily: "'Barlow Condensed', sans-serif", fontSize: 12, fontWeight: 800, letterSpacing: 1, cursor: 'pointer' }}>
-              {bRun ? '⏸ PAUSAR' : '▶ PRACTICAR'}
-            </button>
-            <button onClick={() => { clearInterval(bRef.current); setBRun(false); setBPh(0); setBCnt(0); setBCyc(0); }}
-              style={{ background: 'transparent', color: '#4a6480', border: '1px solid #1a2640', borderRadius: 100, padding: '7px 12px', fontFamily: "'Barlow Condensed', sans-serif", fontSize: 12, fontWeight: 800, cursor: 'pointer' }}>
-              ↺
-            </button>
-          </div>
-          <div style={{ fontFamily: "'Barlow Condensed', sans-serif", fontSize: 10, fontWeight: 700, letterSpacing: 1, textTransform: 'uppercase', color: bCyc >= 3 ? '#00e676' : '#4a6480', marginTop: 8 }}>
-            {bCyc >= 3 ? '✓ ¡Completado!' : `${bCyc} / 3 ciclos`}
-          </div>
-        </div>
+      <RStep letter="R" bg="#00e676" tc="#000" title="REENFOCO" desc="Respiración 4-2-8 + palabra ancla">
+        <BreathingTimer />
         <div style={S.label}>Tu palabra ancla</div>
         <input style={S.input} value={palabraAncla} onChange={e=>setPalabraAncla(e.target.value)} placeholder="Ej: Ya · Siguiente · Arriba" />
       </RStep>
@@ -593,37 +626,94 @@ function BloqueCheckout({ onGuardar, saving }) {
 // ════════════════════════════════════════════════════════════════
 // PANTALLAS DE ESTADO
 // ════════════════════════════════════════════════════════════════
-function PantallaGuardado({ bloqueId, bloqueConfig, mostrarResultados }) {
-  return (
-    <div style={{ textAlign: 'center', paddingTop: 40, animation: 'fadeUp 0.3s ease' }}>
-      <CheckCircle2 size={52} color="#00e676" style={{ marginBottom: 16 }} />
-      <h2 style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: 36, letterSpacing: 2, color: '#fff', marginBottom: 8 }}>
-        ¡Listo!
-      </h2>
-      <p style={{ fontSize: 14, color: '#4a6480', fontStyle: 'italic', marginBottom: 24, lineHeight: 1.6 }}>
-        Tu respuesta fue guardada.<br />
-        La siguiente actividad aparecerá acá automáticamente.
-      </p>
+const PantallaGuardado = ({ bloqueId, bloqueConfig, mostrarResultados, sesionId, jugadores, respuestas }) => {
+  const S = {
+    card: { background: '#0e1526', border: '1px solid #1a2640', borderRadius: 20, padding: 32, textAlign: 'center', animation: 'fadeIn 0.5s ease' },
+    check: { width: 64, height: 64, background: 'rgba(0,230,118,0.1)', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 20px', border: '2px solid rgba(0,230,118,0.3)' },
+    title: { fontFamily: "'Bebas Neue', sans-serif", fontSize: 28, letterSpacing: 2, color: '#fff', marginBottom: 8 },
+    text: { fontSize: 14, color: '#4a6480', lineHeight: 1.6, marginBottom: 24 }
+  };
 
-      {mostrarResultados && (
-        <div style={{ background: 'rgba(0,230,118,0.08)', border: '1px solid rgba(0,230,118,0.2)', borderRadius: 12, padding: '14px 16px', marginBottom: 20, fontFamily: "'Barlow Condensed', sans-serif", fontSize: 13, fontWeight: 700, letterSpacing: 1, textTransform: 'uppercase', color: '#00e676' }}>
-          👁️ El facilitador está mostrando los resultados
+  // Vistas de resultados simplificadas para el celular
+  const ResultView = () => {
+    if (bloqueId === 'checkin') {
+      const vals = Object.entries(respuestas).filter(([k]) => k.endsWith('_checkin')).map(([, v]) => v.valor || 0).filter(Boolean);
+      const avg = vals.length ? (vals.reduce((a, b) => a + b, 0) / vals.length).toFixed(1) : '—';
+      return (
+        <div style={{ marginTop: 24, padding: 16, background: 'rgba(0,112,243,0.05)', borderRadius: 16, border: '1px solid rgba(0,112,243,0.1)' }}>
+          <div style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: 48, color: '#0070F3' }}>{avg}</div>
+          <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: 1, textTransform: 'uppercase', color: '#4a6480' }}>Promedio Grupal</div>
         </div>
-      )}
-
-      {/* Indicador visual pulsante prominente */}
-      <div style={{ background: '#0e1526', border: '1px solid #1a2640', borderRadius: 16, padding: '20px 16px', marginTop: 8 }}>
-        <div style={{ display: 'flex', justifyContent: 'center', gap: 8, marginBottom: 12 }}>
-          {[0,1,2].map(i => (
-            <div key={i} style={{ width: 8, height: 8, borderRadius: '50%', background: '#0070F3', animation: `pulse 1.2s infinite`, animationDelay: `${i * 0.3}s` }} />
+      );
+    }
+    if (bloqueId === 'semaforo') {
+      const counts = { exploto: 0, congele: 0, 'me-fui': 0, respire: 0 };
+      const reactions = [
+        { id: 'exploto', icon: '🤬', color: '#ff2d2d' },
+        { id: 'congele', icon: '🥶', color: '#29b6f6' },
+        { id: 'me-fui', icon: '😶', color: '#ffd700' },
+        { id: 'respire', icon: '😤', color: '#00e676' }
+      ];
+      Object.values(respuestas).filter(r => r.bloqueId === 'semaforo').forEach(r => {
+        ['sit1','sit2','sit3','sit4','sit5','sit6'].forEach(s => { if(r[s] && counts[r[s]] !== undefined) counts[r[s]]++; });
+      });
+      const total = Object.values(counts).reduce((a,b)=>a+b, 0);
+      return (
+        <div style={{ marginTop: 24, display: 'flex', justifyContent: 'center', gap: 12 }}>
+          {reactions.map(r => (
+            <div key={r.id} style={{ textAlign: 'center' }}>
+              <div style={{ fontSize: 20 }}>{r.icon}</div>
+              <div style={{ fontSize: 10, fontWeight: 700, color: r.color }}>{total ? Math.round((counts[r.id]/total)*100) : 0}%</div>
+            </div>
           ))}
         </div>
-        <p style={{ fontFamily: "'Barlow Condensed', sans-serif", fontSize: 13, fontWeight: 700, letterSpacing: 2, textTransform: 'uppercase', color: '#4a6480' }}>
-          Esperando al facilitador...
-        </p>
-        <p style={{ fontSize: 12, color: '#2a3a50', marginTop: 6, fontStyle: 'italic' }}>
-          No cierres esta pantalla
-        </p>
+      );
+    }
+    if (bloqueId === 'rrr') {
+      const palabras = Object.values(respuestas).filter(r => r.bloqueId === 'rrr' && r.palabraAncla).map(r => r.palabraAncla);
+      return (
+        <div style={{ marginTop: 24, display: 'flex', flexWrap: 'wrap', gap: 6, justifyContent: 'center' }}>
+          {palabras.slice(0, 10).map((p, i) => (
+            <span key={i} style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: 14, letterSpacing: 1, padding: '4px 10px', borderRadius: 8, background: 'rgba(255,215,0,0.1)', color: '#ffd700', border: '1px solid rgba(255,215,0,0.1)' }}>{p.toUpperCase()}</span>
+          ))}
+        </div>
+      );
+    }
+    if (bloqueId === 'checkout') {
+      const words = Object.values(respuestas).filter(r => r.bloqueId === 'checkout').flatMap(r => [r.palabra1, r.palabra2, r.palabra3].filter(Boolean));
+      const freq = {}; words.forEach(w => { const val = w.toUpperCase().trim(); freq[val] = (freq[val]||0)+1; });
+      const sorted = Object.entries(freq).sort((a,b)=>b[1]-a[1]).slice(0, 12);
+      return (
+        <div style={{ marginTop: 24, display: 'flex', flexWrap: 'wrap', gap: 8, justifyContent: 'center', alignItems: 'center' }}>
+          {sorted.map(([w, c], i) => (
+            <span key={i} style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: 12 + c*2, color: ['#ff2d2d','#ffd700','#00e676','#29b6f6','#ce93d8'][i%5], opacity: 0.8 }}>{w}</span>
+          ))}
+        </div>
+      );
+    }
+    return null;
+  };
+
+  return (
+    <div style={{ textAlign: 'center', paddingTop: 40, animation: 'fadeUp 0.3s ease' }}>
+      <div style={S.card}>
+        <div style={S.check}><CheckCircle2 size={32} color="#00e676" /></div>
+        <h2 style={S.title}>¡Listo!</h2>
+        <p style={S.text}>Tus respuestas han sido enviadas. Espera a que el facilitador avance al siguiente bloque.</p>
+        
+        {mostrarResultados ? (
+          <div style={{ animation: 'fadeIn 0.5s ease' }}>
+            <div style={{ height: 1, background: '#1a2640', margin: '20px 0' }} />
+            <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: 2, color: '#ffd700', textTransform: 'uppercase' }}>Resultados del Grupo</div>
+            <ResultView />
+            <p style={{ fontSize: 11, color: '#4a6480', fontStyle: 'italic', marginTop: 16 }}>Mira la pantalla principal para más detalle</p>
+          </div>
+        ) : (
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 10, background: 'rgba(26,36,64,0.4)', borderRadius: 12, padding: 12 }}>
+            <div style={{ width: 8, height: 8, borderRadius: '50%', background: '#4a6480', animation: 'pulse 2s infinite' }} />
+            <span style={{ fontSize: 12, color: '#4a6480', fontWeight: 500 }}>Sincronizando...</span>
+          </div>
+        )}
       </div>
     </div>
   );

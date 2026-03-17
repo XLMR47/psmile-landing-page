@@ -212,9 +212,18 @@ export default function FacilitadorPanel() {
       {/* ── MAIN CONTENT ────────────────────────────────────── */}
       <div style={{ flex: 1, display: 'grid', gridTemplateColumns: '1fr 420px', minHeight: 0 }}>
 
-        {/* ── COLUMNA IZQUIERDA: DIAPOSITIVA ─────────────────── */}
+        {/* ── COLUMNA IZQUIERDA: DIAPOSITIVA O RESULTADOS ─── */}
         <div style={{ borderRight: '1px solid #1a2640', display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
-          <SlideView slide={slide} bloqueNum={sesion.bloqueActual} />
+          <SlideView 
+            slide={slide} 
+            bloqueNum={sesion.bloqueActual} 
+            mostrarResultados={sesion.mostrarResultados}
+            PanelComp={PanelComp}
+            sesionId={sesionId}
+            jugadores={jugadores}
+            respuestas={respuestas}
+            bloqueId={bloqueId}
+          />
         </div>
 
         {/* ── COLUMNA DERECHA: DATOS LIVE ────────────────────── */}
@@ -406,9 +415,38 @@ export default function FacilitadorPanel() {
 }
 
 // ════════════════════════════════════════════════════════════════
-// SLIDE VIEW — diapositiva del bloque actual
+// SLIDE VIEW — diapositiva del bloque actual o proyección de resultados
 // ════════════════════════════════════════════════════════════════
-function SlideView({ slide, bloqueNum }) {
+function SlideView({ 
+  slide, bloqueNum, mostrarResultados, PanelComp, 
+  sesionId, jugadores, respuestas, bloqueId 
+}) {
+  if (mostrarResultados && PanelComp) {
+    return (
+      <div style={{ flex: 1, display: 'flex', flexDirection: 'column', padding: '40px 48px', background: '#040608', position: 'relative', overflow: 'hidden', animation: 'fadeIn 0.5s ease' }}>
+        <div style={{ borderLeft: `4px solid ${slide.accent}`, paddingLeft: 20, marginBottom: 32 }}>
+          <div style={{ fontFamily: "'Barlow Condensed', sans-serif", fontSize: 13, fontWeight: 700, letterSpacing: 4, textTransform: 'uppercase', color: slide.accent, marginBottom: 8 }}>
+             Resultados en Vivo
+          </div>
+          <h1 style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: 64, lineHeight: 1, letterSpacing: 2, color: '#fff' }}>
+            {slide.title.replace('\n', ' ')}
+          </h1>
+        </div>
+        
+        <div style={{ flex: 1, background: 'rgba(14,21,38,0.5)', border: '1px solid #1a2640', borderRadius: 24, padding: 32, overflowY: 'auto' }}>
+          <PanelComp 
+            sesionId={sesionId}
+            jugadores={jugadores}
+            respuestas={respuestas}
+            bloqueId={bloqueId}
+            mostrarResultados={true}
+            isLarge={true}
+          />
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div style={{ flex: 1, display: 'flex', flexDirection: 'column', padding: '40px 48px', background: `radial-gradient(ellipse at 20% 20%, ${slide.accent}0a 0%, transparent 60%), #040608`, position: 'relative', overflow: 'hidden', animation: 'fadeIn 0.3s ease' }}>
 
@@ -530,7 +568,7 @@ function PanelGenerico({ bloqueId, jugadores, respondieron }) {
 // ════════════════════════════════════════════════════════════════
 
 // Panel Checkin ──────────────────────────────────────────────────
-function PanelCheckin({ sesionId, jugadores, respuestas, bloqueId }) {
+function PanelCheckin({ sesionId, jugadores, respuestas, bloqueId, isLarge }) {
   const vals = Object.entries(respuestas)
     .filter(([k]) => k.endsWith('_checkin'))
     .map(([, v]) => v.valor || 0)
@@ -538,23 +576,24 @@ function PanelCheckin({ sesionId, jugadores, respuestas, bloqueId }) {
   const avg = vals.length ? (vals.reduce((a, b) => a + b, 0) / vals.length).toFixed(1) : '—';
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-      <StatCard label="Promedio grupal" value={avg} color="#0070F3" sub={`${vals.length}/${jugadores.length} respondieron`} />
-      <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+    <div style={{ display: 'flex', flexDirection: 'column', gap: isLarge ? 24 : 12 }}>
+      <StatCard label="Promedio grupal" value={avg} color="#0070F3" sub={`${vals.length}/${jugadores.length} respondieron`} isLarge={isLarge} />
+      <div style={{ display: 'flex', flexDirection: 'column', gap: isLarge ? 12 : 6 }}>
         {[10,9,8,7,6,5,4,3,2,1].map(n => {
           const count = vals.filter(v => v === n).length;
           const pct = vals.length ? (count / vals.length) * 100 : 0;
-          return count > 0 ? (
-            <div key={n} style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-              <span style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: 16, color: '#dce8f5', width: 16, textAlign: 'right', flexShrink: 0 }}>{n}</span>
-              <div style={{ flex: 1, height: 22, background: '#131d30', borderRadius: 6, overflow: 'hidden' }}>
-                <div style={{ height: '100%', background: `linear-gradient(90deg, #0070F3, #00b4ff)`, width: `${pct}%`, transition: 'width 0.5s ease', borderRadius: 6, display: 'flex', alignItems: 'center', paddingLeft: 8 }}>
-                  {pct > 20 && <span style={{ fontFamily: "'Barlow Condensed', sans-serif", fontSize: 11, fontWeight: 700, color: '#fff' }}>{count}</span>}
+          if (count === 0) return null;
+          return (
+            <div key={n} style={{ display: 'flex', alignItems: 'center', gap: isLarge ? 16 : 8 }}>
+              <span style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: isLarge ? 24 : 16, color: '#dce8f5', width: isLarge ? 32 : 16, textAlign: 'right', flexShrink: 0 }}>{n}</span>
+              <div style={{ flex: 1, height: isLarge ? 32 : 22, background: '#131d30', borderRadius: 10, overflow: 'hidden' }}>
+                <div style={{ height: '100%', background: `linear-gradient(90deg, #0070F3, #00b4ff)`, width: `${pct}%`, transition: 'width 0.5s ease', borderRadius: 10, display: 'flex', alignItems: 'center', paddingLeft: 8 }}>
+                  {pct > (isLarge ? 10 : 20) && <span style={{ fontFamily: "'Barlow Condensed', sans-serif", fontSize: isLarge ? 14 : 11, fontWeight: 700, color: '#fff' }}>{count}</span>}
                 </div>
               </div>
-              <span style={{ fontFamily: "'Barlow Condensed', sans-serif", fontSize: 11, fontWeight: 700, color: '#4a6480', width: 24, flexShrink: 0 }}>{count}</span>
+              <span style={{ fontFamily: "'Barlow Condensed', sans-serif", fontSize: isLarge ? 14 : 11, fontWeight: 700, color: '#4a6480', width: 24, flexShrink: 0 }}>{count}</span>
             </div>
-          ) : null;
+          );
         })}
       </div>
     </div>
@@ -562,7 +601,7 @@ function PanelCheckin({ sesionId, jugadores, respuestas, bloqueId }) {
 }
 
 // Panel Semáforo ─────────────────────────────────────────────────
-function PanelSemaforo({ sesionId, jugadores, respuestas, bloqueId, mostrarResultados }) {
+function PanelSemaforo({ sesionId, jugadores, respuestas, bloqueId, mostrarResultados, isLarge }) {
   const REACTIONS = [
     { id: 'exploto',  label: 'Exploté',       icon: '🤬', color: '#ff2d2d' },
     { id: 'congele',  label: 'Me congelé',     icon: '🥶', color: '#29b6f6' },
@@ -585,44 +624,46 @@ function PanelSemaforo({ sesionId, jugadores, respuestas, bloqueId, mostrarResul
   const total = Object.values(counts).reduce((a,b) => a+b, 0);
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+    <div style={{ display: 'flex', flexDirection: 'column', gap: isLarge ? 24 : 12 }}>
       {/* Selector de situación */}
-      <div style={{ display: 'flex', flexWrap: 'wrap', gap: 5 }}>
+      <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, justifyContent: isLarge ? 'center' : 'flex-start' }}>
         {SITSLAB.map((lab, i) => (
           <button key={i} onClick={() => setSitActiva(i)}
-            style={{ padding: '4px 10px', borderRadius: 6, border: `1px solid ${sitActiva === i ? '#ff2d2d' : '#1a2640'}`, background: sitActiva === i ? 'rgba(255,45,45,0.12)' : 'transparent', color: sitActiva === i ? '#ff6b6b' : '#4a6480', fontFamily: "'Barlow Condensed', sans-serif", fontSize: 11, fontWeight: 700, letterSpacing: 1, cursor: 'pointer', transition: 'all 0.2s' }}>
+            style={{ padding: isLarge ? '8px 16px' : '4px 10px', borderRadius: 8, border: `2px solid ${sitActiva === i ? '#ff2d2d' : '#1a2640'}`, background: sitActiva === i ? 'rgba(255,45,45,0.12)' : 'transparent', color: sitActiva === i ? '#ff6b6b' : '#4a6480', fontFamily: "'Barlow Condensed', sans-serif", fontSize: isLarge ? 14 : 11, fontWeight: 700, letterSpacing: 1, cursor: 'pointer', transition: 'all 0.2s' }}>
             {lab}
           </button>
         ))}
       </div>
 
       {/* Barras de reacción */}
-      {REACTIONS.map(r => {
-        const c = counts[r.id] || 0;
-        const pct = total > 0 ? (c / total) * 100 : 0;
-        return (
-          <div key={r.id} style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-            <span style={{ fontSize: 16, flexShrink: 0 }}>{r.icon}</span>
-            <div style={{ flex: 1 }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 3 }}>
-                <span style={{ fontFamily: "'Barlow Condensed', sans-serif", fontSize: 11, fontWeight: 700, letterSpacing: 1, color: r.color }}>{r.label}</span>
-                <span style={{ fontFamily: "'Barlow Condensed', sans-serif", fontSize: 11, fontWeight: 700, color: '#4a6480' }}>{c} ({Math.round(pct)}%)</span>
-              </div>
-              <div style={{ height: 18, background: '#131d30', borderRadius: 5, overflow: 'hidden' }}>
-                <div style={{ height: '100%', background: r.color, width: `${pct}%`, transition: 'width 0.6s ease', borderRadius: 5, opacity: 0.8 }} />
+      <div style={{ display: 'flex', flexDirection: 'column', gap: isLarge ? 20 : 8 }}>
+        {REACTIONS.map(r => {
+          const c = counts[r.id] || 0;
+          const pct = total > 0 ? (c / total) * 100 : 0;
+          return (
+            <div key={r.id} style={{ display: 'flex', alignItems: 'center', gap: isLarge ? 16 : 8 }}>
+              <span style={{ fontSize: isLarge ? 32 : 16, flexShrink: 0 }}>{r.icon}</span>
+              <div style={{ flex: 1 }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 3 }}>
+                  <span style={{ fontFamily: "'Barlow Condensed', sans-serif", fontSize: isLarge ? 16 : 11, fontWeight: 700, letterSpacing: 1, color: r.color }}>{r.label}</span>
+                  <span style={{ fontFamily: "'Barlow Condensed', sans-serif", fontSize: isLarge ? 16 : 11, fontWeight: 700, color: '#4a6480' }}>{c} ({Math.round(pct)}%)</span>
+                </div>
+                <div style={{ height: isLarge ? 32 : 18, background: '#131d30', borderRadius: 10, overflow: 'hidden' }}>
+                  <div style={{ height: '100%', background: r.color, width: `${pct}%`, transition: 'width 0.6s ease', borderRadius: 10, opacity: 0.8 }} />
+                </div>
               </div>
             </div>
-          </div>
-        );
-      })}
+          );
+        })}
+      </div>
 
-      <StatCard label="Respondieron" value={`${sitRespuestas.length}/${jugadores.length}`} color="#ffd700" />
+      <StatCard label="Respondieron" value={`${sitRespuestas.length}/${jugadores.length}`} color="#ffd700" isLarge={isLarge} />
     </div>
   );
 }
 
 // Panel Mapa ─────────────────────────────────────────────────────
-function PanelMapa({ sesionId, jugadores, respuestas, bloqueId }) {
+function PanelMapa({ sesionId, jugadores, respuestas, bloqueId, isLarge }) {
   const canvasRef = useRef(null);
   const mapaRespuestas = Object.values(respuestas).filter(r => r.bloqueId === 'mapa' || r.trazos);
   const totalTrazos = mapaRespuestas.reduce((acc, r) => acc + (r.trazos?.length || 0), 0);
@@ -632,7 +673,7 @@ function PanelMapa({ sesionId, jugadores, respuestas, bloqueId }) {
     if (!canvas) return;
     const ctx = canvas.getContext('2d');
     ctx.clearRect(0, 0, canvas.width, canvas.height);
-    ctx.fillStyle = '#0e1526';
+    ctx.fillStyle = '#131d30';
     ctx.fillRect(0, 0, canvas.width, canvas.height);
     drawSilhouetteMini(ctx, canvas.width, canvas.height);
 
@@ -640,19 +681,22 @@ function PanelMapa({ sesionId, jugadores, respuestas, bloqueId }) {
       if (!r.trazos?.length) return;
       r.trazos.forEach(t => {
         ctx.beginPath();
-        ctx.arc(t.x * (canvas.width / 240), t.y * (canvas.height / 380), 5, 0, Math.PI * 2);
-        ctx.fillStyle = (t.color || '#ff2d2d') + '44';
+        ctx.arc(t.x * (canvas.width / 240), t.y * (canvas.height / 380), isLarge ? 8 : 5, 0, Math.PI * 2);
+        ctx.fillStyle = (t.color || '#ff2d2d') + (isLarge ? '66' : '44');
         ctx.fill();
       });
     });
-  }, [mapaRespuestas]);
+  }, [mapaRespuestas, isLarge]);
+
+  const width = isLarge ? 300 : 180;
+  const height = isLarge ? 600 : 360;
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-      <StatCard label="Jugadores mapearon" value={`${mapaRespuestas.length}/${jugadores.length}`} color="#29b6f6" sub={`${totalTrazos} trazos totales`} />
-      <div style={{ background: '#131d30', border: '1px solid #1a2640', borderRadius: 10, overflow: 'hidden', textAlign: 'center', padding: 8 }}>
-        <p style={{ fontFamily: "'Barlow Condensed', sans-serif", fontSize: 10, fontWeight: 700, letterSpacing: 2, textTransform: 'uppercase', color: '#4a6480', marginBottom: 8 }}>Mapa colectivo</p>
-        <canvas ref={canvasRef} width={180} height={360} style={{ borderRadius: 8, maxWidth: '100%' }} />
+    <div style={{ display: 'flex', flexDirection: isLarge ? 'row' : 'column', gap: 20, alignItems: 'center', justifyContent: 'center' }}>
+      <StatCard label="Jugadores mapearon" value={`${mapaRespuestas.length}/${jugadores.length}`} color="#29b6f6" sub={`${totalTrazos} trazos totales`} isLarge={isLarge} />
+      <div style={{ background: '#131d30', border: '1px solid #1a2640', borderRadius: isLarge ? 24 : 10, overflow: 'hidden', textAlign: 'center', padding: isLarge ? 24 : 8 }}>
+        <p style={{ fontFamily: "'Barlow Condensed', sans-serif", fontSize: isLarge ? 14 : 10, fontWeight: 700, letterSpacing: 2, textTransform: 'uppercase', color: '#4a6480', marginBottom: 12 }}>Mapa colectivo</p>
+        <canvas ref={canvasRef} width={width} height={height} style={{ borderRadius: 8, maxWidth: '100%', background: '#0e1526' }} />
       </div>
     </div>
   );
@@ -683,26 +727,28 @@ function drawSilhouetteMini(ctx, w, h) {
 }
 
 // Panel Impostor ─────────────────────────────────────────────────
-function PanelImpostor({ sesionId, jugadores, respuestas, bloqueId, mostrarResultados }) {
+function PanelImpostor({ sesionId, jugadores, respuestas, bloqueId, mostrarResultados, isLarge }) {
   const votos = Object.values(respuestas).filter(r => r.bloqueId === 'impostor' || r.votoImpostores);
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-      <StatCard label="Votaron" value={`${votos.length}/${jugadores.length}`} color="#ce93d8" />
+    <div style={{ display: 'flex', flexDirection: 'column', gap: isLarge ? 24 : 12 }}>
+      <StatCard label="Votaron" value={`${votos.length}/${jugadores.length}`} color="#ce93d8" isLarge={isLarge} />
       {votos.length > 0 && (
-        <div style={{ background: '#131d30', border: '1px solid #1a2640', borderRadius: 10, padding: 14 }}>
-          <p style={{ fontFamily: "'Barlow Condensed', sans-serif", fontSize: 10, fontWeight: 700, letterSpacing: 2, textTransform: 'uppercase', color: '#ce93d8', marginBottom: 10 }}>Votos recibidos</p>
-          {[0,1,2,3,4].map(i => {
-            const c = votos.filter(v => v.votoImpostores?.includes(i)).length;
-            return c > 0 ? (
-              <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 6 }}>
-                <span style={{ fontFamily: "'Barlow Condensed', sans-serif", fontSize: 12, fontWeight: 700, color: '#4a6480', width: 64 }}>Jugador {i+1}</span>
-                <div style={{ flex: 1, height: 16, background: '#0e1526', borderRadius: 4, overflow: 'hidden' }}>
-                  <div style={{ height: '100%', background: '#ce93d8', width: `${(c/votos.length)*100}%`, transition: 'width 0.5s ease', borderRadius: 4, opacity: 0.7 }} />
+        <div style={{ background: '#131d30', border: '1px solid #1a2640', borderRadius: isLarge ? 20 : 10, padding: isLarge ? 32 : 14 }}>
+          <p style={{ fontFamily: "'Barlow Condensed', sans-serif", fontSize: isLarge ? 14 : 10, fontWeight: 700, letterSpacing: 2, textTransform: 'uppercase', color: '#ce93d8', marginBottom: isLarge ? 20 : 10 }}>Votos recibidos</p>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: isLarge ? 16 : 8 }}>
+            {[0,1,2,3,4].map(i => {
+              const c = votos.filter(v => v.votoImpostores?.includes(i)).length;
+              return c > 0 ? (
+                <div key={i} style={{ display: 'flex', alignItems: 'center', gap: isLarge ? 16 : 8 }}>
+                  <span style={{ fontFamily: "'Barlow Condensed', sans-serif", fontSize: isLarge ? 18 : 12, fontWeight: 700, color: '#4a6480', width: isLarge ? 120 : 64 }}>Jugador {i+1}</span>
+                  <div style={{ flex: 1, height: isLarge ? 24 : 16, background: '#0e1526', borderRadius: 6, overflow: 'hidden' }}>
+                    <div style={{ height: '100%', background: '#ce93d8', width: `${(c/votos.length)*100}%`, transition: 'width 0.5s ease', borderRadius: 6, opacity: 0.7 }} />
+                  </div>
+                  <span style={{ fontFamily: "'Barlow Condensed', sans-serif", fontSize: isLarge ? 16 : 11, color: '#4a6480', width: 30 }}>{c}</span>
                 </div>
-                <span style={{ fontFamily: "'Barlow Condensed', sans-serif", fontSize: 11, color: '#4a6480', width: 20 }}>{c}</span>
-              </div>
-            ) : null;
-          })}
+              ) : null;
+            })}
+          </div>
         </div>
       )}
     </div>
@@ -710,19 +756,19 @@ function PanelImpostor({ sesionId, jugadores, respuestas, bloqueId, mostrarResul
 }
 
 // Panel RRR ──────────────────────────────────────────────────────
-function PanelRRR({ sesionId, jugadores, respuestas, bloqueId }) {
+function PanelRRR({ sesionId, jugadores, respuestas, bloqueId, isLarge }) {
   const rrrRespuestas = Object.values(respuestas).filter(r => r.bloqueId === 'rrr' || r.palabraAncla);
   const palabras = rrrRespuestas.map(r => r.palabraAncla).filter(Boolean);
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-      <StatCard label="Completaron RRR" value={`${rrrRespuestas.length}/${jugadores.length}`} color="#ffd700" />
+    <div style={{ display: 'flex', flexDirection: 'column', gap: isLarge ? 24 : 12 }}>
+      <StatCard label="Completaron RRR" value={`${rrrRespuestas.length}/${jugadores.length}`} color="#ffd700" isLarge={isLarge} />
       {palabras.length > 0 && (
-        <div style={{ background: '#131d30', border: '1px solid #1a2640', borderRadius: 10, padding: 14 }}>
-          <p style={{ fontFamily: "'Barlow Condensed', sans-serif", fontSize: 10, fontWeight: 700, letterSpacing: 2, textTransform: 'uppercase', color: '#ffd700', marginBottom: 10 }}>Palabras ancla del grupo</p>
-          <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
+        <div style={{ background: '#131d30', border: '1px solid #1a2640', borderRadius: isLarge ? 20 : 10, padding: isLarge ? 32 : 14 }}>
+          <p style={{ fontFamily: "'Barlow Condensed', sans-serif", fontSize: isLarge ? 14 : 10, fontWeight: 700, letterSpacing: 2, textTransform: 'uppercase', color: '#ffd700', marginBottom: isLarge ? 20 : 10 }}>Palabras ancla del grupo</p>
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: 10, justifyContent: isLarge ? 'center' : 'flex-start' }}>
             {palabras.map((p, i) => (
-              <span key={i} style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: 16, letterSpacing: 2, padding: '3px 10px', borderRadius: 6, background: 'rgba(255,215,0,0.1)', border: '1px solid rgba(255,215,0,0.2)', color: '#ffd700', animation: 'fadeIn 0.3s ease' }}>
+              <span key={i} style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: isLarge ? 28 : 16, letterSpacing: 2, padding: isLarge ? '8px 20px' : '3px 10px', borderRadius: isLarge ? 12 : 6, background: 'rgba(255,215,0,0.1)', border: '1px solid rgba(255,215,0,0.2)', color: '#ffd700', animation: 'fadeIn 0.3s ease' }}>
                 {p.toUpperCase()}
               </span>
             ))}
@@ -734,7 +780,7 @@ function PanelRRR({ sesionId, jugadores, respuestas, bloqueId }) {
 }
 
 // Panel Checkout ─────────────────────────────────────────────────
-function PanelCheckout({ sesionId, jugadores, respuestas, bloqueId }) {
+function PanelCheckout({ sesionId, jugadores, respuestas, bloqueId, isLarge }) {
   const checkoutRespuestas = Object.values(respuestas).filter(r => r.bloqueId === 'checkout' || r.palabra1);
   const allPalabras = checkoutRespuestas.flatMap(r => [r.palabra1, r.palabra2, r.palabra3].filter(Boolean));
   const freq = {};
@@ -744,16 +790,18 @@ function PanelCheckout({ sesionId, jugadores, respuestas, bloqueId }) {
   const COLORS = ['#ff2d2d','#ffd700','#00e676','#29b6f6','#ce93d8','#ffa726'];
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-      <StatCard label="Check-out completado" value={`${checkoutRespuestas.length}/${jugadores.length}`} color="#00e676" />
+    <div style={{ display: 'flex', flexDirection: 'column', gap: isLarge ? 24 : 12 }}>
+      <StatCard label="Check-out completado" value={`${checkoutRespuestas.length}/${jugadores.length}`} color="#00e676" isLarge={isLarge} />
       {sorted.length > 0 && (
-        <div style={{ background: '#131d30', border: '1px solid #1a2640', borderRadius: 10, padding: 14 }}>
-          <p style={{ fontFamily: "'Barlow Condensed', sans-serif", fontSize: 10, fontWeight: 700, letterSpacing: 2, textTransform: 'uppercase', color: '#00e676', marginBottom: 12 }}>
+        <div style={{ background: '#131d30', border: '1px solid #1a2640', borderRadius: isLarge ? 20 : 10, padding: isLarge ? 40 : 14 }}>
+          <p style={{ fontFamily: "'Barlow Condensed', sans-serif", fontSize: isLarge ? 14 : 10, fontWeight: 700, letterSpacing: 2, textTransform: 'uppercase', color: '#00e676', marginBottom: isLarge ? 24 : 12, textAlign: isLarge ? 'center' : 'left' }}>
             Nube de palabras del grupo
           </p>
-          <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, alignItems: 'center' }}>
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: isLarge ? 24 : 8, alignItems: 'center', justifyContent: isLarge ? 'center' : 'flex-start' }}>
             {sorted.map(([word, count], i) => {
-              const size = Math.max(12, Math.min(28, 12 + count * 4));
+              const baseSize = isLarge ? 20 : 12;
+              const maxSize = isLarge ? 64 : 28;
+              const size = Math.max(baseSize, Math.min(maxSize, baseSize + count * (isLarge ? 8 : 4)));
               return (
                 <span key={i} style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: size, letterSpacing: 2, color: COLORS[i % COLORS.length], opacity: 0.7 + (count / (sorted[0][1] || 1)) * 0.3, animation: `fadeIn 0.3s ease ${i * 0.05}s both` }}>
                   {word}
@@ -768,14 +816,14 @@ function PanelCheckout({ sesionId, jugadores, respuestas, bloqueId }) {
 }
 
 // ── Componente auxiliar ──────────────────────────────────────────
-function StatCard({ label, value, color, sub }) {
+function StatCard({ label, value, color, sub, isLarge }) {
   return (
-    <div style={{ background: '#131d30', border: `1px solid ${color}22`, borderRadius: 10, padding: '12px 14px', display: 'flex', alignItems: 'center', gap: 12 }}>
+    <div style={{ background: '#131d30', border: `1px solid ${color}22`, borderRadius: isLarge ? 20 : 10, padding: isLarge ? '24px 32px' : '12px 14px', display: 'flex', alignItems: 'center', gap: isLarge ? 24 : 12 }}>
       <div>
-        <div style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: 32, color, lineHeight: 1 }}>{value}</div>
-        {sub && <div style={{ fontFamily: "'Barlow Condensed', sans-serif", fontSize: 10, color: '#4a6480', letterSpacing: 1, textTransform: 'uppercase', marginTop: 2 }}>{sub}</div>}
+        <div style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: isLarge ? 64 : 32, color, lineHeight: 1 }}>{value}</div>
+        {sub && <div style={{ fontFamily: "'Barlow Condensed', sans-serif", fontSize: isLarge ? 14 : 10, color: '#4a6480', letterSpacing: 1, textTransform: 'uppercase', marginTop: 4 }}>{sub}</div>}
       </div>
-      <div style={{ fontFamily: "'Barlow Condensed', sans-serif", fontSize: 11, fontWeight: 700, letterSpacing: 2, textTransform: 'uppercase', color: '#4a6480' }}>{label}</div>
+      <div style={{ fontFamily: "'Barlow Condensed', sans-serif", fontSize: isLarge ? 18 : 11, fontWeight: 700, letterSpacing: 2, textTransform: 'uppercase', color: '#4a6480' }}>{label}</div>
     </div>
   );
 }
