@@ -74,15 +74,15 @@ const SLIDES = [
     icon: '⚡',
     rrr: true,
   },
-  // Bloque 6 — Kahoot
+  // Bloque 6 — Kahoot / Ahaslides
   {
     kicker: 'Cierre · 5 min',
-    title: 'Kahoot\nRelámpago',
-    body: '5 preguntas sobre los contenidos de hoy.',
+    title: 'Kahoot o\nAhaslides',
+    body: 'Preguntas interactivas sobre los contenidos de hoy.',
     accent: '#b44fff',
     icon: '🎮',
     bullets: [
-      'Los jugadores abren Kahoot en sus celulares',
+      'Los jugadores abren el link en sus celulares',
       'Formato competitivo y lúdico',
       'Cierre con reconocimiento al ganador',
     ],
@@ -557,7 +557,7 @@ function PanelGenerico({ bloqueId, jugadores, respondieron }) {
         Actividad sin datos en tiempo real
       </p>
       <p style={{ fontSize: 13, color: '#2a3a50', fontStyle: 'italic' }}>
-        Los jugadores ingresan al Kahoot desde sus celulares
+        Los jugadores ingresan a la actividad (Ahaslides por defecto) desde sus celulares
       </p>
     </div>
   );
@@ -847,13 +847,13 @@ function KahootControl({ sesionId, sesion }) {
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
       <div style={{ fontFamily: "'Barlow Condensed', sans-serif", fontSize: 10, fontWeight: 700, letterSpacing: 2, textTransform: 'uppercase', color: '#b44fff', marginBottom: 2 }}>
-        Link de Kahoot
+        Link de Actividad (Kahoot/Ahaslides)
       </div>
       <div style={{ display: 'flex', gap: 6 }}>
         <input
           value={url}
           onChange={e => { setUrl(e.target.value); setSaved(false); }}
-          placeholder="https://kahoot.it/challenge/..."
+          placeholder="https://ahaslides.com/2VKXI"
           style={{ flex: 1, background: '#0a0f1c', border: '1px solid #1a2640', borderRadius: 8, color: '#fff', fontFamily: "'Barlow', sans-serif", fontSize: 12, padding: '8px 10px', outline: 'none' }}
         />
         <button onClick={handleSave} disabled={!url.trim()}
@@ -861,11 +861,9 @@ function KahootControl({ sesionId, sesion }) {
           {saved ? '✓' : 'Enviar'}
         </button>
       </div>
-      {sesion?.kahootUrl && (
-        <div style={{ fontFamily: "'Barlow Condensed', sans-serif", fontSize: 10, color: '#00e676', letterSpacing: 1 }}>
-          ✓ Link activo — los jugadores pueden abrirlo
-        </div>
-      )}
+      <div style={{ fontFamily: "'Barlow Condensed', sans-serif", fontSize: 10, color: '#00e676', letterSpacing: 1 }}>
+        ✓ {sesion?.kahootUrl ? 'Link personalizado activo' : 'Link predefinido (Ahaslides) activo'}
+      </div>
     </div>
   );
 }

@@ -20,7 +20,7 @@ export const CHARLAS = [
       { id: 'mapa',      nombre: 'Mapa del Jugador',      icono: '🗺️', minutos: 17 },
       { id: 'impostor',  nombre: 'El Impostor Emocional', icono: '🃏', minutos: 10 },
       { id: 'rrr',       nombre: 'Rutina RRR',            icono: '⚡', minutos: 15 },
-      { id: 'kahoot',    nombre: 'Kahoot Relámpago',      icono: '🎮', minutos: 5  },
+      { id: 'kahoot',    nombre: 'Kahoot o Ahaslides',    icono: '🎮', minutos: 5  },
       { id: 'checkout',  nombre: 'Check-out 3 Palabras',  icono: '🏁', minutos: 3  },
     ],
   },

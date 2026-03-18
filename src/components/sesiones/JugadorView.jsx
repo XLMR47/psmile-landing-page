@@ -560,7 +560,7 @@ function BloqueRRR({ onGuardar, saving }) {
 // ── Kahoot ────────────────────────────────────────────────────────
 function BloqueKahoot({ sesion }) {
   const [url, setUrl] = useState('');
-  const kahootUrl = sesion?.kahootUrl || '';
+  const kahootUrl = sesion?.kahootUrl || 'https://ahaslides.com/2VKXI';
 
   return (
     <div style={{ textAlign: 'center', paddingTop: 20 }}>
@@ -570,11 +570,11 @@ function BloqueKahoot({ sesion }) {
       {kahootUrl ? (
         <>
           <p style={{ fontSize: 13, color: '#4a6480', fontStyle: 'italic', marginBottom: 20, lineHeight: 1.6 }}>
-            El facilitador activó el Kahoot. Toca para entrar:
+            El facilitador activó la actividad. Toca para entrar:
           </p>
           <a href={kahootUrl} target="_blank" rel="noreferrer"
             style={{ display: 'inline-block', background: 'linear-gradient(135deg,#2e2dff,#b44fff)', color: '#fff', borderRadius: 12, padding: '14px 28px', fontFamily: "'Bebas Neue', sans-serif", fontSize: 20, letterSpacing: 3, textDecoration: 'none', boxShadow: '0 8px 24px rgba(180,79,255,0.35)' }}>
-            ABRIR KAHOOT →
+            ABRIR ACTIVIDAD →
           </a>
         </>
       ) : (
