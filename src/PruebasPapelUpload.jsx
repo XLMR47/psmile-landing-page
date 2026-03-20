@@ -1,9 +1,9 @@
 import { useState, useEffect } from 'react';
 import { ArrowLeft, Save, FileText, Calculator, Check, Loader2, ChevronDown, ChevronUp } from 'lucide-react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
-import { db } from '../firebase';
+import { db } from './firebase';
 import { collection, addDoc, getDocs, query, serverTimestamp } from 'firebase/firestore';
-import { useAuth } from '../contexts/AuthContext';
+import { useAuth } from './contexts/AuthContext';
 import { getUserConfig } from './academyConfig';
 
 // ─── Interpretación Landolt (S = bits/seg) ────────────────────────────────────
