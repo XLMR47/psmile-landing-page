@@ -4,7 +4,7 @@ import { useNavigate, useSearchParams } from 'react-router-dom';
 import { db } from './firebase';
 import { collection, addDoc, getDocs, query, serverTimestamp } from 'firebase/firestore';
 import { useAuth } from './contexts/AuthContext';
-import { getUserConfig } from './academyConfig';
+import { getUserConfig } from './portal/academyConfig';
 
 // ─── Interpretación Landolt (S = bits/seg) ────────────────────────────────────
 function interpretarLandolt(S) {
