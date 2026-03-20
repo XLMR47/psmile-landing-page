@@ -40,7 +40,20 @@ exports.handler = async (event) => {
     // --- CASE 2: AI Analysis ---
     let apiUrl, headers, payload;
 
-    if (model?.startsWith("claude")) {
+    const isClaude = model?.toLowerCase().includes("claude") || model?.toLowerCase().includes("sonnet") || model?.toLowerCase().includes("haiku");
+
+    if (isClaude) {
+      let finalModel = "claude-3-5-sonnet-20241022"; // Default
+      
+      if (model?.includes("haiku")) {
+        finalModel = "claude-3-haiku-20240307";
+      } else if (model?.includes("sonnet") && (model?.includes("4.5") || model?.includes("4"))) {
+        // El usuario pidió específicamente "sonnet 4.5" (asumimos el último modelo disponible o futura actualización)
+        finalModel = "claude-3-7-sonnet-20250219"; 
+      } else if (model?.includes("sonnet")) {
+        finalModel = "claude-3-5-sonnet-20241022";
+      }
+
       apiUrl = "https://api.anthropic.com/v1/messages";
       headers = {
         "x-api-key": process.env.ANTHROPIC_API_KEY,
@@ -48,7 +61,7 @@ exports.handler = async (event) => {
         "Content-Type": "application/json"
       };
       payload = {
-        model: "claude-sonnet-4-20250514",
+        model: finalModel,
         max_tokens: body.max_tokens || 4000,
         system: systemPrompt,
         messages: [{ 

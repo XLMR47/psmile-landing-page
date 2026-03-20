@@ -8,9 +8,10 @@ import { getUserConfig } from './academyConfig';
 import { 
     ArrowLeft, ChevronRight, Activity, Calendar, Download, FileText, User, Plus, Edit2, 
     Check, X, Printer, Brain, BarChart, Zap, Heart, Shield, Upload, Clock, CheckCircle, 
-    Circle, Loader, Trash2, Edit3, Save 
+    Circle, Loader, Trash2, Edit3, Save, FlaskConical, Sparkles 
 } from 'lucide-react';
 import EpsdEliteReport from './EpsdEliteReport';
+import PsicometriaSection from '../PsicometriaSection';
 
 export default function PlayerDetail() {
     const { id } = useParams();
@@ -601,6 +602,25 @@ export default function PlayerDetail() {
                     </div>
                 )}
 
+                {/* Sección de Psicometría */}
+                {!isStaff && (
+                    <div className="mb-12">
+                        <div className="flex items-center justify-between mb-6">
+                            <h3 className="text-xl font-black text-white flex items-center gap-2">
+                                <FlaskConical size={18} className="text-purple-400" />
+                                EVALUACIONES PSICOMÉTRICAS
+                            </h3>
+                            <button
+                                onClick={() => navigate(`/portal/analisis-ia?jugadorId=${id}`)}
+                                className="flex items-center gap-2 text-[10px] font-black tracking-widest uppercase text-purple-400 hover:text-white transition-colors border border-purple-500/30 px-6 py-3 rounded-2xl bg-purple-500/5 hover:bg-purple-500/10"
+                            >
+                                <Sparkles size={12} /> Análisis IA cruzado
+                            </button>
+                        </div>
+                        <PsicometriaSection jugadorId={id} />
+                    </div>
+                )}
+                
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
                     {/* LEFT: Report History */}
                     <div className="lg:col-span-2">

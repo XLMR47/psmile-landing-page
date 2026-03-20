@@ -40,7 +40,8 @@ export const generateGroqAnalysis = async (playerData, evaluationData, historyDa
         TIPO DE REPORTE: ${reportType}
 
         DATOS DEL JUGADOR:
-        - Nombre: ${playerData.nombre} | Posición: ${playerData.posicion} | Categoría: ${playerData.categoria}
+        - Nombre: ${playerData.nombre} | ID Perfil: ${playerData.id || 'N/A'} | Posición: ${playerData.posicion} | Categoría: ${playerData.categoria}
+        - Configuración de Pesos (Importancia por Posición): ${JSON.stringify(playerData.configWeights || "Estándar")}
 
         DATOS CUANTITATIVOS ACTUALES (P2):
         Torneo/Contexto: ${evaluationData.contexto?.torneo || 'Actual'}
@@ -142,10 +143,11 @@ export const generateGroqAnalysis = async (playerData, evaluationData, historyDa
                 "Content-Type": "application/json"
             },
             body: JSON.stringify({
-                systemPrompt: "Eres un generador de informes psicodeportivos de élite en formato JSON.",
+                systemPrompt: "Eres un generador de informes psicodeportivos de élite en formato JSON. Responde solo con JSON.",
                 prompt: prompt,
+                model: "claude-haiku",
                 temperature: 0.5,
-                response_format: { type: "json_object" }
+                max_tokens: 3000
             })
         });
 

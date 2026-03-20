@@ -66,24 +66,24 @@ const POSICIONES = ["ARQ", "DEF", "MC", "DL"];
 
 const DEFAULT_WEIGHT_CONFIG = {
     "ARQ": {
-        "Percepción del entorno": 18, "Toma de decisiones": 20, "Control atencional": 17,
-        "Gestión emocional": 10, "Autodiálogo y enfoque mental": 10, "Autoconfianza y resiliencia": 10,
-        "Comunicación emocional": 8, "Vínculo y cohesión": 3, "Liderazgo emocional": 4
+        "Percepción del entorno": 10, "Toma de decisiones": 10, "Control atencional": 20,
+        "Gestión emocional": 15, "Autodiálogo y enfoque mental": 10, "Autoconfianza y resiliencia": 15,
+        "Comunicación emocional": 12, "Vínculo y cohesión": 3, "Liderazgo emocional": 5
     },
     "DEF": {
-        "Percepción del entorno": 16, "Toma de decisiones": 18, "Control atencional": 14,
-        "Gestión emocional": 10, "Autodiálogo y enfoque mental": 8, "Autoconfianza y resiliencia": 12,
-        "Comunicación emocional": 10, "Vínculo y cohesión": 6, "Liderazgo emocional": 6
+        "Percepción del entorno": 18, "Toma de decisiones": 12, "Control atencional": 15,
+        "Gestión emocional": 8, "Autodiálogo y enfoque mental": 10, "Autoconfianza y resiliencia": 12,
+        "Comunicación emocional": 15, "Vínculo y cohesión": 5, "Liderazgo emocional": 5
     },
     "MC": {
-        "Percepción del entorno": 15, "Toma de decisiones": 20, "Control atencional": 12,
+        "Percepción del entorno": 22, "Toma de decisiones": 20, "Control atencional": 10,
         "Gestión emocional": 8, "Autodiálogo y enfoque mental": 10, "Autoconfianza y resiliencia": 10,
-        "Comunicación emocional": 12, "Vínculo y cohesión": 7, "Liderazgo emocional": 6
+        "Comunicación emocional": 8, "Vínculo y cohesión": 7, "Liderazgo emocional": 5
     },
     "DL": {
-        "Percepción del entorno": 12, "Toma de decisiones": 18, "Control atencional": 12,
-        "Gestión emocional": 10, "Autodiálogo y enfoque mental": 10, "Autoconfianza y resiliencia": 13,
-        "Comunicación emocional": 8, "Vínculo y cohesión": 7, "Liderazgo emocional": 10
+        "Percepción del entorno": 12, "Toma de decisiones": 18, "Control atencional": 10,
+        "Gestión emocional": 10, "Autodiálogo y enfoque mental": 15, "Autoconfianza y resiliencia": 20,
+        "Comunicación emocional": 5, "Vínculo y cohesión": 5, "Liderazgo emocional": 5
     }
 };
 

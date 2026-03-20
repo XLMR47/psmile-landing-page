@@ -42,10 +42,35 @@ export default function EpsdEliteReport({ playerData, evalData, previousEval, ai
 
   const getDomainScore = (evalObj, domainName) => {
     if (!evalObj) return 0;
-    const weights = evalObj.configWeights || {
-      "Percepción del entorno": 15, "Toma de decisiones": 20, "Control atencional": 12,
-      "Gestión emocional": 8, "Autodiálogo y enfoque mental": 10, "Autoconfianza y resiliencia": 10,
-      "Comunicación emocional": 12, "Vínculo y cohesión": 7, "Liderazgo emocional": 6
+    
+    // Tabla oficial de pesos por posición
+    const POSITION_WEIGHTS = {
+      "ARQ": {
+        "Percepción del entorno": 10, "Toma de decisiones": 10, "Control atencional": 20,
+        "Gestión emocional": 15, "Autodiálogo y enfoque mental": 10, "Autoconfianza y resiliencia": 15,
+        "Comunicación emocional": 12, "Vínculo y cohesión": 3, "Liderazgo emocional": 5
+      },
+      "DEF": {
+        "Percepción del entorno": 18, "Toma de decisiones": 12, "Control atencional": 15,
+        "Gestión emocional": 8, "Autodiálogo y enfoque mental": 10, "Autoconfianza y resiliencia": 12,
+        "Comunicación emocional": 15, "Vínculo y cohesión": 5, "Liderazgo emocional": 5
+      },
+      "MC": {
+        "Percepción del entorno": 22, "Toma de decisiones": 20, "Control atencional": 10,
+        "Gestión emocional": 8, "Autodiálogo y enfoque mental": 10, "Autoconfianza y resiliencia": 10,
+        "Comunicación emocional": 8, "Vínculo y cohesión": 7, "Liderazgo emocional": 5
+      },
+      "DL": {
+        "Percepción del entorno": 12, "Toma de decisiones": 18, "Control atencional": 10,
+        "Gestión emocional": 10, "Autodiálogo y enfoque mental": 15, "Autoconfianza y resiliencia": 20,
+        "Comunicación emocional": 5, "Vínculo y cohesión": 5, "Liderazgo emocional": 5
+      }
+    };
+
+    const weights = evalObj.configWeights || POSITION_WEIGHTS[evalObj.posicion] || {
+      "Percepción del entorno": 15, "Toma de decisiones": 15, "Control atencional": 15,
+      "Gestión emocional": 10, "Autodiálogo y enfoque mental": 10, "Autoconfianza y resiliencia": 10,
+      "Comunicación emocional": 10, "Vínculo y cohesión": 8, "Liderazgo emocional": 7
     };
     const structure = {
       "COGNITIVO": ["Percepción del entorno", "Toma de decisiones", "Control atencional"],

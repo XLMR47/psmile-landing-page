@@ -29,6 +29,13 @@ import { LobbyFacilitador, LobbyJugador } from './components/sesiones/SesionLobb
 import FacilitadorPanel from './components/sesiones/FacilitadorPanel';
 import JugadorView from './components/sesiones/JugadorView';
 import Biblioteca from './views/Biblioteca';
+import EpiTest from './EpiTest';
+import MotivacionTest from './MotivacionTest';
+import NivelPreparacionTest from './NivelPreparacionTest';
+import TablaAtencionTest from './TablaAtencionTest';
+import CSAI2Test from './CSAI2Test';
+import TestsHub from './TestsHub';
+import AnalisisIA from './AnalisisIA';
 
 // Landing Page (página pública)
 function LandingPage() {
@@ -128,6 +135,62 @@ function App() {
         element={
           <ProtectedRoute>
             <CharlaAutorregulacion />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/portal/epi"
+        element={
+          <ProtectedRoute>
+            <EpiTest />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/portal/motivacion"
+        element={
+          <ProtectedRoute>
+            <MotivacionTest />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/portal/nivel-preparacion"
+        element={
+          <ProtectedRoute>
+            <NivelPreparacionTest />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/portal/tabla-atencion"
+        element={
+          <ProtectedRoute>
+            <TablaAtencionTest />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/portal/csai2"
+        element={
+          <ProtectedRoute>
+            <CSAI2Test />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/portal/tests"
+        element={
+          <ProtectedRoute>
+            <TestsHub />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/portal/analisis-ia"
+        element={
+          <ProtectedRoute>
+            <AnalisisIA />
           </ProtectedRoute>
         }
       />

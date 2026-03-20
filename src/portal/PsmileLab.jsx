@@ -32,7 +32,7 @@ export default function PsmileLab() {
     const [generatingMaster, setGeneratingMaster] = useState(false);
     const [masterAnalysis, setMasterAnalysis] = useState(null);
     const [aiConfig, setAiConfig] = useState({
-        model: 'llama-3.3-70b-versatile',
+        model: 'claude-sonnet-4.5',
         marcoTeorico: true,
         dimensions: ['Estabilidad Cognitiva', 'Fatiga Neuromuscular']
     });
@@ -608,9 +608,9 @@ export default function PsmileLab() {
                                     value={aiConfig.model}
                                     onChange={(e) => setAiConfig({...aiConfig, model: e.target.value})}
                                 >
-                                    <option value="llama-3.3-70b-versatile">DeepSeek-R1 (Elite Detail)</option>
-                                    <option value="llama-3.1-8b-instant">Llama 3.1 8B (Speed)</option>
-                                    <option value="claude-3-5-sonnet-20241022">Claude 3.5 Sonnet</option>
+                                    <option value="claude-sonnet-4.5">Claude 4.5 Sonnet (Master Detail)</option>
+                                    <option value="claude-haiku">Claude Haiku (Speed Optimization)</option>
+                                    <option value="llama-3.3-70b-versatile">DeepSeek-R1 / Llama 70B</option>
                                 </select>
                                 <ChevronDown size={14} className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-[#bbc9cd]" />
                             </div>

@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { db } from '../firebase';
 import { collection, getDocs, orderBy, query, deleteDoc, doc, where } from 'firebase/firestore';
-import { Brain, LogOut, Plus, Users, Search, Trash2, ShieldCheck, Eye, Building2, Activity, BarChart, FlaskConical, Menu, X, Radio } from 'lucide-react';
+import { Brain, LogOut, Plus, Users, Search, Trash2, ShieldCheck, Eye, Building2, Activity, BarChart, FlaskConical, Menu, X, Radio, Sparkles } from 'lucide-react';
 import PlayerCard from './PlayerCard';
 import AddPlayerModal from './AddPlayerModal';
 import { getUserConfig, ACADEMIAS } from './academyConfig';
@@ -145,6 +145,13 @@ export default function Dashboard() {
                                 >
                                     <Radio size={14} />
                                     Sesión Live
+                                </button>
+                                <button
+                                    onClick={() => navigate('/portal/analisis-ia')}
+                                    className="flex items-center gap-2 bg-[#111827] hover:bg-purple-500/10 border border-white/5 hover:border-purple-500/30 text-[#6B7280] hover:text-purple-400 px-4 py-2 rounded-xl transition-all font-bold text-xs uppercase tracking-widest"
+                                >
+                                    <Sparkles size={14} />
+                                    Análisis IA
                                 </button>
                             </div>
                         )}

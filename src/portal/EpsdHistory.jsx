@@ -341,9 +341,11 @@ export default function EpsdHistory() {
         console.log("DEBUG: Historial encontrado para IA:", historyData.length);
 
         const playerData = {
+            id: selectedEval.jugadorId || 'N/A',
             nombre: realPlayerData?.nombre || selectedEval.nombreJugador || 'Jugador Manual',
             posicion: realPlayerData?.posicion || selectedEval.posicion || selectedEval.contexto?.posicion || 'No especificada',
-            categoria: realPlayerData?.categoria || selectedEval.categoria || selectedEval.contexto?.categoria || 'No especificada'
+            categoria: realPlayerData?.categoria || selectedEval.categoria || selectedEval.contexto?.categoria || 'No especificada',
+            configWeights: selectedEval.configWeights || null
         };
 
         setGeneratingIA(true);
