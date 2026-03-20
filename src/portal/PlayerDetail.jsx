@@ -8,7 +8,7 @@ import { getUserConfig } from './academyConfig';
 import { 
     ArrowLeft, ChevronRight, Activity, Calendar, Download, FileText, User, Plus, Edit2, 
     Check, X, Printer, Brain, BarChart, Zap, Heart, Shield, Upload, Clock, CheckCircle, 
-    Circle, Loader, Trash2, Edit3, Save, FlaskConical, Sparkles 
+    Circle, Loader, Trash2, Edit3, Save, FlaskConical, Sparkles, Target 
 } from 'lucide-react';
 import EpsdEliteReport from './EpsdEliteReport';
 import PsicometriaSection from '../PsicometriaSection';
