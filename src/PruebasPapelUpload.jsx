@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { ArrowLeft, Save, FileText, Calculator, Check, Loader2, ChevronDown, ChevronUp } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { db } from '../firebase';
 import { collection, addDoc, getDocs, query, serverTimestamp } from 'firebase/firestore';
 import { useAuth } from '../contexts/AuthContext';
@@ -37,12 +37,13 @@ const minutoVacio = () => ({ N: '', n: '' });
 
 export default function PruebasPapelUpload() {
     const navigate = useNavigate();
+    const [searchParams] = useSearchParams();
     const { currentUser } = useAuth();
     const userConfig = getUserConfig(currentUser?.email);
     const isAdmin = userConfig?.role === 'admin';
 
     const [listaJugadores, setListaJugadores] = useState([]);
-    const [jugadorId, setJugadorId] = useState('');
+    const [jugadorId, setJugadorId] = useState(searchParams.get('jugadorId') || '');
     const [jugadorManual, setJugadorManual] = useState({ nombre: '' });
     const [fecha, setFecha] = useState(new Date().toISOString().split('T')[0]);
     const [contexto, setContexto] = useState({ torneo: '', rival: '' });

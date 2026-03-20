@@ -12,6 +12,7 @@ import {
 } from 'lucide-react';
 import EpsdEliteReport from './EpsdEliteReport';
 import PsicometriaSection from '../PsicometriaSection';
+import SmartSection from '../components/SmartSection';
 
 export default function PlayerDetail() {
     const { id } = useParams();
@@ -605,19 +606,45 @@ export default function PlayerDetail() {
                 {/* Sección de Psicometría */}
                 {!isStaff && (
                     <div className="mb-12">
-                        <div className="flex items-center justify-between mb-6">
+                        <div className="flex flex-col md:flex-row md:items-center justify-between mb-6 gap-4">
                             <h3 className="text-xl font-black text-white flex items-center gap-2">
                                 <FlaskConical size={18} className="text-purple-400" />
                                 EVALUACIONES PSICOMÉTRICAS
                             </h3>
-                            <button
-                                onClick={() => navigate(`/portal/analisis-ia?jugadorId=${id}`)}
-                                className="flex items-center gap-2 text-[10px] font-black tracking-widest uppercase text-purple-400 hover:text-white transition-colors border border-purple-500/30 px-6 py-3 rounded-2xl bg-purple-500/5 hover:bg-purple-500/10"
-                            >
-                                <Sparkles size={12} /> Análisis IA cruzado
-                            </button>
+                            <div className="flex flex-wrap gap-2">
+                                {isAdmin && (
+                                    <button
+                                        onClick={() => navigate(`/portal/tests?jugadorId=${id}`)}
+                                        className="flex items-center gap-2 text-[10px] font-black tracking-widest uppercase text-white hover:bg-purple-600 transition-colors border border-purple-500/30 px-6 py-3 rounded-2xl bg-purple-600/80"
+                                    >
+                                        <Plus size={12} /> Nueva Evaluación
+                                    </button>
+                                )}
+                                <button
+                                    onClick={() => navigate(`/portal/analisis-ia?jugadorId=${id}`)}
+                                    className="flex items-center gap-2 text-[10px] font-black tracking-widest uppercase text-purple-400 hover:text-white transition-colors border border-purple-500/30 px-6 py-3 rounded-2xl bg-purple-500/5 hover:bg-purple-500/10"
+                                >
+                                    <Sparkles size={12} /> Análisis IA cruzado
+                                </button>
+                            </div>
                         </div>
                         <PsicometriaSection jugadorId={id} />
+                    </div>
+                )}
+
+                {/* Sección de Metas SMART */}
+                {!isStaff && (
+                    <div className="mb-12">
+                         <div className="flex flex-col md:flex-row md:items-center justify-between mb-6 gap-4">
+                            <h3 className="text-xl font-black text-white flex items-center gap-2">
+                                <Target size={18} className="text-[#38BDF8]" />
+                                OBJETIVOS SMART INTEGRADOS
+                            </h3>
+                            <div className="flex items-center gap-2">
+                                <span className="text-[10px] font-black text-[#6B7280] uppercase tracking-widest bg-white/5 px-3 py-1.5 rounded-full border border-white/5">Seguimiento Semanal</span>
+                            </div>
+                        </div>
+                        <SmartSection jugadorId={id} isAdmin={isAdmin} />
                     </div>
                 )}
                 

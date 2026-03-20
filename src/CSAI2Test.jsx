@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { ArrowLeft, ArrowRight, Zap, Check, Loader2 } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { db } from './firebase';
 import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
 import { useAuth } from './contexts/AuthContext';
@@ -90,7 +90,9 @@ const PAGINA_LABELS = [
 
 export default function CSAI2Test() {
     const navigate = useNavigate();
+    const [searchParams] = useSearchParams();
     const { currentUser } = useAuth();
+    const targetJugadorId = searchParams.get('jugadorId') || currentUser?.uid;
 
     const [respuestas, setRespuestas] = useState({});
     const [pagina, setPagina] = useState(0);
@@ -144,8 +146,8 @@ export default function CSAI2Test() {
         setIsSaving(true);
         try {
             await addDoc(collection(db, 'evaluaciones_psicometricas'), {
-                jugadorId: currentUser?.uid || 'desconocido',
-                nombreJugador: currentUser?.displayName || currentUser?.email || '',
+                jugadorId: targetJugadorId || 'desconocido',
+                nombreJugador: targetJugadorId !== currentUser?.uid ? 'Evaluación Admin' : (currentUser?.displayName || currentUser?.email || ''),
                 evaluador: 'self',
                 fecha: new Date().toISOString().split('T')[0],
                 contexto,

@@ -96,13 +96,40 @@ export default function PsmileLab() {
                 }
 
                 const snapEpsd = await getDocs(qEpsd);
-
                 const epsdData = snapEpsd.docs.map(d => ({ 
                     id: d.id, 
                     ...d.data(), 
                     source: 'epsd',
                     displayTitle: 'Evaluación ePsD Elite',
                     date: d.data().timestamp?.toDate ? d.data().timestamp.toDate() : new Date(0)
+                }));
+
+                // Fetch Psicometría (Tests digitales)
+                const qPsic = query(
+                    collection(db, 'evaluaciones_psicometricas'),
+                    where('jugadorId', '==', selectedPlayer.id)
+                );
+                const snapPsic = await getDocs(qPsic);
+                const psicData = snapPsic.docs.map(d => ({
+                    id: d.id,
+                    ...d.data(),
+                    source: 'psicometria',
+                    displayTitle: `Test: ${d.data().instrumento?.nombre || 'Psicometría'}`,
+                    date: d.data().timestamp?.toDate ? d.data().timestamp.toDate() : new Date(0)
+                }));
+
+                // Fetch Metas SMART
+                const qSmart = query(
+                    collection(db, 'metas_smart'),
+                    where('jugadorId', '==', selectedPlayer.id)
+                );
+                const snapSmart = await getDocs(qSmart);
+                const smartData = snapSmart.docs.map(d => ({
+                    id: d.id,
+                    ...d.data(),
+                    source: 'smart',
+                    displayTitle: `Meta SMART: ${d.data().dimension?.toUpperCase()}`,
+                    date: d.data().updatedAt?.toDate ? d.data().updatedAt.toDate() : new Date(0)
                 }));
 
                 const historialData = snapHistorial.docs.map(d => ({ 
@@ -113,7 +140,7 @@ export default function PsmileLab() {
                     date: d.data().createdAt ? new Date(d.data().createdAt) : new Date(0)
                 }));
 
-                const merged = [...epsdData, ...historialData].sort((a, b) => b.date - a.date);
+                const merged = [...epsdData, ...psicData, ...smartData, ...historialData].sort((a, b) => b.date - a.date);
                 
                 setAllReports(merged);
                 setSelectedReports([]); 
@@ -169,20 +196,41 @@ export default function PsmileLab() {
                     if (rep.source === 'epsd') {
                         return {
                             ...base,
-                            data_epsd: {
+                            data: {
                                 contexto: rep.contexto,
                                 respuestas: rep.respuestas,
                                 intervalos: rep.dataIntervalos || null,
                                 aiOriginal: rep.aiAnalysis || null
                             }
                         };
+                    } else if (rep.source === 'psicometria') {
+                        return {
+                            ...base,
+                            data: {
+                                instrumento: rep.instrumento,
+                                puntajes: rep.puntajes,
+                                nivel: rep.nivel,
+                                interpretacion: rep.interpretacion,
+                                respuestasRaw: rep.respuestasRaw
+                            }
+                        };
+                    } else if (rep.source === 'smart') {
+                        return {
+                            ...base,
+                            data: {
+                                dimension: rep.dimension,
+                                meta: rep.meta,
+                                seguimiento: rep.seguimiento,
+                                status: rep.status
+                            }
+                        };
                     } else {
                         return {
                             ...base,
-                            data_externa: {
+                            data: {
                                 titulo_original: rep.titulo,
                                 observaciones: rep.observaciones || "No especificadas",
-                                externalUrl: rep.reporteURL || null
+                                raw: rep.data_externa || rep
                             }
                         };
                     }
@@ -367,18 +415,18 @@ export default function PsmileLab() {
                                     </span>
                                 </div>
                                 <div className="mb-4">
-                                    <h4 className={`font-bold mb-1 ${rep.source === 'epsd' ? 'text-[#8aebff]' : 'text-[#4edea3]'}`}>
+                                    <h4 className={`font-bold mb-1 truncate ${rep.source === 'epsd' ? 'text-[#8aebff]' : rep.source === 'psicometria' ? 'text-purple-400' : rep.source === 'smart' ? 'text-[#38BDF8]' : 'text-[#4edea3]'}`}>
                                         {rep.displayTitle}
                                     </h4>
                                     <p className="text-[10px] text-[#bbc9cd] uppercase tracking-wider">
-                                        {rep.source === 'epsd' ? '🔥 ePsD Elite' : '📄 Psicometría / Notas'}
+                                        {rep.source === 'epsd' ? '🔥 ePsD Elite' : rep.source === 'psicometria' ? '🧠 Psicometría' : rep.source === 'smart' ? '🎯 Metas SMART' : '📄 Notas Externas'}
                                     </p>
                                 </div>
                                 <div className="space-y-2 pt-4 border-t border-[#3c494c]/10">
                                     <div className="flex justify-between text-[10px] uppercase">
                                         <span className="text-[#bbc9cd]">Fuente</span>
-                                        <span className={`font-bold ${rep.source === 'epsd' ? 'text-[#8aebff]' : 'text-[#4edea3]'}`}>
-                                            {rep.source === 'epsd' ? 'EPSD' : 'EXTERNO'}
+                                        <span className={`font-bold ${rep.source === 'epsd' ? 'text-[#8aebff]' : 'text-purple-400'}`}>
+                                            {rep.source.toUpperCase()}
                                         </span>
                                     </div>
                                 </div>

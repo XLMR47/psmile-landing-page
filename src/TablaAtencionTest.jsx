@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { ArrowLeft, Timer, Check, Loader2, Brain } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { db } from './firebase';
 import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
 import { useAuth } from './contexts/AuthContext';
@@ -62,7 +62,9 @@ function etiquetarCurva(m1, m2, m3) {
 
 export default function TablaAtencionTest() {
     const navigate = useNavigate();
+    const [searchParams] = useSearchParams();
     const { currentUser } = useAuth();
+    const targetJugadorId = searchParams.get('jugadorId') || currentUser?.uid;
 
     // Estado general
     const [fase, setFase] = useState('intro'); // intro | test | resultado
@@ -162,8 +164,8 @@ export default function TablaAtencionTest() {
             const curva = etiquetarCurva(m1, m2, m3);
 
             await addDoc(collection(db, 'evaluaciones_psicometricas'), {
-                jugadorId: currentUser?.uid || 'desconocido',
-                nombreJugador: currentUser?.displayName || currentUser?.email || '',
+                jugadorId: targetJugadorId || 'desconocido',
+                nombreJugador: targetJugadorId !== currentUser?.uid ? 'Evaluación Admin' : (currentUser?.displayName || currentUser?.email || ''),
                 evaluador: 'self',
                 fecha: new Date().toISOString().split('T')[0],
                 instrumento: {

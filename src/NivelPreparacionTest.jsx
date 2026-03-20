@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { ArrowLeft, ArrowRight, Target, Check, Loader2 } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { db } from './firebase';
 import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
 import { useAuth } from './contexts/AuthContext';
@@ -58,7 +58,9 @@ const TOTAL_PAGINAS = Math.ceil(ITEMS.length / ITEMS_POR_PAGINA);
 
 export default function NivelPreparacionTest() {
     const navigate = useNavigate();
+    const [searchParams] = useSearchParams();
     const { currentUser } = useAuth();
+    const targetJugadorId = searchParams.get('jugadorId') || currentUser?.uid;
 
     const [respuestas, setRespuestas] = useState({});
     const [pagina, setPagina] = useState(0);
@@ -122,8 +124,8 @@ export default function NivelPreparacionTest() {
             const fortalezas  = puntajes.filter(d => d.puntaje >= 4).map(d => d.label).join(', ');
 
             await addDoc(collection(db, 'evaluaciones_psicometricas'), {
-                jugadorId: currentUser?.uid || 'desconocido',
-                nombreJugador: currentUser?.displayName || currentUser?.email || '',
+                jugadorId: targetJugadorId || 'desconocido',
+                nombreJugador: targetJugadorId !== currentUser?.uid ? 'Evaluación Admin' : (currentUser?.displayName || currentUser?.email || ''),
                 evaluador: 'self',
                 fecha: new Date().toISOString().split('T')[0],
                 contexto: { torneo },

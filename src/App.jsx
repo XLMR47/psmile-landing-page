@@ -36,6 +36,7 @@ import TablaAtencionTest from './TablaAtencionTest';
 import CSAI2Test from './CSAI2Test';
 import TestsHub from './TestsHub';
 import AnalisisIA from './AnalisisIA';
+import PruebasPapelUpload from './PruebasPapelUpload';
 
 // Landing Page (página pública)
 function LandingPage() {
@@ -183,6 +184,14 @@ function App() {
         element={
           <ProtectedRoute>
             <TestsHub />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/portal/pruebas-papel"
+        element={
+          <ProtectedRoute>
+            <PruebasPapelUpload />
           </ProtectedRoute>
         }
       />

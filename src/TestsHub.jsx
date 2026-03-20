@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useAuth } from './contexts/AuthContext';
 import { db } from './firebase';
 import { collection, getDocs, query, where, orderBy } from 'firebase/firestore';
@@ -79,20 +79,24 @@ function etiquetaDimension(dim) {
 
 export default function TestsHub() {
     const navigate = useNavigate();
+    const [searchParams] = useSearchParams();
     const { currentUser } = useAuth();
+    
+    // Si viene jugadorId en la URL, lo usamos (para administradores)
+    const targetJugadorId = searchParams.get('jugadorId') || currentUser?.uid;
 
     const [completados, setCompletados] = useState({}); // { instrumento_id: { fecha, nivel } }
     const [loading, setLoading] = useState(true);
 
-    // Cargar resultados previos del jugador
+    // Cargar resultados previos del jugador objetivo
     useEffect(() => {
-        if (!currentUser) return;
+        if (!targetJugadorId) return;
         const cargar = async () => {
             setLoading(true);
             try {
                 const q = query(
                     collection(db, 'evaluaciones_psicometricas'),
-                    where('jugadorId', '==', currentUser.uid),
+                    where('jugadorId', '==', targetJugadorId),
                     orderBy('timestamp', 'desc')
                 );
                 const snap = await getDocs(q);
@@ -247,7 +251,7 @@ export default function TestsHub() {
                                         {/* Botón */}
                                         <div className="mt-4">
                                             <button
-                                                onClick={() => navigate(test.ruta)}
+                                                onClick={() => navigate(`${test.ruta}?jugadorId=${targetJugadorId}`)}
                                                 style={{
                                                     backgroundColor: completado ? 'rgba(255,255,255,0.05)' : test.color + '20',
                                                     borderColor: completado ? 'rgba(255,255,255,0.1)' : test.color + '60',
@@ -273,10 +277,10 @@ export default function TestsHub() {
                     </p>
                     <div className="flex flex-wrap gap-3">
                         <button
-                            onClick={() => navigate('/portal/pruebas-papel')}
-                            className="flex items-center gap-2 px-4 py-2.5 bg-white/5 border border-white/10 rounded-xl text-xs font-black uppercase tracking-widest text-[#6B7280] hover:text-white hover:border-white/20 transition-all"
+                            onClick={() => navigate(`/portal/pruebas-papel?jugadorId=${targetJugadorId}`)}
+                            className="bg-[#38BDF8] hover:bg-[#29ABE2] text-black px-6 py-3 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all"
                         >
-                            <FileText size={13} /> Tapping + Landolt
+                            Cargar resultados papel
                         </button>
                         <button
                             onClick={() => navigate('/portal/psicometria')}

@@ -1,57 +1,31 @@
 // netlify/functions/analyze.js
-// Netlify Function to proxy Groq API calls and fetch HTML content without CORS issues.
+// Proxy para APIs de IA (Anthropic y Groq) optimizado para datos directos de Firebase.
+
+const Anthropic = require('@anthropic-ai/sdk');
 
 exports.handler = async (event) => {
-  // Only allow POST requests
   if (event.httpMethod !== 'POST') {
     return { statusCode: 405, body: 'Method Not Allowed' };
   }
 
   try {
     const body = JSON.parse(event.body);
-    const { systemPrompt, userPrompt, prompt, model, fetchUrl, temperature, response_format } = body;
+    const { systemPrompt, userPrompt, prompt, model, temperature, response_format } = body;
 
-    // --- CASE 1: Fetch HTML Content (CORS Proxy) ---
-    if (body.fetchUrl) {
-      try {
-        const response = await fetch(body.fetchUrl);
-        let html = await response.text();
-        
-        html = html
-            .replace(/<style[^>]*>[\s\S]*?<\/style>/gi, '')
-            .replace(/<script[^>]*>[\s\S]*?<\/script>/gi, '')
-            .replace(/<[^>]+>/g, ' ')
-            .replace(/\s+/g, ' ')
-            .trim();
-
-        return {
-            statusCode: 200,
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ htmlContent: html })
-        };
-      } catch (e) {
-        return {
-          statusCode: 500,
-          body: JSON.stringify({ error: "Error al leer documento remoto: " + e.message })
-        };
-      }
+    if (!model) {
+      return { statusCode: 400, body: JSON.stringify({ error: "El modelo es requerido" }) };
     }
 
-    // --- CASE 2: AI Analysis ---
     let apiUrl, headers, payload;
-
-    const isClaude = model?.toLowerCase().includes("claude") || model?.toLowerCase().includes("sonnet") || model?.toLowerCase().includes("haiku");
+    const isClaude = model.toLowerCase().includes("claude") || model.toLowerCase().includes("sonnet") || model.toLowerCase().includes("haiku");
 
     if (isClaude) {
       let finalModel = "claude-3-5-sonnet-20241022"; // Default
       
-      if (model?.includes("haiku")) {
-        finalModel = "claude-3-haiku-20240307";
-      } else if (model?.includes("sonnet") && (model?.includes("4.5") || model?.includes("4"))) {
-        // El usuario pidió específicamente "sonnet 4.5" (asumimos el último modelo disponible o futura actualización)
+      if (model.includes("haiku")) {
+        finalModel = "claude-3-5-haiku-20241022";
+      } else if (model.includes("sonnet") && (model.includes("4.5") || model.includes("4") || model.includes("3.7"))) {
         finalModel = "claude-3-7-sonnet-20250219"; 
-      } else if (model?.includes("sonnet")) {
-        finalModel = "claude-3-5-sonnet-20241022";
       }
 
       apiUrl = "https://api.anthropic.com/v1/messages";
@@ -66,16 +40,13 @@ exports.handler = async (event) => {
         system: systemPrompt,
         messages: [{ 
             role: "user", 
-            content: (userPrompt || prompt) + "\n\nIMPORTANT: Respond with raw JSON only. No markdown, no ```json fences, no explanation. Just the JSON object."
+            content: (userPrompt || prompt) + "\n\nIMPORTANT: Respond with raw JSON only. No markdown fences. Just the JSON object."
         }]
       };
     } else {
       const GROQ_API_KEY = process.env.GROQ_API_KEY;
       if (!GROQ_API_KEY) {
-        return { 
-          statusCode: 500, 
-          body: JSON.stringify({ error: "GROQ_API_KEY no configurada en el servidor." }) 
-        };
+        return { statusCode: 500, body: JSON.stringify({ error: "GROQ_API_KEY no configurada" }) };
       }
       apiUrl = "https://api.groq.com/openai/v1/chat/completions";
       headers = {
@@ -86,7 +57,7 @@ exports.handler = async (event) => {
         model: model || "llama-3.3-70b-versatile",
         messages: systemPrompt ? [{role:"system", content:systemPrompt}, {role:"user", content:userPrompt||prompt}] : [{role:"user", content:userPrompt||prompt}],
         temperature: temperature !== undefined ? temperature : 0.2,
-        max_tokens: body.max_tokens,
+        max_tokens: body.max_tokens || 4000,
         response_format: response_format || { type: "json_object" }
       };
     }
@@ -98,19 +69,19 @@ exports.handler = async (event) => {
     });
 
     const data = await aiResponse.json();
-    
+
     if (!aiResponse.ok) {
-        return {
-            statusCode: aiResponse.status,
-            body: JSON.stringify({ error: data.error?.message || data.error || "Error en AI API" })
-        };
+      return {
+        statusCode: aiResponse.status,
+        body: JSON.stringify({ error: data.error?.message || data.error || "Error en AI API" })
+      };
     }
 
     let content;
-    if (model?.startsWith("claude")) {
-        content = data.content?.[0]?.text;
+    if (isClaude) {
+      content = data.content?.[0]?.text;
     } else {
-        content = data.choices?.[0]?.message?.content;
+      content = data.choices?.[0]?.message?.content;
     }
 
     return {
@@ -120,6 +91,7 @@ exports.handler = async (event) => {
     };
 
   } catch (error) {
+    console.error("Error en analyze function:", error);
     return {
       statusCode: 500,
       body: JSON.stringify({ error: error.message })
