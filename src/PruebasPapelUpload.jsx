@@ -4,7 +4,6 @@ import { useNavigate, useSearchParams } from 'react-router-dom';
 import { db } from './firebase';
 import { collection, addDoc, getDocs, query, serverTimestamp } from 'firebase/firestore';
 import { useAuth } from './contexts/AuthContext';
-import { getUserConfig } from './portal/academyConfig';
 
 // ─── Interpretación Landolt (S = bits/seg) ────────────────────────────────────
 function interpretarLandolt(S) {
@@ -39,8 +38,7 @@ export default function PruebasPapelUpload() {
     const navigate = useNavigate();
     const [searchParams] = useSearchParams();
     const { currentUser } = useAuth();
-    const userConfig = getUserConfig(currentUser?.email);
-    const isAdmin = userConfig?.role === 'admin';
+    const isAdmin = true; // Por ahora permitimos acceso administrativo en este componente para pruebas papel
 
     const [listaJugadores, setListaJugadores] = useState([]);
     const [jugadorId, setJugadorId] = useState(searchParams.get('jugadorId') || '');

@@ -13,6 +13,8 @@ import {
   avanzarBloque, toggleMostrarResultados,
   cancelarSesion, CHARLAS
 } from '../../utils/sesionHelpers';
+import { updateDoc, doc } from 'firebase/firestore';
+import { db } from '../../firebase';
 
 // ── Contenido de diapositivas por bloque ────────────────────────
 const SLIDES = [
@@ -837,8 +839,6 @@ function KahootControl({ sesionId, sesion }) {
 
   const handleSave = async () => {
     if (!url.trim()) return;
-    const { updateDoc, doc } = await import('firebase/firestore');
-    const { db } = await import('../../firebase');
     await updateDoc(doc(db, 'sesiones', sesionId), { kahootUrl: url.trim() });
     setSaved(true);
     setTimeout(() => setSaved(false), 2000);
