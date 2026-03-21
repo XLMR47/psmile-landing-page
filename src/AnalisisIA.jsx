@@ -274,7 +274,7 @@ export default function AnalisisIA() {
                                 Análisis clínico cruzado
                             </h1>
                             <p className="text-[#6B7280] text-sm mt-0.5">
-                                ePsD + Psicometría → Diagnóstico integrado por Claude IA
+                                ePsD + Psicometría
                             </p>
                         </div>
                     </div>

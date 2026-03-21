@@ -4,8 +4,8 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { db } from '../firebase';
-import { doc, getDoc, collection, getDocs, orderBy, query } from 'firebase/firestore';
-import { Brain, ArrowLeft, CheckCircle2, Clock, Lock, PlayCircle, ChevronRight } from 'lucide-react';
+import { doc, getDoc, collection, getDocs, orderBy, query, where } from 'firebase/firestore';
+import { Brain, ArrowLeft, CheckCircle2, Clock, Lock, PlayCircle, ChevronRight, AlertCircle, ArrowRight, FlaskConical } from 'lucide-react';
 
 // Catálogo de sesiones disponibles — agrega aquí las futuras
 const SESIONES_CATALOGO = [
@@ -27,6 +27,7 @@ export default function PlayerSesiones() {
   const navigate = useNavigate();
   const [jugador, setJugador] = useState(null);
   const [sesionesCompletadas, setSesionesCompletadas] = useState({});
+  const [pendingTests, setPendingTests] = useState([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -46,6 +47,16 @@ export default function PlayerSesiones() {
           completadas[d.data().sesionId] = d.data();
         });
         setSesionesCompletadas(completadas);
+
+        // Tests pendientes
+        const pendingSnap = await getDocs(
+          query(
+            collection(db, 'tests_asignados'),
+            where('jugadorId', '==', id),
+            where('estado', '==', 'pendiente')
+          )
+        );
+        setPendingTests(pendingSnap.docs.map(d => ({ id: d.id, ...d.data() })));
       } catch (err) {
         console.error('Error:', err);
       } finally {
@@ -104,6 +115,42 @@ export default function PlayerSesiones() {
             </div>
           </div>
         </div>
+
+        {/* Evaluaciones Pendientes */}
+        {pendingTests.length > 0 && (
+          <div className="mb-10 animate-in fade-in slide-in-from-top-4 duration-700">
+            <div className="flex items-center gap-2 mb-4">
+              <AlertCircle className="text-[#F59E0B]" size={18} />
+              <h3 className="text-sm font-black text-white uppercase tracking-widest">Evaluaciones Pendientes</h3>
+            </div>
+            <div className="grid grid-cols-1 gap-4">
+              {pendingTests.map(test => (
+                <button
+                  key={test.id}
+                  onClick={() => navigate(`/portal/${test.testId}?jugadorId=${id}&asignadoId=${test.id}`)}
+                  className="group relative bg-[#111827] border border-[#F59E0B]/30 hover:border-[#F59E0B] rounded-2xl p-5 text-left transition-all hover:scale-[1.01] shadow-xl shadow-orange-500/5 flex items-center justify-between"
+                >
+                  <div className="flex items-center gap-4">
+                    <div className="w-12 h-12 bg-[#F59E0B]/10 rounded-xl border border-[#F59E0B]/20 flex items-center justify-center shrink-0">
+                      <FlaskConical className="text-[#F59E0B]" size={20} />
+                    </div>
+                    <div>
+                      <h4 className="text-sm font-bold text-white uppercase">
+                        Test Pendiente: {test.testId.replace(/_/g, ' ')}
+                      </h4>
+                      <p className="text-[10px] text-[#6B7280] uppercase font-bold tracking-widest mt-0.5">
+                        Asignado recientemente
+                      </p>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-2 text-[#F59E0B] text-[10px] font-black uppercase tracking-widest pr-2">
+                    Comenzar <ArrowRight size={14} className="group-hover:translate-x-1 transition-transform" />
+                  </div>
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
 
         {/* Título sección */}
         <div className="flex items-center gap-2 mb-4">

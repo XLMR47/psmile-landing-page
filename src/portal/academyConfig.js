@@ -16,14 +16,14 @@ export const ACADEMY_CONFIG = {
 
     // DT de Academia Bewe
     'bewe@psmile.cl': {
-        role: 'dt',
+        role: 'admin',
         academiaId: 'bewe',
         academiaName: 'Academia Bewe',
     },
 
     // DT de Neurosport
     'neurosport@psmile.cl': {
-        role: 'dt',
+        role: 'admin',
         academiaId: 'neurosport',
         academiaName: 'Neurosport',
     },

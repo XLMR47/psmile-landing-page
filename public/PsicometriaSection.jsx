@@ -192,11 +192,10 @@ export default function PsicometriaSection({ jugadorId }) {
                                         if (N !== null && E !== null) evTemperamento = tipoTemperamento(N, E);
                                     }
 
-                                    // ── FIX Error 2: no mostrar recomendacion si es duplicado ──
-                                    // Mantengo mi lógica de deduplicación mejorada
-                                    const mostrarRecomendacion = ev.recomendacion 
-                                         && ev.recomendacion.trim() !== ev.interpretacion?.trim() 
-                                         && !ev.interpretacion?.includes(ev.recomendacion.slice(0, 50));
+                                    // ── FIX Error 2: no mostrar recomendacion si es igual a interpretacion ──
+                                    const mostrarRecomendacion = ev.recomendacion
+                                        && ev.recomendacion.trim() !== ''
+                                        && ev.recomendacion.trim() !== ev.interpretacion?.trim();
 
                                     return (
                                         <div
@@ -272,7 +271,7 @@ export default function PsicometriaSection({ jugadorId }) {
                                                 </p>
                                             )}
 
-                                            {/* Recomendación (solo si no es duplicado) */}
+                                            {/* ── FIX Error 2: solo mostrar recomendacion si es diferente a interpretacion ── */}
                                             {mostrarRecomendacion && (
                                                 <div className="mt-2 flex items-start gap-2">
                                                     <div className="w-1.5 h-1.5 rounded-full mt-1.5 shrink-0" style={{ backgroundColor: cfg.color }} />

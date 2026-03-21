@@ -8,7 +8,7 @@ import { getUserConfig } from './academyConfig';
 import { 
     ArrowLeft, ChevronRight, Activity, Calendar, Download, FileText, User, Plus, Edit2, 
     Check, X, Printer, Brain, BarChart, Zap, Heart, Shield, Upload, Clock, CheckCircle, 
-    Circle, Loader, Trash2, Edit3, Save, FlaskConical, Sparkles, Target, Lock
+    Circle, Loader, Trash2, Edit3, Save, FlaskConical, Sparkles, Target, Lock, AlertCircle, ArrowRight
 } from 'lucide-react';
 import EpsdEliteReport from './EpsdEliteReport';
 import PsicometriaSection from '../PsicometriaSection';
@@ -20,7 +20,7 @@ export default function PlayerDetail() {
     const navigate = useNavigate();
     const { currentUser } = useAuth();
     const userConfig = getUserConfig(currentUser?.email);
-    const isAdmin = userConfig.role === 'admin';
+    const isAdmin = userConfig.role === 'admin' || userConfig.role === 'dt';
 
     const [player, setPlayer] = useState(null);
     const [loading, setLoading] = useState(true);
@@ -58,6 +58,7 @@ export default function PlayerDetail() {
     // Test assignment logic
     const [showAsignarTest, setShowAsignarTest] = useState(false);
     const [testSeleccionado, setTestSeleccionado] = useState('');
+    const [pendingTests, setPendingTests] = useState([]);
 
     const TESTS_DISPONIBLES = [
         { id: 'epi', nombre: 'EPI — Personalidad' },
@@ -79,6 +80,7 @@ export default function PlayerDetail() {
             });
             setShowAsignarTest(false);
             setTestSeleccionado('');
+            await fetchPendingTests();
             alert('✅ Test asignado al jugador');
         } catch (err) {
             console.error('Error al asignar test:', err);
@@ -163,11 +165,26 @@ export default function PlayerDetail() {
         }
     };
 
+    const fetchPendingTests = async () => {
+        try {
+            const q = query(
+                collection(db, 'tests_asignados'),
+                where('jugadorId', '==', id),
+                where('estado', '==', 'pendiente')
+            );
+            const snap = await getDocs(q);
+            setPendingTests(snap.docs.map(d => ({ id: d.id, ...d.data() })));
+        } catch (err) {
+            console.error("Error fetching pending tests:", err);
+        }
+    };
+
     useEffect(() => {
         fetchPlayer();
         fetchReportes();
         fetchSesiones();
         fetchEvalsEpsd();
+        fetchPendingTests();
     }, [id]);
 
     const handleSave = async () => {
@@ -504,6 +521,42 @@ export default function PlayerDetail() {
                         </div>
                     </div>
                 </div>
+
+                {/* Tests Pendientes - NEW SECTION */}
+                {pendingTests.length > 0 && (
+                    <div className="mb-12 animate-in fade-in slide-in-from-top-4 duration-700">
+                        <div className="flex items-center gap-2 mb-4">
+                            <AlertCircle className="text-[#F59E0B]" size={18} />
+                            <h3 className="text-sm font-black text-white uppercase tracking-widest">Evaluaciones Pendientes</h3>
+                        </div>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            {pendingTests.map(test => (
+                                <button
+                                    key={test.id}
+                                    onClick={() => navigate(`/portal/${test.testId}?jugadorId=${id}&asignadoId=${test.id}`)}
+                                    className="group relative bg-gradient-to-br from-[#111827] to-[#0A0F1E] border border-[#F59E0B]/30 hover:border-[#F59E0B] rounded-[2rem] p-6 text-left transition-all hover:scale-[1.02] shadow-xl shadow-orange-500/5 flex items-center justify-between"
+                                >
+                                    <div className="flex items-center gap-5">
+                                        <div className="w-14 h-14 bg-[#F59E0B]/10 rounded-2xl border border-[#F59E0B]/20 flex items-center justify-center shrink-0">
+                                            <FlaskConical className="text-[#F59E0B]" size={28} />
+                                        </div>
+                                        <div>
+                                            <h4 className="text-white text-lg font-black uppercase tracking-tight">
+                                                {TESTS_DISPONIBLES.find(t => t.id === test.testId)?.nombre || test.testId}
+                                            </h4>
+                                            <p className="text-[#6B7280] text-[10px] font-black uppercase tracking-widest mt-1">
+                                                Acción requerida inmediata
+                                            </p>
+                                        </div>
+                                    </div>
+                                    <div className="flex items-center gap-2 text-[#F59E0B] text-xs font-black uppercase tracking-widest pr-4">
+                                        Comenzar <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform" />
+                                    </div>
+                                </button>
+                            ))}
+                        </div>
+                    </div>
+                )}
                 
                 {/* ePsD Elite Analysis Section - MOVED TO TOP */}
                 {!isStaff && (
