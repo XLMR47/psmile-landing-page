@@ -2,7 +2,7 @@ import { useState, useEffect, useRef, useCallback } from 'react';
 import { ArrowLeft, Timer, Check, Loader2, Brain } from 'lucide-react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { db } from './firebase';
-import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
+import { collection, addDoc, serverTimestamp, updateDoc, doc } from 'firebase/firestore';
 import { useAuth } from './contexts/AuthContext';
 
 // ─── 4 grillas (números 1-38 en distinto orden) ───────────────────────────────
@@ -178,9 +178,21 @@ export default function TablaAtencionTest() {
                 puntajes: { minuto1: m1, minuto2: m2, minuto3: m3, total },
                 nivel: curva.label,
                 interpretacion: `Concentración en minuto 1: ${m1} números. Minuto 2: ${m2}. Minuto 3: ${m3}. Total: ${total}/38. Patrón: ${curva.label} — ${curva.desc || ''}`,
-                recomendacion: '',
                 timestamp: serverTimestamp(),
             });
+
+            // Actualizar estado del test asignado
+            const asignadoId = searchParams.get('asignadoId');
+            if (asignadoId) {
+                try {
+                    await updateDoc(doc(db, 'tests_asignados', asignadoId), {
+                        estado: 'completado',
+                        completadoEn: serverTimestamp()
+                    });
+                } catch (err) {
+                    console.error("Error actualizando estado del test:", err);
+                }
+            }
             setShowSuccess(true);
         } catch (err) {
             console.error(err);

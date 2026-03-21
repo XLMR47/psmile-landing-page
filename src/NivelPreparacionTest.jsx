@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { ArrowLeft, ArrowRight, Target, Check, Loader2 } from 'lucide-react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { db } from './firebase';
-import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
+import { collection, addDoc, serverTimestamp, updateDoc, doc } from 'firebase/firestore';
 import { useAuth } from './contexts/AuthContext';
 
 // ─── 25 ítems con clave de corrección ─────────────────────────────────────────
@@ -143,6 +143,19 @@ export default function NivelPreparacionTest() {
                 respuestasRaw: respuestas,
                 timestamp: serverTimestamp(),
             });
+
+            // Status update for assigned tests
+            const asignadoId = searchParams.get('asignadoId');
+            if (asignadoId) {
+                try {
+                    await updateDoc(doc(db, 'tests_asignados', asignadoId), {
+                        estado: 'completado',
+                        completadoEn: serverTimestamp()
+                    });
+                } catch (err) {
+                    console.error("Error updating test status:", err);
+                }
+            }
 
             localStorage.removeItem('nsp_respuestas');
             setShowSuccess(true);

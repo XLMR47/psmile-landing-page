@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { ArrowLeft, ArrowRight, Brain, Check, Loader2, AlertTriangle } from 'lucide-react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { db } from './firebase';
-import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
+import { collection, addDoc, serverTimestamp, updateDoc, doc } from 'firebase/firestore';
 import { useAuth } from './contexts/AuthContext';
 
 // ─── 57 preguntas del EPI Forma B ────────────────────────────────────────────
@@ -174,7 +174,7 @@ export default function EpiTest() {
             await addDoc(collection(db, 'evaluaciones_psicometricas'), {
                 jugadorId: targetJugadorId || 'desconocido',
                 nombreJugador: targetJugadorId !== currentUser?.uid ? 'Evaluación Admin' : (currentUser?.displayName || currentUser?.email || ''),
-                evaluador: 'self', // el propio jugador
+                evaluador: 'self',
                 fecha: new Date().toISOString().split('T')[0],
                 instrumento: { id: 'epi', nombre: 'EPI - Inventario de Personalidad de Eysenck', tipo: 'digital' },
                 dimension: 'EMOCIONAL',
@@ -187,6 +187,20 @@ export default function EpiTest() {
                 respuestasRaw: respuestas,
                 timestamp: serverTimestamp(),
             });
+
+            // Si venía de una asignación, marcar como completado
+            const asignadoId = searchParams.get('asignadoId');
+            if (asignadoId) {
+                try {
+                    await updateDoc(doc(db, 'tests_asignados', asignadoId), {
+                        estado: 'completado',
+                        completadoEn: serverTimestamp()
+                    });
+                } catch (err) {
+                    console.error("Error actualizando estado del test:", err);
+                }
+            }
+
             localStorage.removeItem('epi_respuestas');
             setShowSuccess(true);
         } catch (err) {

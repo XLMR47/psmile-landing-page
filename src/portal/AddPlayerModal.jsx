@@ -88,8 +88,9 @@ export default function AddPlayerModal({ isOpen, onClose, onPlayerAdded }) {
                 playerData.categoria = formData.categoria;
             } else {
                 playerData.cargo = formData.cargo;
-                if (formData.pin) playerData.pin = formData.pin;
             }
+
+            if (formData.pin) playerData.pin = formData.pin;
 
             const playerDoc = await addDoc(collection(db, 'jugadores'), playerData);
 
@@ -259,21 +260,25 @@ export default function AddPlayerModal({ isOpen, onClose, onPlayerAdded }) {
                                     </button>
                                 ))}
                             </div>
-                            <div className="mt-4">
-                                <label className="block text-[10px] font-bold text-[#6B7280] tracking-[0.2em] uppercase mb-2">
-                                    Contraseña de Acceso (Opcional)
-                                </label>
-                                <input
-                                    type="text"
-                                    value={formData.pin || ''}
-                                    onChange={(e) => setFormData({ ...formData, pin: e.target.value })}
-                                    className="w-full bg-[#0A0F1E] border border-white/10 rounded-xl px-4 py-3 text-white text-sm placeholder-white/20 outline-none focus:border-[#F59E0B] transition-colors"
-                                    placeholder="Ej: dtbewe"
-                                />
-                                <p className="text-[10px] text-[#4B5563] mt-1.5">Si estableces una contraseña, se pedirá al intentar ver este perfil.</p>
-                            </div>
                         </div>
                     )}
+
+                    {/* Contraseña de Acceso (Común para ambos) */}
+                    <div>
+                        <label className="block text-[10px] font-bold text-[#6B7280] tracking-[0.2em] uppercase mb-2">
+                            Contraseña de Acceso (Pin de Privacidad)
+                        </label>
+                        <input
+                            type="password"
+                            value={formData.pin || ''}
+                            onChange={(e) => setFormData({ ...formData, pin: e.target.value })}
+                            className="w-full bg-[#0A0F1E] border border-white/10 rounded-xl px-4 py-3 text-white text-sm placeholder-white/20 outline-none focus:border-[#F59E0B] transition-colors"
+                            placeholder="Ej: 1234"
+                        />
+                        <p className="text-[10px] text-[#4B5563] mt-1.5 font-medium">
+                            Si se establece, se pedirá esta clave para ver el perfil por seguridad.
+                        </p>
+                    </div>
 
                     {/* Upload Foto */}
                     <div>

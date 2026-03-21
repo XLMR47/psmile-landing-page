@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { db } from '../firebase';
 import { collection, getDocs, orderBy, query, deleteDoc, doc, where } from 'firebase/firestore';
-import { Brain, LogOut, Plus, Users, Search, Trash2, ShieldCheck, Eye, Building2, Activity, BarChart, FlaskConical, Menu, X, Radio, Sparkles } from 'lucide-react';
+import { Brain, LogOut, Plus, Users, Search, Trash2, ShieldCheck, Eye, Building2, Activity, BarChart, FlaskConical, Menu, X, Radio, Sparkles, AlertCircle, ArrowRight } from 'lucide-react';
 import PlayerCard from './PlayerCard';
 import AddPlayerModal from './AddPlayerModal';
 import { getUserConfig, ACADEMIAS } from './academyConfig';
@@ -24,6 +24,7 @@ export default function Dashboard() {
     const [filterAcademia, setFilterAcademia] = useState('Todas');
     const [deleteConfirm, setDeleteConfirm] = useState(null);
     const [showMobileMenu, setShowMobileMenu] = useState(false);
+    const [pendingTests, setPendingTests] = useState([]);
 
     const categorias = ['Todas', 'Sub-13', 'Sub-15', 'Sub-17', 'Sub-20'];
 
@@ -58,7 +59,24 @@ export default function Dashboard() {
 
     useEffect(() => {
         fetchPlayers();
-    }, []);
+        // Cargar tests pendientes para el jugador (si aplica)
+        const fetchPending = async () => {
+            if (!currentUser) return;
+            try {
+                // Buscamos tests asignados a este UID
+                const q = query(
+                    collection(db, 'tests_asignados'),
+                    where('jugadorId', '==', currentUser.uid),
+                    where('estado', '==', 'pendiente')
+                );
+                const snap = await getDocs(q);
+                setPendingTests(snap.docs.map(d => ({ id: d.id, ...d.data() })));
+            } catch (err) {
+                console.error("Error cargando tests pendientes:", err);
+            }
+        };
+        fetchPending();
+    }, [currentUser]);
 
     const handleLogout = async () => {
         try {
@@ -290,6 +308,38 @@ export default function Dashboard() {
 
             {/* Main Content */}
             <main className="container mx-auto px-6 lg:px-12 py-8">
+                
+                {/* Pending Tests Section (For Players) */}
+                {pendingTests.length > 0 && (
+                    <div className="mb-10 animate-in fade-in slide-in-from-top-4 duration-700">
+                        <div className="flex items-center gap-2 mb-4">
+                            <AlertCircle className="text-[#F59E0B]" size={18} />
+                            <h3 className="text-xs font-black text-white uppercase tracking-widest">Tienes evaluanciones pendientes</h3>
+                        </div>
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                            {pendingTests.map(test => (
+                                <button
+                                    key={test.id}
+                                    onClick={() => navigate(`/portal/${test.testId}?jugadorId=${currentUser.uid}&asignadoId=${test.id}`)}
+                                    className="group relative bg-gradient-to-br from-[#111827] to-[#0A0F1E] border border-[#F59E0B]/30 hover:border-[#F59E0B] rounded-2xl p-5 text-left transition-all hover:scale-[1.02] shadow-xl shadow-orange-500/5"
+                                >
+                                    <div className="flex justify-between items-start mb-4">
+                                        <div className="p-2.5 bg-[#F59E0B]/10 rounded-xl border border-[#F59E0B]/20">
+                                            <Brain className="text-[#F59E0B]" size={20} />
+                                        </div>
+                                        <span className="text-[9px] font-black text-[#F59E0B] bg-[#F59E0B]/10 px-2 py-0.5 rounded-full uppercase tracking-widest">Pendiente</span>
+                                    </div>
+                                    <h4 className="text-sm font-black text-white uppercase mb-1">{test.testId.replace('_', ' ')}</h4>
+                                    <p className="text-[10px] text-[#6B7280] uppercase font-bold tracking-widest mb-4">Asignado: {new Date(test.timestamp).toLocaleDateString()}</p>
+                                    <div className="flex items-center gap-2 text-[#F59E0B] text-[10px] font-black uppercase tracking-widest">
+                                        Comenzar ahora <ArrowRight size={12} className="group-hover:translate-x-1 transition-transform" />
+                                    </div>
+                                </button>
+                            ))}
+                        </div>
+                    </div>
+                )}
+
                 {/* Title + Stats */}
                 <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-6 mb-8">
                     <div>

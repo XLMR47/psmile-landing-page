@@ -8,11 +8,12 @@ import { getUserConfig } from './academyConfig';
 import { 
     ArrowLeft, ChevronRight, Activity, Calendar, Download, FileText, User, Plus, Edit2, 
     Check, X, Printer, Brain, BarChart, Zap, Heart, Shield, Upload, Clock, CheckCircle, 
-    Circle, Loader, Trash2, Edit3, Save, FlaskConical, Sparkles, Target 
+    Circle, Loader, Trash2, Edit3, Save, FlaskConical, Sparkles, Target, Lock
 } from 'lucide-react';
 import EpsdEliteReport from './EpsdEliteReport';
 import PsicometriaSection from '../PsicometriaSection';
 import SmartSection from '../components/SmartSection';
+import PinModal from './PinModal';
 
 export default function PlayerDetail() {
     const { id } = useParams();
@@ -28,6 +29,8 @@ export default function PlayerDetail() {
     const [saving, setSaving] = useState(false);
     const [selectedEpsd, setSelectedEpsd] = useState(null);
     const [pinAuthenticated, setPinAuthenticated] = useState(false);
+    const [showEditPin, setShowEditPin] = useState(false);
+    const [newPin, setNewPin] = useState('');
 
     // Reports
     const [reportes, setReportes] = useState([]);
@@ -51,6 +54,37 @@ export default function PlayerDetail() {
 
     // ePsD Evaluations for this player
     const [evalsEpsd, setEvalsEpsd] = useState([]);
+    
+    // Test assignment logic
+    const [showAsignarTest, setShowAsignarTest] = useState(false);
+    const [testSeleccionado, setTestSeleccionado] = useState('');
+
+    const TESTS_DISPONIBLES = [
+        { id: 'epi', nombre: 'EPI — Personalidad' },
+        { id: 'motivacion', nombre: 'Cualidades Motivacionales' },
+        { id: 'csai2', nombre: 'CSAI-2 — Ansiedad' },
+        { id: 'nivel_preparacion', nombre: 'Nivel de Preparación' },
+        { id: 'tabla_atencion', nombre: 'Tabla de Atención' },
+    ];
+
+    const asignarTest = async () => {
+        if (!testSeleccionado) return;
+        try {
+            await addDoc(collection(db, 'tests_asignados'), {
+                jugadorId: id,
+                testId: testSeleccionado,
+                estado: 'pendiente',
+                asignadoPor: currentUser?.email,
+                timestamp: new Date().toISOString(), // Use simple ISO string if serverTimestamp is not imported identically
+            });
+            setShowAsignarTest(false);
+            setTestSeleccionado('');
+            alert('✅ Test asignado al jugador');
+        } catch (err) {
+            console.error('Error al asignar test:', err);
+            alert('Error al asignar test');
+        }
+    };
 
     const tiposSesion = ['Evaluación', 'Intervención', 'Psicología 1:1', 'Seguimiento', 'Sesión grupal'];
     const cargos = ['Director Técnico', 'Asistente Técnico', 'Preparador Físico', 'Kinesiólogo', 'Coordinador'];
@@ -69,15 +103,8 @@ export default function PlayerDetail() {
                     if (savedPin === pData.pin) {
                         setPinAuthenticated(true);
                     } else {
-                        const enteredPin = prompt('🔒 Perfil protegido. Introduce la contraseña para acceder:');
-                        if (enteredPin === pData.pin) {
-                            sessionStorage.setItem(`pin_${id}`, enteredPin);
-                            setPinAuthenticated(true);
-                        } else {
-                            if (enteredPin !== null) alert('Contraseña incorrecta.');
-                            navigate('/portal/dashboard');
-                            return;
-                        }
+                        // El modal se encargará de pedirlo
+                        setPinAuthenticated(false);
                     }
                 } else {
                     setPinAuthenticated(true);
@@ -274,6 +301,25 @@ export default function PlayerDetail() {
         }
     };
 
+    const handleUpdatePin = async () => {
+        try {
+            setSaving(true);
+            await updateDoc(doc(db, 'jugadores', id), {
+                pin: newPin
+            });
+            sessionStorage.setItem(`pin_${id}`, newPin);
+            setShowEditPin(false);
+            setNewPin('');
+            await fetchPlayer();
+            alert('✅ Contraseña de privacidad actualizada');
+        } catch (err) {
+            console.error("Error updating pin:", err);
+            alert("Error al actualizar la contraseña");
+        } finally {
+            setSaving(false);
+        }
+    };
+
     if (loading) {
         return (
             <div className="min-h-screen bg-[#0A0F1E] flex items-center justify-center">
@@ -282,10 +328,26 @@ export default function PlayerDetail() {
         );
     }
 
-    if (!player || !pinAuthenticated) {
+    if (!player) {
         return (
             <div className="min-h-screen bg-[#0A0F1E] flex items-center justify-center">
-                <p className="text-[#6B7280]">Jugador no encontrado o acceso denegado.</p>
+                <p className="text-[#6B7280]">Jugador no encontrado.</p>
+            </div>
+        );
+    }
+
+    if (!pinAuthenticated) {
+        return (
+            <div className="min-h-screen bg-[#0A0F1E]">
+                <PinModal
+                    isOpen={true}
+                    onClose={() => navigate('/portal/dashboard')}
+                    onConfirm={(pin) => {
+                        sessionStorage.setItem(`pin_${id}`, pin);
+                        setPinAuthenticated(true);
+                    }}
+                    player={player}
+                />
             </div>
         );
     }
@@ -614,7 +676,7 @@ export default function PlayerDetail() {
                             <div className="flex flex-wrap gap-2">
                                 {isAdmin && (
                                     <button
-                                        onClick={() => navigate(`/portal/tests?jugadorId=${id}`)}
+                                        onClick={() => setShowAsignarTest(true)}
                                         className="flex items-center gap-2 text-[10px] font-black tracking-widest uppercase text-white hover:bg-purple-600 transition-colors border border-purple-500/30 px-6 py-3 rounded-2xl bg-purple-600/80"
                                     >
                                         <Plus size={12} /> Nueva Evaluación
@@ -647,6 +709,65 @@ export default function PlayerDetail() {
                         <SmartSection jugadorId={id} isAdmin={isAdmin} />
                     </div>
                 )}
+
+                {/* Sección de Configuración de Privacidad */}
+                <div className="mb-12">
+                     <div className="flex flex-col md:flex-row md:items-center justify-between mb-6 gap-4">
+                        <h3 className="text-xl font-black text-white flex items-center gap-2">
+                            <Lock size={18} className="text-[#F59E0B]" />
+                            SEGURIDAD Y PRIVACIDAD
+                        </h3>
+                    </div>
+                    <div className="bg-[#111827] border border-white/5 rounded-3xl p-8 flex flex-col md:flex-row items-center justify-between gap-6">
+                        <div className="flex items-center gap-5">
+                            <div className="w-16 h-16 rounded-2xl bg-[#F59E0B]/10 border border-[#F59E0B]/20 flex items-center justify-center shrink-0">
+                                <Shield size={32} className="text-[#F59E0B]" />
+                            </div>
+                            <div>
+                                <h4 className="text-white font-black uppercase tracking-tight">Protección de Perfil</h4>
+                                <p className="text-[#6B7280] text-sm leading-relaxed max-w-sm">
+                                    {player.pin 
+                                        ? 'Tu perfil está actualmente protegido con una contraseña privada.' 
+                                        : 'Tu perfil es público para cualquier usuario con acceso a la academia. Protégelo ahora.'}
+                                </p>
+                            </div>
+                        </div>
+                        
+                        {showEditPin ? (
+                            <div className="flex flex-col sm:flex-row items-center gap-3 w-full md:w-auto animate-in slide-in-from-right-4 duration-300">
+                                <input 
+                                    type="password"
+                                    value={newPin}
+                                    onChange={(e) => setNewPin(e.target.value)}
+                                    placeholder="Nueva clave"
+                                    className="w-full sm:w-32 bg-[#0A0F1E] border border-white/10 rounded-xl px-4 py-3 text-white text-sm outline-none focus:border-[#F59E0B]"
+                                />
+                                <div className="flex gap-2 w-full sm:w-auto">
+                                    <button 
+                                        onClick={handleUpdatePin}
+                                        disabled={saving || !newPin}
+                                        className="flex-1 sm:flex-none px-6 py-3 bg-[#F59E0B] text-black rounded-xl font-black uppercase tracking-widest text-[10px] hover:scale-105 transition-all disabled:opacity-50"
+                                    >
+                                        Guardar
+                                    </button>
+                                    <button 
+                                        onClick={() => { setShowEditPin(false); setNewPin(''); }}
+                                        className="flex-1 sm:flex-none px-4 py-3 bg-white/5 text-[#6B7280] hover:text-white rounded-xl font-bold text-[10px] uppercase tracking-widest"
+                                    >
+                                        <X size={14} />
+                                    </button>
+                                </div>
+                            </div>
+                        ) : (
+                            <button 
+                                onClick={() => { setShowEditPin(true); setNewPin(player.pin || ''); }}
+                                className="w-full md:w-auto px-8 py-4 bg-[#F59E0B]/10 border border-[#F59E0B]/30 text-[#F59E0B] hover:bg-[#F59E0B] hover:text-black rounded-2xl font-black uppercase tracking-widest text-xs transition-all shadow-xl shadow-orange-500/5 flex items-center justify-center gap-2"
+                            >
+                                <Edit2 size={16} /> {player.pin ? 'Cambiar Contraseña' : 'Establecer Contraseña'}
+                            </button>
+                        )}
+                    </div>
+                </div>
                 
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
                     {/* LEFT: Report History */}
@@ -819,7 +940,61 @@ export default function PlayerDetail() {
                 </div>
             </main>
 
-            {/* Report Viewer Modal */}
+                {/* Modal Asignar Test */}
+                {showAsignarTest && (
+                    <div className="fixed inset-0 z-[100] bg-black/80 backdrop-blur-sm flex items-center justify-center p-6">
+                        <div className="bg-[#111827] border border-white/10 rounded-3xl p-8 max-w-md w-full shadow-2xl animate-in zoom-in-95 duration-200">
+                            <div className="flex items-center gap-4 mb-6">
+                                <div className="w-12 h-12 rounded-2xl bg-purple-500/10 flex items-center justify-center">
+                                    <FlaskConical className="text-purple-400" size={24} />
+                                </div>
+                                <div>
+                                    <h3 className="text-xl font-black text-white uppercase tracking-tight">Asignar Test</h3>
+                                    <p className="text-xs text-[#6B7280] uppercase font-black tracking-widest">A habilitar para el jugador</p>
+                                </div>
+                            </div>
+                            
+                            <div className="space-y-4 mb-8">
+                                <p className="text-xs text-[#9CA3AF] leading-relaxed">
+                                    Selecciona el instrumento psicométrico que deseas que el jugador complete de forma digital.
+                                </p>
+                                <div className="grid grid-cols-1 gap-2">
+                                    {TESTS_DISPONIBLES.map(test => (
+                                        <button
+                                            key={test.id}
+                                            onClick={() => setTestSeleccionado(test.id)}
+                                            className={`p-4 rounded-2xl border text-left transition-all ${
+                                                testSeleccionado === test.id
+                                                    ? 'bg-purple-500/20 border-purple-500 text-white'
+                                                    : 'bg-[#0A0F1E] border-white/5 text-[#6B7280] hover:border-white/20'
+                                            }`}
+                                        >
+                                            <p className="text-sm font-bold uppercase tracking-widest">{test.nombre}</p>
+                                        </button>
+                                    ))}
+                                </div>
+                            </div>
+
+                            <div className="flex gap-3">
+                                <button 
+                                    onClick={() => { setShowAsignarTest(false); setTestSeleccionado(''); }}
+                                    className="flex-1 py-4 bg-white/5 hover:bg-white/10 rounded-2xl font-black uppercase tracking-widest text-[10px] transition-all"
+                                >
+                                    Cancelar
+                                </button>
+                                <button 
+                                    onClick={asignarTest}
+                                    disabled={!testSeleccionado}
+                                    className="flex-1 py-4 bg-purple-600 hover:bg-purple-700 disabled:opacity-40 text-white rounded-2xl font-black uppercase tracking-widest text-[10px] transition-all flex items-center justify-center gap-2"
+                                >
+                                    <Check size={14} /> Confirmar
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                )}
+
+                {/* Report Viewer Overlay */}
             {viewingReport && (
                 <div className="fixed inset-0 z-50 bg-black/90 backdrop-blur-sm flex items-center justify-center p-4">
                     <div className="bg-[#111827] border border-white/10 rounded-2xl w-full max-w-5xl h-[85vh] flex flex-col shadow-2xl">

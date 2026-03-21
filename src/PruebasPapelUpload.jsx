@@ -175,7 +175,6 @@ export default function PruebasPapelUpload() {
                         `Potencial excitación SNC: C2−C1=${difExcit} (umbral >${umbral}) → ${excitOk ? 'Adecuado' : 'Bajo'}.`,
                         difMem !== null ? `Memoria motriz: |C3−C1|=${difMem} (umbral ≤5) → ${memOk ? 'Buena' : 'Alterada'}.` : '',
                         difInhib !== null ? `Inhibición: |C4−C1/2|=${difInhib?.toFixed(1)} (umbral ≤3) → ${inhibOk ? 'Buena' : 'Alterada'}.` : '',
-                        tapping.observacion || '',
                     ].filter(Boolean).join(' '),
                     recomendacion: tapping.observacion || '',
                 });
@@ -201,7 +200,7 @@ export default function PruebasPapelUpload() {
                     },
                     nivel: resLandolt.interpTotal.label,
                     curva: curva?.label || 'Insuficiente data',
-                    interpretacion: `${interpretacionMinutos} | S_total: ${resLandolt.Stotal} → ${resLandolt.interpTotal.label}. Curva: ${curva?.label || 'N/A'}.${landolt.observacion ? ' ' + landolt.observacion : ''}`,
+                    interpretacion: `${interpretacionMinutos} | S_total: ${resLandolt.Stotal} → ${resLandolt.interpTotal.label}. Curva: ${curva?.label || 'N/A'}.`,
                     recomendacion: landolt.observacion || '',
                 });
             }

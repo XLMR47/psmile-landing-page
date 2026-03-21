@@ -185,9 +185,19 @@ export default function PsicometriaSection({ jugadorId }) {
 
                                         {/* Interpretación */}
                                         {ev.interpretacion && (
-                                            <p className="text-xs text-[#9CA3AF] leading-relaxed bg-[#0A0F1E] rounded-xl p-3">
-                                                {ev.interpretacion}
-                                            </p>
+                                            <div className="bg-[#0A0F1E] rounded-xl p-4 space-y-3">
+                                                {ev.instrumento?.id === 'epi' && ev.temperamento && (
+                                                    <div className="flex items-center gap-3 pb-3 border-b border-white/5">
+                                                        <div className="w-2 h-2 rounded-full bg-purple-400 shadow-[0_0_10px_rgba(168,85,247,0.5)]" />
+                                                        <p className="text-sm font-black text-white uppercase tracking-tight">
+                                                            Tipo: <span className="text-purple-400">{ev.temperamento}</span>
+                                                        </p>
+                                                    </div>
+                                                )}
+                                                <p className="text-xs text-[#9CA3AF] leading-relaxed">
+                                                    {ev.interpretacion}
+                                                </p>
+                                            </div>
                                         )}
 
                                         {/* Recomendación */}

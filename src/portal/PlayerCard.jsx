@@ -1,22 +1,29 @@
-import { Brain, User, Shield, FolderOpen } from 'lucide-react';
+import { useState } from 'react';
+import { Brain, User, Shield, FolderOpen, Lock } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import PinModal from './PinModal';
 
 export default function PlayerCard({ player, showAcademia, getAcademiaName }) {
     const navigate = useNavigate();
     const isStaff = player.tipo === 'staff';
 
+    const [isPinModalOpen, setIsPinModalOpen] = useState(false);
+
     const goToDetail = () => {
+        // Solo saltamos el PIN si es Administrador del sistema
         if (player.pin && !showAcademia) {
             const savedPin = sessionStorage.getItem(`pin_${player.id}`);
             if (savedPin !== player.pin) {
-                const enteredPin = prompt('🔒 Perfil protegido. Introduce la contraseña para acceder:');
-                if (enteredPin !== player.pin) {
-                    if (enteredPin !== null) alert('Contraseña incorrecta.');
-                    return;
-                }
-                sessionStorage.setItem(`pin_${player.id}`, enteredPin);
+                setIsPinModalOpen(true);
+                return;
             }
         }
+        navigate(`/portal/jugador/${player.id}`);
+    };
+
+    const handlePinConfirm = (enteredPin) => {
+        sessionStorage.setItem(`pin_${player.id}`, enteredPin);
+        setIsPinModalOpen(false);
         navigate(`/portal/jugador/${player.id}`);
     };
 
@@ -110,6 +117,13 @@ export default function PlayerCard({ player, showAcademia, getAcademiaName }) {
                     </button>
                 )}
             </div>
+
+            <PinModal
+                isOpen={isPinModalOpen}
+                onClose={() => setIsPinModalOpen(false)}
+                onConfirm={handlePinConfirm}
+                player={player}
+            />
         </div>
     );
 }

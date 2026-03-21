@@ -8,7 +8,7 @@
  */
 export async function generateLabMasterAnalysis(payload) {
     const { jugador, evidencia_seleccionada, config } = payload;
-    const modelId = config.model || "claude-sonnet";
+    const modelId = config.model || "claude-haiku";
 
     // 1. ACUMULADOR DE TEXTO DE DOCUMENTOS
     // Usamos un array para recolectar el contenido y luego unirlo (join)

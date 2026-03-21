@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { ArrowLeft, ArrowRight, Zap, Check, Loader2 } from 'lucide-react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { db } from './firebase';
-import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
+import { collection, addDoc, serverTimestamp, updateDoc, doc } from 'firebase/firestore';
 import { useAuth } from './contexts/AuthContext';
 
 // ─── 27 ítems CSAI-2 (Martens et al., 1990) ──────────────────────────────────
@@ -164,6 +164,19 @@ export default function CSAI2Test() {
                 respuestasRaw: respuestas,
                 timestamp: serverTimestamp(),
             });
+
+            // Status update for assigned tests
+            const asignadoId = searchParams.get('asignadoId');
+            if (asignadoId) {
+                try {
+                    await updateDoc(doc(db, 'tests_asignados', asignadoId), {
+                        estado: 'completado',
+                        completadoEn: serverTimestamp()
+                    });
+                } catch (err) {
+                    console.error("Error updating test status:", err);
+                }
+            }
             localStorage.removeItem('csai2_respuestas');
             setShowSuccess(true);
         } catch (err) {

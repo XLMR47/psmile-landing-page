@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { db } from '../firebase';
 import { collection, query, where, getDocs, addDoc, serverTimestamp, updateDoc, doc, arrayUnion, orderBy } from 'firebase/firestore';
 import { Target, Activity, Zap, Brain, GraduationCap, Plus, Calendar, Check, ChevronDown, ChevronUp, Save, Loader2, Sparkles } from 'lucide-react';
+import { useAuth } from '../contexts/AuthContext';
 
 const DIMENSIONES_SMART = [
     { id: 'fisica',      label: 'FÍSICA',      color: '#F97316', icon: Activity,      desc: 'Capacidades físicas, fuerza, resistencia y prevención.' },
@@ -11,6 +12,9 @@ const DIMENSIONES_SMART = [
 ];
 
 export default function SmartSection({ jugadorId, isAdmin }) {
+    const { currentUser } = useAuth();
+    const canEdit = isAdmin || (currentUser && currentUser.uid === jugadorId);
+
     const [metas, setMetas] = useState({});
     const [loading, setLoading] = useState(true);
     const [expandido, setExpandido] = useState(null);
@@ -163,7 +167,7 @@ export default function SmartSection({ jugadorId, isAdmin }) {
                                         {isOpen ? <ChevronUp size={12} /> : <ChevronDown size={12} />}
                                     </button>
                                     
-                                    {!meta && isAdmin && (
+                                    {!meta && canEdit && (
                                         <button 
                                             onClick={() => setShowNuevaMeta(dim.id)}
                                             className="px-4 py-2 bg-white/5 hover:bg-white/10 border border-white/10 rounded-xl text-[10px] font-black uppercase tracking-widest text-[#bbc9cd] flex items-center gap-2"
@@ -203,7 +207,7 @@ export default function SmartSection({ jugadorId, isAdmin }) {
                                     <div className="space-y-3">
                                         <div className="flex items-center justify-between">
                                              <h5 className="text-[10px] font-black text-white uppercase tracking-widest">Estado por Semana</h5>
-                                             {isAdmin && meta && (
+                                              {canEdit && meta && (
                                                  <button 
                                                     onClick={() => setShowNuevoSeguimiento(dim.id)}
                                                     className="w-7 h-7 rounded-lg bg-[#38BDF8]/10 text-[#38BDF8] flex items-center justify-center hover:bg-[#38BDF8]/20 transition-all"

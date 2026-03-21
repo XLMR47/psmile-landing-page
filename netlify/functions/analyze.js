@@ -16,79 +16,89 @@ exports.handler = async (event) => {
       return { statusCode: 400, body: JSON.stringify({ error: "El modelo es requerido" }) };
     }
 
-    let apiUrl, headers, payload;
+    let clientResponse;
     const isClaude = model.toLowerCase().includes("claude") || model.toLowerCase().includes("sonnet") || model.toLowerCase().includes("haiku");
 
     if (isClaude) {
-      let finalModel = "claude-3-5-sonnet-20241022"; // Default
-      
-      if (model.includes("haiku")) {
-        finalModel = "claude-3-5-haiku-20241022";
-      } else if (model.includes("sonnet") && (model.includes("4.5") || model.includes("4") || model.includes("3.7"))) {
-        finalModel = "claude-3-7-sonnet-20250219"; 
+      if (!process.env.ANTHROPIC_API_KEY) {
+        return { statusCode: 500, body: JSON.stringify({ error: "ANTHROPIC_API_KEY no configurada" }) };
       }
 
-      apiUrl = "https://api.anthropic.com/v1/messages";
-      headers = {
-        "x-api-key": process.env.ANTHROPIC_API_KEY,
-        "anthropic-version": "2023-06-01",
-        "Content-Type": "application/json"
-      };
-      payload = {
+      const anthropic = new Anthropic({
+        apiKey: process.env.ANTHROPIC_API_KEY,
+      });
+
+      // Mapeo de modelos estable (Contexto 2026)
+      let finalModel = "claude-3-5-sonnet-20241022"; // Modelo Maestro (Sonnet 3.5 v2)
+      
+      // Mapeo dinámico según solicitud
+      if (model.includes("haiku")) {
+        // Claude 4.5 Haiku: Máxima velocidad y eficiencia (Rel. Oct 2025)
+        finalModel = "claude-haiku-4-5-20251001";
+      } else if (model.includes("haiku-original")) {
+        finalModel = "claude-3-haiku-20240307";
+      } else if (model.includes("3.7") || model.includes("latest")) {
+        finalModel = "claude-3-7-sonnet-20250219";
+      }
+
+      const msg = await anthropic.messages.create({
         model: finalModel,
         max_tokens: body.max_tokens || 4000,
         system: systemPrompt,
         messages: [{ 
             role: "user", 
             content: (userPrompt || prompt) + "\n\nIMPORTANT: Respond with raw JSON only. No markdown fences. Just the JSON object."
-        }]
+        }],
+        temperature: temperature || 0.2
+      });
+
+      return {
+        statusCode: 200,
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ 
+          choices: [{ 
+            message: { content: msg.content[0].text } 
+          }],
+          model_used: finalModel
+        })
       };
+
     } else {
       const GROQ_API_KEY = process.env.GROQ_API_KEY;
       if (!GROQ_API_KEY) {
         return { statusCode: 500, body: JSON.stringify({ error: "GROQ_API_KEY no configurada" }) };
       }
-      apiUrl = "https://api.groq.com/openai/v1/chat/completions";
-      headers = {
-        "Authorization": `Bearer ${GROQ_API_KEY}`,
-        "Content-Type": "application/json"
-      };
-      payload = {
-        model: model || "llama-3.3-70b-versatile",
-        messages: systemPrompt ? [{role:"system", content:systemPrompt}, {role:"user", content:userPrompt||prompt}] : [{role:"user", content:userPrompt||prompt}],
-        temperature: temperature !== undefined ? temperature : 0.2,
-        max_tokens: body.max_tokens || 4000,
-        response_format: response_format || { type: "json_object" }
-      };
-    }
+      const groqUrl = "https://api.groq.com/openai/v1/chat/completions";
+      const groqResponse = await fetch(groqUrl, {
+        method: "POST",
+        headers: {
+          "Authorization": `Bearer ${GROQ_API_KEY}`,
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          model: model || "llama-3.3-70b-versatile",
+          messages: systemPrompt ? [{role:"system", content:systemPrompt}, {role:"user", content:userPrompt||prompt}] : [{role:"user", content:userPrompt||prompt}],
+          temperature: temperature !== undefined ? temperature : 0.2,
+          max_tokens: body.max_tokens || 4000,
+          response_format: response_format || { type: "json_object" }
+        })
+      });
 
-    const aiResponse = await fetch(apiUrl, {
-      method: "POST",
-      headers: headers,
-      body: JSON.stringify(payload)
-    });
+      const groqData = await groqResponse.json();
 
-    const data = await aiResponse.json();
+      if (!groqResponse.ok) {
+        return {
+          statusCode: groqResponse.status,
+          body: JSON.stringify({ error: groqData.error?.message || groqData.error || "Error en Groq API" })
+        };
+      }
 
-    if (!aiResponse.ok) {
       return {
-        statusCode: aiResponse.status,
-        body: JSON.stringify({ error: data.error?.message || data.error || "Error en AI API" })
+        statusCode: 200,
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ choices: [{ message: { content: groqData.choices?.[0]?.message?.content } }] })
       };
     }
-
-    let content;
-    if (isClaude) {
-      content = data.content?.[0]?.text;
-    } else {
-      content = data.choices?.[0]?.message?.content;
-    }
-
-    return {
-      statusCode: 200,
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ choices: [{ message: { content } }] })
-    };
 
   } catch (error) {
     console.error("Error en analyze function:", error);
