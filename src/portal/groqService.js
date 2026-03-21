@@ -104,7 +104,7 @@ ${JSON.stringify(EPSD_OPERATIONAL_DEFINITIONS)}
 </REGLAS_DE_ORO>
 
 <FORMATO_JSON_ESTRICTO>
-IMPORTANTE: Responde SOLO con JSON válido. SIN bloques de código (```). SIN texto antes o después.
+IMPORTANTE: Responde SOLO con JSON válido. SIN bloques de código (\`\`\`). SIN texto antes o después.
 
 Schema exacto:
 {
