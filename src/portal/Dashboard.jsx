@@ -13,6 +13,7 @@ export default function Dashboard() {
     const navigate = useNavigate();
     const userConfig = getUserConfig(currentUser?.email);
     const isAdmin = userConfig.role === 'admin';
+    const isSuperAdmin = isAdmin && userConfig.academiaId === null;
 
     console.log("[DASH_DEBUG] User:", currentUser?.email, "Role:", userConfig.role, "Academia:", userConfig.academiaId);
 
@@ -33,11 +34,13 @@ export default function Dashboard() {
         setLoading(true);
         try {
             let q;
-            if (isAdmin) {
-                // Admin: todos los jugadores
+            if (isSuperAdmin) {
+                // Super Admin: todos los jugadores de todas las academias
+                console.log("[DASH_DEBUG] Super Admin Fetching ALL");
                 q = query(collection(db, 'jugadores'));
             } else {
-                // DT: filtrar por academia
+                // Admin de Academia o DT: filtrar por su propia academia
+                console.log("[DASH_DEBUG] Restricted Fetching for:", userConfig.academiaId);
                 q = query(
                     collection(db, 'jugadores'),
                     where('academiaId', '==', userConfig.academiaId)
@@ -132,30 +135,41 @@ export default function Dashboard() {
                     <div className="flex items-center gap-2 md:gap-4">
                         {isAdmin && (
                             <div className="hidden lg:flex items-center gap-2">
-                                <button
-                                    onClick={() => navigate('/portal/laboratorio')}
-                                    className="flex items-center gap-2 bg-[#111827] hover:bg-[#8aebff]/10 border border-white/5 hover:border-[#8aebff]/30 text-[#6B7280] hover:text-[#8aebff] px-4 py-2 rounded-xl transition-all font-bold text-xs uppercase tracking-widest"
-                                    title="Laboratorio Psicodeportivo de Alto Rendimiento"
-                                >
-                                    <FlaskConical size={14} />
-                                    Laboratorio
-                                </button>
-                                <button
-                                    onClick={() => navigate('/portal/epsd-lite')}
-                                    className="flex items-center gap-2 bg-[#111827] hover:bg-[#39FF14]/10 border border-white/5 hover:border-[#39FF14]/30 text-[#6B7280] hover:text-[#39FF14] px-4 py-2 rounded-xl transition-all font-bold text-xs uppercase tracking-widest"
-                                    title="Herramienta de Evaluación ePsD en Vivo"
-                                >
-                                    <Activity size={14} />
-                                    ePsD Lite
-                                </button>
-                                <button
-                                    onClick={() => navigate('/portal/epsd-historial')}
-                                    className="flex items-center gap-2 bg-[#111827] hover:bg-[#0070F3]/10 border border-white/5 hover:border-[#0070F3]/30 text-[#6B7280] hover:text-[#0070F3] px-4 py-2 rounded-xl transition-all font-bold text-xs uppercase tracking-widest"
-                                    title="Ver Historial de Resultados ePsD"
-                                >
-                                    <BarChart size={14} />
-                                    Resultados ePsD
-                                </button>
+                                {isSuperAdmin && (
+                                    <>
+                                        <button
+                                            onClick={() => navigate('/portal/laboratorio')}
+                                            className="flex items-center gap-2 bg-[#111827] hover:bg-[#8aebff]/10 border border-white/5 hover:border-[#8aebff]/30 text-[#6B7280] hover:text-[#8aebff] px-4 py-2 rounded-xl transition-all font-bold text-xs uppercase tracking-widest"
+                                            title="Laboratorio Psicodeportivo de Alto Rendimiento"
+                                        >
+                                            <FlaskConical size={14} />
+                                            Laboratorio
+                                        </button>
+                                        <button
+                                            onClick={() => navigate('/portal/epsd-lite')}
+                                            className="flex items-center gap-2 bg-[#111827] hover:bg-[#39FF14]/10 border border-white/5 hover:border-[#39FF14]/30 text-[#6B7280] hover:text-[#39FF14] px-4 py-2 rounded-xl transition-all font-bold text-xs uppercase tracking-widest"
+                                            title="Herramienta de Evaluación ePsD en Vivo"
+                                        >
+                                            <Activity size={14} />
+                                            ePsD Lite
+                                        </button>
+                                        <button
+                                            onClick={() => navigate('/portal/epsd-historial')}
+                                            className="flex items-center gap-2 bg-[#111827] hover:bg-[#0070F3]/10 border border-white/5 hover:border-[#0070F3]/30 text-[#6B7280] hover:text-[#0070F3] px-4 py-2 rounded-xl transition-all font-bold text-xs uppercase tracking-widest"
+                                            title="Ver Historial de Resultados ePsD"
+                                        >
+                                            <BarChart size={14} />
+                                            Resultados ePsD
+                                        </button>
+                                        <button
+                                            onClick={() => navigate('/portal/analisis-ia')}
+                                            className="flex items-center gap-2 bg-[#111827] hover:bg-purple-500/10 border border-white/5 hover:border-purple-500/30 text-[#6B7280] hover:text-purple-400 px-4 py-2 rounded-xl transition-all font-bold text-xs uppercase tracking-widest"
+                                        >
+                                            <Sparkles size={14} />
+                                            Análisis IA
+                                        </button>
+                                    </>
+                                )}
                                 <button
                                     onClick={() => navigate('/portal/sesion/nueva')}
                                     className="flex items-center gap-2 bg-[#111827] hover:bg-[#ff2d2d]/10 border border-white/5 hover:border-[#ff2d2d]/30 text-[#6B7280] hover:text-[#ff6b6b] px-4 py-2 rounded-xl transition-all font-bold text-xs uppercase tracking-widest"
@@ -163,13 +177,6 @@ export default function Dashboard() {
                                 >
                                     <Radio size={14} />
                                     Sesión Live
-                                </button>
-                                <button
-                                    onClick={() => navigate('/portal/analisis-ia')}
-                                    className="flex items-center gap-2 bg-[#111827] hover:bg-purple-500/10 border border-white/5 hover:border-purple-500/30 text-[#6B7280] hover:text-purple-400 px-4 py-2 rounded-xl transition-all font-bold text-xs uppercase tracking-widest"
-                                >
-                                    <Sparkles size={14} />
-                                    Análisis IA
                                 </button>
                             </div>
                         )}
@@ -235,7 +242,7 @@ export default function Dashboard() {
                                 </button>
                             </div>
 
-                            {isAdmin && (
+                            {isSuperAdmin && (
                                 <>
                                     <button
                                         onClick={() => { navigate('/portal/laboratorio'); setShowMobileMenu(false); }}
@@ -274,18 +281,32 @@ export default function Dashboard() {
                                         </div>
                                     </button>
                                     <button
-                                        onClick={() => { navigate('/portal/sesion/nueva'); setShowMobileMenu(false); }}
+                                        onClick={() => { navigate('/portal/analisis-ia'); setShowMobileMenu(false); }}
                                         className="flex items-center gap-4 bg-[#111827] p-4 rounded-2xl border border-white/5 text-left"
                                     >
-                                        <div className="p-2.5 bg-[#ff2d2d]/10 text-[#ff6b6b] rounded-xl border border-[#ff2d2d]/20">
-                                            <Radio size={18} />
+                                        <div className="p-2.5 bg-purple-500/10 text-purple-400 rounded-xl border border-purple-500/20">
+                                            <Sparkles size={18} />
                                         </div>
                                         <div>
-                                            <p className="text-sm font-bold text-white uppercase tracking-tight">Sesión Live</p>
-                                            <p className="text-[10px] text-[#6B7280]">Sesión grupal en vivo</p>
+                                            <p className="text-sm font-bold text-white uppercase tracking-tight">Análisis IA</p>
+                                            <p className="text-[10px] text-[#6B7280]">Diagnóstico Inteligente</p>
                                         </div>
                                     </button>
                                 </>
+                            )}
+                            {isAdmin && (
+                                <button
+                                    onClick={() => { navigate('/portal/sesion/nueva'); setShowMobileMenu(false); }}
+                                    className="flex items-center gap-4 bg-[#111827] p-4 rounded-2xl border border-white/5 text-left"
+                                >
+                                    <div className="p-2.5 bg-[#ff2d2d]/10 text-[#ff6b6b] rounded-xl border border-[#ff2d2d]/20">
+                                        <Radio size={18} />
+                                    </div>
+                                    <div>
+                                        <p className="text-sm font-bold text-white uppercase tracking-tight">Sesión Live</p>
+                                        <p className="text-[10px] text-[#6B7280]">Sesión grupal en vivo</p>
+                                    </div>
+                                </button>
                             )}
                             {!isAdmin && userConfig.academiaId === 'neurosport' && (
                                 <button
@@ -344,10 +365,10 @@ export default function Dashboard() {
                 <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-6 mb-8">
                     <div>
                         <h2 className="text-2xl md:text-3xl font-black text-white mb-1">
-                            {isAdmin ? (
+                            {isSuperAdmin ? (
                                 <>Portal <span className="text-[#0070F3]">Multi-Academia</span></>
                             ) : (
-                                <>{getAcademiaName(userConfig.academiaId)}</>
+                                <>{userConfig.academiaName || getAcademiaName(userConfig.academiaId)}</>
                             )}
                         </h2>
                         <p className="text-[#6B7280] text-sm flex items-center gap-2">
@@ -390,7 +411,7 @@ export default function Dashboard() {
                 </div>
 
                 {/* Academia Filter (solo admin) */}
-                {isAdmin && (
+                {isSuperAdmin && (
                     <div className="flex items-center gap-2 mb-8">
                         <Building2 size={14} className="text-[#6B7280]" />
                         <div className="flex gap-1 bg-[#111827] border border-white/5 rounded-xl p-1">

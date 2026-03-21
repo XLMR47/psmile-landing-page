@@ -106,7 +106,7 @@ export default function AnalisisIA() {
     const [searchParams] = useSearchParams();
     const { currentUser } = useAuth();
     const userConfig = getUserConfig(currentUser?.email);
-    const isAdmin = userConfig?.role === 'admin';
+    const isSuperAdmin = userConfig?.role === 'admin' && userConfig.academiaId === null;
 
     const jugadorIdParam = searchParams.get('jugadorId');
 
@@ -126,7 +126,10 @@ export default function AnalisisIA() {
 
     // Cargar lista de jugadores
     useEffect(() => {
-        if (!isAdmin) return;
+        if (!isSuperAdmin) {
+            navigate('/portal/dashboard');
+            return;
+        }
         const cargar = async () => {
             const snap = await getDocs(query(collection(db, 'jugadores')));
             const lista = snap.docs
@@ -281,7 +284,7 @@ export default function AnalisisIA() {
                 </div>
 
                 {/* Selector de jugador */}
-                {isAdmin && (
+                {isSuperAdmin && (
                     <div className="bg-[#111827] border border-white/5 rounded-3xl p-6 mb-6 shadow-xl">
                         <p className="text-[10px] font-black tracking-widest text-[#6B7280] uppercase mb-4">
                             Seleccionar jugador

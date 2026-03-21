@@ -10,6 +10,7 @@ export default function AddPlayerModal({ isOpen, onClose, onPlayerAdded }) {
     const { currentUser } = useAuth();
     const userConfig = getUserConfig(currentUser?.email);
     const isAdmin = userConfig.role === 'admin';
+    const isSuperAdmin = isAdmin && userConfig.academiaId === null;
 
     const [tipo, setTipo] = useState('jugador'); // 'jugador' o 'staff'
     const [formData, setFormData] = useState({
@@ -17,7 +18,7 @@ export default function AddPlayerModal({ isOpen, onClose, onPlayerAdded }) {
         categoria: 'Sub-15',
         cargo: 'Director Técnico',
         pin: '',
-        academiaId: isAdmin ? '' : userConfig.academiaId,
+        academiaId: isSuperAdmin ? '' : userConfig.academiaId,
     });
     const [photoFile, setPhotoFile] = useState(null);
     const [photoPreview, setPhotoPreview] = useState(null);
@@ -46,7 +47,7 @@ export default function AddPlayerModal({ isOpen, onClose, onPlayerAdded }) {
     const handleSubmit = async (e) => {
         e.preventDefault();
         if (!formData.nombre) return;
-        if (isAdmin && !formData.academiaId) {
+        if (isSuperAdmin && !formData.academiaId) {
             setError('Selecciona una academia.');
             return;
         }
@@ -105,7 +106,7 @@ export default function AddPlayerModal({ isOpen, onClose, onPlayerAdded }) {
             }
 
             // Reset
-            setFormData({ nombre: '', categoria: 'Sub-15', cargo: 'Director Técnico', pin: '', academiaId: isAdmin ? '' : userConfig.academiaId });
+            setFormData({ nombre: '', categoria: 'Sub-15', cargo: 'Director Técnico', pin: '', academiaId: isSuperAdmin ? '' : userConfig.academiaId });
             setTipo('jugador');
             setPhotoFile(null);
             setPhotoPreview(null);
@@ -176,8 +177,8 @@ export default function AddPlayerModal({ isOpen, onClose, onPlayerAdded }) {
                         </div>
                     </div>
 
-                    {/* Academia (solo admin) */}
-                    {isAdmin && (
+                    {/* Academia (solo super-admin) */}
+                    {isSuperAdmin && (
                         <div>
                             <label className="block text-[10px] font-bold text-[#6B7280] tracking-[0.2em] uppercase mb-2">
                                 Academia
@@ -200,6 +201,7 @@ export default function AddPlayerModal({ isOpen, onClose, onPlayerAdded }) {
                             </div>
                         </div>
                     )}
+
 
                     {/* Nombre */}
                     <div>

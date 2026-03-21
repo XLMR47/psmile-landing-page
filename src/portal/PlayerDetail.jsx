@@ -21,6 +21,7 @@ export default function PlayerDetail() {
     const { currentUser } = useAuth();
     const userConfig = getUserConfig(currentUser?.email);
     const isAdmin = userConfig.role === 'admin' || userConfig.role === 'dt';
+    const isSuperAdmin = userConfig.role === 'admin' && userConfig.academiaId === null;
 
     const [player, setPlayer] = useState(null);
     const [loading, setLoading] = useState(true);
@@ -100,6 +101,13 @@ export default function PlayerDetail() {
             if (snap.exists()) {
                 const pData = snap.data();
                 
+                // AISLAMIENTO DE DATOS: Verificar si el admin tiene acceso a esta academia
+                if (userConfig.academiaId !== null && pData.academiaId !== userConfig.academiaId) {
+                    console.error("[SECURITY] Acceso denegado a academia externa");
+                    navigate('/portal/dashboard');
+                    return;
+                }
+
                 if (pData.pin && !isAdmin) {
                     const savedPin = sessionStorage.getItem(`pin_${id}`);
                     if (savedPin === pData.pin) {
@@ -558,8 +566,8 @@ export default function PlayerDetail() {
                     </div>
                 )}
                 
-                {/* ePsD Elite Analysis Section - MOVED TO TOP */}
-                {!isStaff && (
+                {/* ePsD Elite Analysis Section - SOLO PARA SUPER-ADMIN PSMILE */}
+                {!isStaff && isSuperAdmin && (
                     <div className="mt-6 mb-12">
                         <div className="flex flex-col md:flex-row md:items-center justify-between mb-8">
                             <div className="flex items-center gap-4 mb-6 md:mb-0">
@@ -735,12 +743,14 @@ export default function PlayerDetail() {
                                         <Plus size={12} /> Nueva Evaluación
                                     </button>
                                 )}
-                                <button
-                                    onClick={() => navigate(`/portal/analisis-ia?jugadorId=${id}`)}
-                                    className="flex items-center gap-2 text-[10px] font-black tracking-widest uppercase text-purple-400 hover:text-white transition-colors border border-purple-500/30 px-6 py-3 rounded-2xl bg-purple-500/5 hover:bg-purple-500/10"
-                                >
-                                    <Sparkles size={12} /> Análisis IA cruzado
-                                </button>
+                                {isSuperAdmin && (
+                                    <button
+                                        onClick={() => navigate(`/portal/analisis-ia?jugadorId=${id}`)}
+                                        className="flex items-center gap-2 text-[10px] font-black tracking-widest uppercase text-purple-400 hover:text-white transition-colors border border-purple-500/30 px-6 py-3 rounded-2xl bg-purple-500/5 hover:bg-purple-500/10"
+                                    >
+                                        <Sparkles size={12} /> Análisis IA cruzado
+                                    </button>
+                                )}
                             </div>
                         </div>
                         <PsicometriaSection jugadorId={id} />

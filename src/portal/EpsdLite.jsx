@@ -92,6 +92,7 @@ export default function EpsdLite() {
     const { currentUser } = useAuth();
     const userConfig = getUserConfig(currentUser?.email);
     const isAdmin = userConfig?.role === 'admin';
+    const isSuperAdmin = isAdmin && userConfig.academiaId === null;
 
     const [jugadorId, setJugadorId] = useState('');
     const [jugadorManual, setJugadorManual] = useState({
@@ -114,7 +115,11 @@ export default function EpsdLite() {
     const [editConfig, setEditConfig] = useState(false);
 
     useEffect(() => {
-        if (!isAdmin || !currentUser) return;
+        if (!isSuperAdmin) {
+            navigate('/portal/dashboard');
+            return;
+        }
+        if (!currentUser) return;
         const fetchPlayers = async () => {
             setIsLoadingPlayers(true);
             try {

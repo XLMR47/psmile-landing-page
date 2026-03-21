@@ -18,6 +18,7 @@ export default function PsmileLab() {
     const navigate = useNavigate();
     const userConfig = getUserConfig(currentUser?.email);
     const isAdmin = userConfig.role === 'admin';
+    const isSuperAdmin = isAdmin && userConfig.academiaId === null;
 
     console.log("[LAB_DEBUG] User:", currentUser?.email, "Role:", userConfig.role, "Academia:", userConfig.academiaId);
 
@@ -43,18 +44,14 @@ export default function PsmileLab() {
 
     // Fetch initial player list
     useEffect(() => {
+        if (!isSuperAdmin) {
+            navigate('/portal/dashboard');
+            return;
+        }
         const fetchPlayers = async () => {
             setLoadingPlayers(true);
             try {
-                let q;
-                if (isAdmin) {
-                    q = query(collection(db, 'jugadores'));
-                } else {
-                    q = query(
-                        collection(db, 'jugadores'),
-                        where('academiaId', '==', userConfig.academiaId)
-                    );
-                }
+                let q = query(collection(db, 'jugadores'));
                 const snapshot = await getDocs(q);
                 let list = snapshot.docs.map(d => ({ id: d.id, ...d.data() }));
                 
@@ -69,7 +66,7 @@ export default function PsmileLab() {
             }
         };
         fetchPlayers();
-    }, [userConfig.academiaId, isAdmin]);
+    }, [isSuperAdmin]);
 
     // Fetch evaluations and history when player is selected
     useEffect(() => {
